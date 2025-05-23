@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Realtime Fire Detection - Upload Image</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+  <style>
+    #container {
+      position: relative;
+      width: fit-content;
+      max-width: 640px;
+    }
+    #preview, #uploadCanvas {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    #uploadCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Hamburger -->
+  <div id="hamburger" onclick="toggleSidebar()">☰</div>
+  <!-- Overlay -->
+  <div id="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <h2>Thông tin người dùng</h2>
+    <p><strong>Tên:</strong> Nguyễn Văn A</p>
+    <p><strong>Email:</strong> user@example.com</p>
+
+    <hr>
+
+    <h3>Chức năng</h3>
+    <ul class="sidebar-menu">
+      <li onclick="location.href='/camera'">🔴 Detect with Camera</li>
+      <li onclick="location.href='/picture'">🖼️ Detect with Picture</li>
+      <li onclick="location.href='/video'">🎞️ Detect with Video</li>
+    </ul>
+
+    <button onclick="logout()">Đăng xuất</button>
+  </div>
+
+
+  <div id="main-content">
+    <h1>Realtime Fire Detection - Upload Image</h1>
+
+    <input type="file" id="imageUpload" accept="image/*" />
+
+    <div id="container" style="margin-top: 20px;">
+      <img id="preview" src="" alt="" />
+      <canvas id="uploadCanvas"></canvas>
+    </div>
+    <button id="detectBtn" disabled> Detect</button>
+  </div>
+
+  <script>
+    // Sidebar toggle
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      const hamburger = document.getElementById('hamburger');
+      const isActive = sidebar.classList.contains('active');
+      if (isActive) {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        hamburger.style.display = 'block';
+      } else {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+        hamburger.style.display = 'none';
+      }
+    }
+
+    function logout() {
+      alert('Bạn đã đăng xuất!');
+    }
+
+    // Upload image detection logic
+    const imageUpload = document.getElementById('imageUpload');
+const preview = document.getElementById('preview');
+const uploadCanvas = document.getElementById('uploadCanvas');
+const uploadCtx = uploadCanvas.getContext('2d');
+const detectBtn = document.getElementById('detectBtn');
+
+let selectedFile = null;
+
+// Khi chọn ảnh, chỉ preview, chưa gửi lên server
+imageUpload.addEventListener('change', () => {
+  const file = imageUpload.files[0];
+  selectedFile = file;
+  detectBtn.disabled = !file; // Chỉ enable nút nếu có file
+
+  if (!file) {
+    preview.src = '';
+    uploadCtx.clearRect(0, 0, uploadCanvas.width, uploadCanvas.height);
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    preview.onload = () => {
+      // Resize canvas to match image
+      uploadCanvas.width = preview.naturalWidth;
+      uploadCanvas.height = preview.naturalHeight;
+      uploadCanvas.style.width = preview.width + 'px';
+      uploadCanvas.style.height = preview.height + 'px';
+
+      // Clear canvas & vẽ lại ảnh
+      uploadCtx.clearRect(0, 0, uploadCanvas.width, uploadCanvas.height);
+      uploadCtx.drawImage(preview, 0, 0);
+    };
+  };
+  reader.readAsDataURL(file);
+});
+
+// Khi bấm nút "Nhận diện", mới gửi ảnh lên server
+detectBtn.addEventListener('click', () => {
+  if (!selectedFile) return;
+
+  // Vẽ lại ảnh gốc
+  uploadCtx.clearRect(0, 0, uploadCanvas.width, uploadCanvas.height);
+  uploadCtx.drawImage(preview, 0, 0);
+
+  // Convert canvas to blob để giữ đúng kích thước ảnh
+  uploadCanvas.toBlob(blob => {
+    const formData = new FormData();
+    formData.append('file', blob, 'upload.jpg');
+
+    fetch('/predict', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.detections && data.detections.length > 0) {
+        uploadCtx.strokeStyle = 'red';
+        uploadCtx.lineWidth = 3;
+        uploadCtx.font = '18px Arial';
+        uploadCtx.fillStyle = 'red';
+
+        data.detections.forEach(det => {
+          const [x1, y1, x2, y2] = det.bbox;
+          const w = x2 - x1;
+          const h = y2 - y1;
+
+          uploadCtx.strokeRect(x1, y1, w, h);
+          const confText = (det.confidence * 100).toFixed(1) + '%';
+          uploadCtx.fillText(confText, x1, y1 > 20 ? y1 - 5 : y1 + 20);
+        });
+      }
+    })
+    .catch(err => {
+      console.error('Lỗi khi gửi ảnh upload:', err);
+    });
+  }, 'image/jpeg');
+});
+  </script>
+</body>
+</html>

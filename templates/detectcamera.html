@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Realtime Fire Detection</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    #camera-select {
+      margin-top: 10px;
+      padding: 5px;
+    }
+    #camera-label {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    video {
+      transform: scaleX(-1); /* Lật gương */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hamburger -->
+  <div id="hamburger" onclick="toggleSidebar()">☰</div>
+
+  <!-- Overlay -->
+  <div id="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <h2>Thông tin người dùng</h2>
+    <p><strong>Tên:</strong> Nguyễn Văn A</p>
+    <p><strong>Email:</strong> user@example.com</p>
+
+    <hr>
+
+    <h3>Chức năng</h3>
+    <ul class="sidebar-menu">
+      <li onclick="location.href='/camera'">🔴 Detect with Camera</li>
+      <li onclick="location.href='/picture'">🖼️ Detect with Picture</li>
+      <li onclick="location.href='/video'">🎞️ Detect with Video</li>
+    </ul>
+
+    <button onclick="logout()">Đăng xuất</button>
+  </div>
+
+  <!-- Nội dung chính -->
+<div id="main-content">
+  <h1 style="color: crimson;">Realtime Fire Detection Webcam</h1>
+
+  <!-- VIDEO + CANVAS -->
+  <div id="container">
+    <video id="video" autoplay muted playsinline width="640" height="480"></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+  </div>
+
+  <!-- MỤC CHỌN CAMERA TÁCH RIÊNG RA NGOÀI -->
+  <div id="camera-options" style="margin-top: 20px;">
+    <label id="camera-label" for="camera-select">Chọn thiết bị camera đầu vào:</label><br>
+    <select id="camera-select"></select>
+  </div>
+</div
+
+  <!-- Script -->
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const cameraSelect = document.getElementById('camera-select');
+    let currentStream;
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      const hamburger = document.getElementById('hamburger');
+
+      const isActive = sidebar.classList.contains('active');
+      if (isActive) {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        hamburger.style.display = 'block';
+      } else {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+        hamburger.style.display = 'none';
+      }
+    }
+
+    function logout() {
+      alert('Bạn đã đăng xuất!');
+    }
+
+    async function listCameras() {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+      cameraSelect.innerHTML = '';
+      videoDevices.forEach(device => {
+        const option = document.createElement('option');
+        option.value = device.deviceId;
+        option.text = device.label || `Camera ${cameraSelect.length + 1}`;
+        cameraSelect.appendChild(option);
+      });
+    }
+
+    async function startCamera(deviceId) {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { deviceId: { exact: deviceId } }
+        });
+        video.srcObject = stream;
+        currentStream = stream;
+      } catch (err) {
+        alert('Không thể mở camera: ' + err);
+        console.error(err);
+      }
+    }
+
+    function sendFrame() {
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCanvas.width = video.videoWidth;
+      tempCanvas.height = video.videoHeight;
+      tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+
+      tempCanvas.toBlob(blob => {
+        const formData = new FormData();
+        formData.append('file', blob, 'frame.jpg');
+
+        fetch('/predict', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          if (data.detections && data.detections.length > 0) {
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 3;
+            ctx.font = '18px Arial';
+            ctx.fillStyle = 'red';
+
+            data.detections.forEach(det => {
+              const [x1, y1, x2, y2] = det.bbox;
+              const w = x2 - x1;
+              const h = y2 - y1;
+
+              ctx.strokeRect(x1, y1, w, h);
+              const confText = (det.confidence * 100).toFixed(1) + '%';
+              ctx.fillText(confText, x1, y1 > 20 ? y1 - 5 : y1 + 20);
+            });
+          }
+        })
+        .catch(err => {
+          console.error('Lỗi khi gửi frame:', err);
+        });
+      }, 'image/jpeg');
+    }
+
+    window.addEventListener('load', async () => {
+      await listCameras();
+      if (cameraSelect.options.length > 0) {
+        await startCamera(cameraSelect.value);
+      }
+
+      setInterval(() => {
+        if (video.readyState === 4) {
+          sendFrame();
+        }
+      }, 500);
+    });
+
+    cameraSelect.addEventListener('change', () => {
+      startCamera(cameraSelect.value);
+    });
+
+    navigator.mediaDevices.ondevicechange = async () => {
+      const oldValue = cameraSelect.value;
+      await listCameras();
+
+      if ([...cameraSelect.options].some(opt => opt.value === oldValue)) {
+        cameraSelect.value = oldValue;
+      } else if (cameraSelect.options.length > 0) {
+        startCamera(cameraSelect.value);
+      }
+    };
+  </script>
+
+</body>
+</html>
