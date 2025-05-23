@@ -153,6 +153,13 @@
               ctx.strokeRect(x1, y1, w, h);
               const confText = (det.confidence * 100).toFixed(1) + '%';
               ctx.fillText(confText, x1, y1 > 20 ? y1 - 5 : y1 + 20);
+              ctx.save();
+              ctx.translate(canvas.width, 0);  // Dịch sang phải
+              ctx.scale(-1, 1);                // Lật theo trục X
+
+              // Vẽ bounding box bình thường ở đây
+
+              ctx.restore(); 
             });
           }
         })

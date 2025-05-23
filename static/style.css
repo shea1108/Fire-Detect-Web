@@ -9,11 +9,13 @@ body {
 }
 
 /* Mirror transform for video and canvas */
-#video, #canvas {
+/* #video, #canvas {
   transform: scaleX(-1);   
   -webkit-transform: scaleX(-1);
+} */
+#video {
+  transform: scaleX(-1);
 }
-
 /* Camera options center */
 #camera-options {
   text-align: center;
