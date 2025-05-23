@@ -54,27 +54,44 @@
 
   <!-- Nội dung chính -->
   <div id="main-content">
+    <button class="home-btn" onclick="location.href='/'"> 🏠 Về trang chủ   </button>
     <h1>Realtime Fire Detection - Upload Video</h1>
-    <input type="file" id="videoUpload" accept="video/*" />
+
+    <label for="videoUpload" class="upload-btn">
+      <span>🎬 Chọn Video</span>
+    </label>
+    <input type="file" id="videoUpload" accept="video/*" style="display: none;">
+    <span id="FileName" style="color:#eee; margin-left:18px"></span>
+    
     <div id="container" style="margin-top: 20px;">
-      <video id="previewVideo" controls></video>
-      <canvas id="uploadCanvas"></canvas>
+      <video id="previewVideo" controls style=""></video>
+      <canvas id="uploadCanvas" style=""></canvas>
     </div>
+    <button id="detectBtn" disabled>Detect</button>
   </div>
 
 <script>
   const videoUpload = document.getElementById('videoUpload');
+  const fileNameSpan = document.getElementById('FileName');
+  videoUpload.addEventListener('change', function() {
+    if (videoUpload.files.length > 0) {
+      fileNameSpan.textContent = videoUpload.files[0].name;
+    } else {
+      fileNameSpan.textContent = '';
+    }
+  });
   const previewVideo = document.getElementById('previewVideo');
   const uploadCanvas = document.getElementById('uploadCanvas');
   const uploadCtx = uploadCanvas.getContext('2d');
-
+  const detectBtn = document.getElementById('detectBtn');
   let lastBoxes = [];
+  let isDetecting = false;
 
+  // Sidebar toggle (giữ nguyên)
   function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
     const hamburger = document.getElementById('hamburger');
-
     const isActive = sidebar.classList.contains('active');
     if (isActive) {
       sidebar.classList.remove('active');
@@ -91,79 +108,89 @@
     alert('Bạn đã đăng xuất!');
   }
 
+  // Khi upload video, enable detectBtn và chuẩn bị canvas
   videoUpload.addEventListener('change', () => {
     const file = videoUpload.files[0];
     if (!file) return;
-
     const url = URL.createObjectURL(file);
     previewVideo.src = url;
+    detectBtn.disabled = false;
+    lastBoxes = [];
+    isDetecting = false;
 
     previewVideo.addEventListener('loadedmetadata', () => {
       uploadCanvas.width = previewVideo.videoWidth;
       uploadCanvas.height = previewVideo.videoHeight;
       uploadCanvas.style.width = previewVideo.clientWidth + 'px';
       uploadCanvas.style.height = previewVideo.clientHeight + 'px';
+    }, { once: true }); // Đảm bảo chỉ chạy 1 lần khi video mới được chọn
+  });
+
+  async function detectFrame(imageData) {
+    try {
+      const res = await fetch('/detect-frame', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imageData })
+      });
+      const data = await res.json();
+      lastBoxes = data.detections || [];
+    } catch (error) {
+      console.error('Detection error:', error);
+    }
+  }
+
+  function drawLoop() {
+    if (!isDetecting || previewVideo.paused || previewVideo.ended) return;
+
+    uploadCtx.clearRect(0, 0, uploadCanvas.width, uploadCanvas.height);
+    uploadCtx.drawImage(previewVideo, 0, 0, uploadCanvas.width, uploadCanvas.height);
+
+    lastBoxes.forEach(box => {
+      const [x1, y1, x2, y2] = box.bbox;
+      const confidence = box.confidence.toFixed(2);
+      const label = `Fire (${Math.round(confidence * 100)}%)`;
+      uploadCtx.strokeStyle = 'red';
+      uploadCtx.lineWidth = 2;
+      uploadCtx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+      uploadCtx.fillStyle = 'red';
+      uploadCtx.font = '16px sans-serif';
+      uploadCtx.fillText(label, x1 + 4, y1 - 6);
     });
 
-    previewVideo.addEventListener('play', () => {
-      let lastDetectTime = 0;
+    const now = Date.now();
+    if (!drawLoop.lastDetectTime || now - drawLoop.lastDetectTime > 500) {
+      drawLoop.lastDetectTime = now;
+      // Capture current frame to send for detection
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = previewVideo.videoWidth;
+      tempCanvas.height = previewVideo.videoHeight;
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCtx.drawImage(previewVideo, 0, 0, tempCanvas.width, tempCanvas.height);
+      const base64Image = tempCanvas.toDataURL('image/jpeg');
+      detectFrame(base64Image);
+    }
+    requestAnimationFrame(drawLoop);
+  }
 
-      async function detectFrame(imageData) {
-        try {
-          const res = await fetch('/detect-frame', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ image: imageData })
-          });
-
-          const data = await res.json();
-          lastBoxes = data.detections || [];
-        } catch (error) {
-          console.error('Detection error:', error);
-        }
-      }
-
-      function drawLoop() {
-        if (previewVideo.paused || previewVideo.ended) return;
-
-        uploadCtx.clearRect(0, 0, uploadCanvas.width, uploadCanvas.height);
-        uploadCtx.drawImage(previewVideo, 0, 0, uploadCanvas.width, uploadCanvas.height);
-
-        lastBoxes.forEach(box => {
-          const [x1, y1, x2, y2] = box.bbox;
-          const confidence = box.confidence.toFixed(2);
-          const label = `Fire (${Math.round(confidence * 100)}%)`;
-
-          uploadCtx.strokeStyle = 'red';
-          uploadCtx.lineWidth = 2;
-          uploadCtx.strokeRect(x1, y1, x2 - x1, y2 - y1);
-
-          uploadCtx.fillStyle = 'red';
-          uploadCtx.font = '16px sans-serif';
-          uploadCtx.fillText(label, x1 + 4, y1 - 6);
-        });
-
-        const now = Date.now();
-        if (now - lastDetectTime > 500) {
-          lastDetectTime = now;
-
-          const tempCanvas = document.createElement('canvas');
-          tempCanvas.width = previewVideo.videoWidth;
-          tempCanvas.height = previewVideo.videoHeight;
-          const tempCtx = tempCanvas.getContext('2d');
-          tempCtx.drawImage(previewVideo, 0, 0, tempCanvas.width, tempCanvas.height);
-          const base64Image = tempCanvas.toDataURL('image/jpeg');
-
-          detectFrame(base64Image);
-        }
-
-        requestAnimationFrame(drawLoop);
-      }
-
+  // Khi nhấn nút Detect mới bắt đầu detect
+  detectBtn.addEventListener('click', () => {
+    if (previewVideo.src && !isDetecting) {
+      isDetecting = true;
+      previewVideo.play();
       drawLoop();
-    });
+      detectBtn.disabled = true;
+    }
+  });
+
+  // Khi video pause hoặc ended thì tắt detect, cho phép detect lại
+  previewVideo.addEventListener('pause', () => {
+    isDetecting = false;
+    detectBtn.disabled = false;
+  });
+  previewVideo.addEventListener('ended', () => {
+    isDetecting = false;
+    detectBtn.disabled = false;
   });
 </script>
 
