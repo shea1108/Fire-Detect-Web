@@ -9,7 +9,7 @@ model = YOLO('model/23.5_yolov8m_caithien_v2.pt')
 
 @app.route('/')
 def home():
-    return render_template('detectcamera.html')
+    return render_template('index.html')
 
 @app.route('/camera')
 def camera():

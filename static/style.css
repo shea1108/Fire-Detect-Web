@@ -184,3 +184,31 @@ h1 {
   color: #dc3545;
   user-select: none;
 }
+/* Căn nút home lên góc phải của main-content */
+.home-btn {
+  position: fixed;
+  top: 24px;      /* Khoảng cách với viền trên */
+  right: 24px;    /* Khoảng cách với viền phải */
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 13px 34px 13px 24px;   /* Padding trong nút */
+  font-size: 19px;
+  border-radius: 10px; /* Bo góc trừ góc trên phải */
+  box-shadow: 0 3px 14px rgba(220, 53, 69, 0.19);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.21s, box-shadow 0.15s, transform 0.09s;
+  outline: none;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  z-index: 1500;
+}
+
+.home-btn:hover {
+  background-color: #a82028;
+  color: #fff;
+  box-shadow: 0 7px 24px rgba(220, 53, 69, 0.33);
+  transform: translateY(-2px) scale(1.04);
+}
