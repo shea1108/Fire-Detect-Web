@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!--SEO Meta Tags-->
+	<meta charset="utf-8" />
+	<!-- SITE TITLE -->
+	<title>Tapeli - Responsive Admin Dashboard Template</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc." />
+	<meta name="author" content="Zoyothemes" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<!-- App favicon -->
+	<link rel="shortcut icon" href="favicon.ico">
+
+	<!-- Bootstrap Core CSS -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Material Design Icons -->
+    <link href="css/materialdesignicons.min.css" rel="stylesheet" type="text/css"/>
+
+    <!-- Prettify -->
+	<link href="css/prettify.css" rel="stylesheet" type="text/css"/>
+
+	<!-- Custom CSS -->
+	<link href="css/styles.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+	<!-- Begin page -->
+	<div id="wrapper">
+
+		<!-- Topbar -->
+		<div id="page-topbar">
+			<div class="layout-width">
+				<div class="navbar-header">
+					<h5 class="text-dark fw-semibold">Tapeli - Admin Dashboard Template</h5>
+				</div>
+			</div><!-- container -->
+		</div>
+
+		<!-- Sidebar -->
+		<div id="sidebar-wrapper">
+			<!-- LOGO -->
+			<div class="navbar-brand-box">
+				<!-- Dark Logo-->
+				<a href="index.html" class="logo">
+					<span class="logo-sm">
+						<img src="images/logo-dark.png" alt="" height="22">
+					</span>
+				</a>
+			</div>
+
+			<ul class="sidebar-nav">
+				<li>
+					<a href="index.html">Introduction</a>
+				</li>
+				<li>
+					<a href="folder-structure.html">Folder Structure</a>
+				</li>
+                <li>
+					<a href="getting-started.html">Getting Started</a>
+				</li>
+				<li>
+					<a href="resources-plugins.html">Plugins &amp; Resources (Credits)</a>
+				</li>
+				<li>
+					<a href="support.html">Support</a>
+				</li>
+				<li><a href="changelog.html">Change Log</a></li>
+			</ul>
+		</div>
+		<!-- /#sidebar-wrapper -->
+
+		<!-- Page Content -->
+		<div id="page-content-wrapper">
+			<div class="page-content mb-0">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card border-0">
+                                <div class="card-header">
+                                    <h4 class="card-title fs-18 mb-0">Setup Tapeli</h4>
+                                </div>
+								<div class="card-body p-4">
+                                    <p class="text-muted"> We use <a class="text-danger" href="https://gulpjs.com/"
+                                        target="_blank">Gulp</a> to fully automate our build process, making development more efficient. 
+                                        If you're not familiar with Gulp, it's a straightforward tool that automates tedious and 
+                                        time-consuming tasks in the development workflow. By utilizing Gulp, 
+                                        you can focus on coding rather than managing build tasks. 
+                                        For more information, you can read about <a class="text-danger"
+                                        href="https://gulpjs.com/" target="_blank">here</a>.</p>
+
+                                    <h5> Prerequisites:</h5>
+                                    <p class="text-muted"> Please follow the below steps to install and setup all prerequisites:</p>
+                                    <ul>
+                                        <li>
+                                            <strong>Nodejs</strong>
+                                            <p>Ensure <a class="text-danger" href="https://nodejs.org/"
+                                                target="_blank">Node.js</a>  is installed and running on your computer. If Node.js is 
+                                                already installed and  the version is 18 or higher, you can skip this step. 
+                                                We recommend using the ong Term Support (LTS) version of Node.js for 
+                                                optimal stability and compatibility.</p>
+                                        </li>
+                                        <li>
+                                            <strong>Yarn</strong>
+                                            <p>
+                                                Ensure <a class="text-danger"
+                                                    href="https://classic.yarnpkg.com/en/" target="_blank">Yarn</a>
+                                                    is installed and running on your computer.
+                                                If Yarn is already installed in your computer, you
+                                                can skip this step. We recommend you use Yarn instead
+                                                of NPM.</p>
+                                        </li>
+                                        <li>
+                                            <strong>Gulp</strong>
+    
+                                            <p>Ensure <a class="text-danger" href="https://gulpjs.com/"
+                                                    target="_blank">Gulp</a> is installed and running on your computer. 
+                                                    If Gulp is already installed in your compute, you run
+                                                command <code>npm install -g gulp</code> from your
+                                                terminal.</p>
+                                        </li>
+                                        <li>
+                                            <strong>Git</strong>
+    
+                                            <p>Ensure <a class="text-danger" href="https://git-scm.com/"
+                                                    target="_blank">Git</a> is installed globally and
+                                                running on your computer. If Git is already installed in your computer, you
+                                                can skip this step.</p>
+                                        </li>
+                                    </ul>
+                                    <p class="text-muted">
+                                        Once you have completed the previous steps, navigate to the root directory of the project
+                                         <span class="fw-semibold">(
+                                            Tapeli.0.0*/Tapeli-Admin/ )</span> From there, open your terminal or command prompt and 
+                                            execute the following commands to either run the project locally or build it for production:
+                                    </p>
+
+                                    <table class="table table-bordered m-0 mb-4">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 20%;">
+                                                    <i class="ti-file"></i> Command
+                                                </th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <code>yarn install</code>
+                                                </td>
+                                                <td>
+                                                    This will install all necessary dependencies into the <code>node_modules</code> directory.
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <code>gulp</code>
+                                                </td>
+                                                <td>
+                                                    This command runs the project locally, starting the development 
+                                                    server and monitoring for any changes in your code, including HTML, 
+                                                    JavaScript, Sass, and more. The development server can be accessed at <a class="text-danger"
+                                                        href="http://localhost:3000">http://localhost:3000</a>.
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <code>gulp build</code>
+                                                </td>
+                                                <td>
+                                                    Generates a <code>/dist</code> directory with all
+                                                    the production files.
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <div class="mb-0">
+                                        SCSS: We highly recommend against modifying any SCSS files within the <span
+                                            class="fw-semibold">assets/scss/custom</span> directories, as future updates 
+                                            could override your changes. Instead, we strongly advise using a custom.scss 
+                                            file for your modifications to ensure your custom styles remain intact during updates.
+                                    </div>
+
+								</div>
+							</div>  
+						</div>
+					</div>
+					<!-- /#page-content-wrapper -->
+	
+					<div class="text-center">
+						<p class="copy mb-0"><script>document.write(new Date().getFullYear())</script> © Tapeli Design & Develop by Zoyothemes.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- end page-content-wrapper -->
+	</div>
+	<!-- /#wrapper -->
+
+	<!-- jQuery -->
+	<script src="js/jquery.js"></script>
+
+	<!-- Bootstrap Core JavaScript -->
+	<script src="js/bootstrap.min.js"></script>
+
+	<script src="js/jquery.easing.min.js"></script>
+
+	<script type="text/javascript" src="js/prettify.js"></script>
+
+	<!-- Menu Toggle Script -->
+	<script>
+
+		//jQuery for page scrolling feature - requires jQuery Easing plugin
+		$(function () {
+			$('.sidebar-nav a').bind('click', function (event) {
+				var $anchor = $(this);
+				$('html, body').stop().animate({
+					scrollTop: $($anchor.attr('href')).offset().top - 100
+				}, 1500, 'easeInOutExpo');
+				event.preventDefault();
+			});
+		});
+	</script>
+
+</body>
+
+</html>

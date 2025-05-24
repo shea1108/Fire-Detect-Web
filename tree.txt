@@ -1,0 +1,2177 @@
+Folder PATH listing for volume IT
+Volume serial number is 20C3-4E62
+D:.
+|   .env
+|   app.py
+|   README.md
+|   requirements.txt
+|   seorun-seo-digital-marketing-agency-template-2024-07-28-22-14-27-utc.zip
+|   tapeli-responsive-bootstrap-5-admin-ui-kit-2024-10-11-11-18-38-utc.zip
+|   tree.txt
+|   
++---backend
+|   |   config.py
+|   |   extensions.py
+|   |   __init__.py
+|   |   
+|   +---auth
+|   +---databases
+|   +---logs
+|   +---models
+|   +---routes
+|   +---services
+|   +---utils
+|   \---YOLO
+|           23.5_yolov8m_caithien_v2.pt
+|           best.pt
+|           
++---frontend
+|   |   404.html
+|   |   about-us.html
+|   |   blog-left-sidebar.html
+|   |   blog-right-sidebar.html
+|   |   blog-single-left-sidebar.html
+|   |   blog-single-right-sidebar.html
+|   |   contact.html
+|   |   gallery-2-colum.html
+|   |   gallery-3-colum.html
+|   |   gallery-4-colum.html
+|   |   gallery-grid-2-colum.html
+|   |   gallery-grid-3-colum.html
+|   |   gallery-grid-4-colum.html
+|   |   index-2.html
+|   |   index-3.html
+|   |   index-4.html
+|   |   index-5.html
+|   |   index-6.html
+|   |   index-op-2.html
+|   |   index-op-3.html
+|   |   index-op-4.html
+|   |   index-op-5.html
+|   |   index-op-6.html
+|   |   index-op.html
+|   |   index.html
+|   |   services-2.html
+|   |   services-3.html
+|   |   services.html
+|   |   style.css
+|   |   team-single.html
+|   |   team.html
+|   |   
+|   +---admin
+|   |   |   gulpfile.js
+|   |   |   package-lock.json
+|   |   |   package.json
+|   |   |   README.md
+|   |   |   yarn.lock
+|   |   |   
+|   |   +---dist
+|   |   |   |   auth-confirm-mail.html
+|   |   |   |   auth-lock-screen.html
+|   |   |   |   auth-login.html
+|   |   |   |   auth-logout.html
+|   |   |   |   auth-recoverpw.html
+|   |   |   |   auth-register.html
+|   |   |   |   calendar.html
+|   |   |   |   charts-area.html
+|   |   |   |   charts-bar.html
+|   |   |   |   charts-boxplot.html
+|   |   |   |   charts-bubble.html
+|   |   |   |   charts-candlestick.html
+|   |   |   |   charts-chartist.html
+|   |   |   |   charts-chartjs.html
+|   |   |   |   charts-column.html
+|   |   |   |   charts-flot.html
+|   |   |   |   charts-funnel.html
+|   |   |   |   charts-heatmap.html
+|   |   |   |   charts-line.html
+|   |   |   |   charts-mixed.html
+|   |   |   |   charts-morris.html
+|   |   |   |   charts-pie.html
+|   |   |   |   charts-polararea.html
+|   |   |   |   charts-radar.html
+|   |   |   |   charts-radialbar.html
+|   |   |   |   charts-rangearea.html
+|   |   |   |   charts-scatter.html
+|   |   |   |   charts-sparklines.html
+|   |   |   |   charts-timeline.html
+|   |   |   |   charts-treemap.html
+|   |   |   |   contacts-profile.html
+|   |   |   |   ecommerce-sidebar-dark-rtl.html
+|   |   |   |   ecommerce-sidebar-dark.html
+|   |   |   |   ecommerce-sidebar-rtl.html
+|   |   |   |   ecommerce.html
+|   |   |   |   email-verification.html
+|   |   |   |   error-404.html
+|   |   |   |   error-429.html
+|   |   |   |   error-500.html
+|   |   |   |   error-503.html
+|   |   |   |   extended-carousel.html
+|   |   |   |   extended-notifications.html
+|   |   |   |   extended-offcanvas.html
+|   |   |   |   extended-range-slider.html
+|   |   |   |   extended-scrollbar.html
+|   |   |   |   extended-scrollspy.html
+|   |   |   |   forms-advanced.html
+|   |   |   |   forms-elements.html
+|   |   |   |   forms-pickers.html
+|   |   |   |   forms-quilljs.html
+|   |   |   |   forms-validation.html
+|   |   |   |   icons-feather.html
+|   |   |   |   icons-mdi.html
+|   |   |   |   index-sidebar-dark-rtl.html
+|   |   |   |   index-sidebar-dark.html
+|   |   |   |   index-sidebar-rtl.html
+|   |   |   |   index.html
+|   |   |   |   maps-google.html
+|   |   |   |   maps-vector.html
+|   |   |   |   offline-page.html
+|   |   |   |   pages-coming-soon.html
+|   |   |   |   pages-faqs.html
+|   |   |   |   pages-gallery.html
+|   |   |   |   pages-invoice.html
+|   |   |   |   pages-maintenance.html
+|   |   |   |   pages-pricing.html
+|   |   |   |   pages-profile.html
+|   |   |   |   pages-starter.html
+|   |   |   |   pages-timeline.html
+|   |   |   |   preview.html
+|   |   |   |   tables-basic.html
+|   |   |   |   tables-datatables.html
+|   |   |   |   ui-accordions.html
+|   |   |   |   ui-alerts.html
+|   |   |   |   ui-badges.html
+|   |   |   |   ui-breadcrumb.html
+|   |   |   |   ui-buttons.html
+|   |   |   |   ui-cards.html
+|   |   |   |   ui-carousel.html
+|   |   |   |   ui-collapse.html
+|   |   |   |   ui-dropdowns.html
+|   |   |   |   ui-general.html
+|   |   |   |   ui-grid.html
+|   |   |   |   ui-images.html
+|   |   |   |   ui-list.html
+|   |   |   |   ui-modals.html
+|   |   |   |   ui-offcanvas.html
+|   |   |   |   ui-pagination.html
+|   |   |   |   ui-placeholders.html
+|   |   |   |   ui-popovers.html
+|   |   |   |   ui-progress.html
+|   |   |   |   ui-scrollspy.html
+|   |   |   |   ui-spinners.html
+|   |   |   |   ui-tabs.html
+|   |   |   |   ui-tooltips.html
+|   |   |   |   ui-typography.html
+|   |   |   |   ui-video.html
+|   |   |   |   widgets.html
+|   |   |   |   
+|   |   |   \---assets
+|   |   |       +---css
+|   |   |       |       app-rtl.min.css
+|   |   |       |       app-rtl.min.css.map
+|   |   |       |       app.css
+|   |   |       |       app.min.css
+|   |   |       |       app.min.css.map
+|   |   |       |       icons-rtl.min.css
+|   |   |       |       icons-rtl.min.css.map
+|   |   |       |       icons.css
+|   |   |       |       icons.min.css
+|   |   |       |       icons.min.css.map
+|   |   |       |       
+|   |   |       +---fonts
+|   |   |       |       materialdesignicons-webfont.eot
+|   |   |       |       materialdesignicons-webfont.ttf
+|   |   |       |       materialdesignicons-webfont.woff
+|   |   |       |       materialdesignicons-webfont.woff2
+|   |   |       |       
+|   |   |       +---images
+|   |   |       |   |   authentication.svg
+|   |   |       |   |   favicon.ico
+|   |   |       |   |   instagram.png
+|   |   |       |   |   logo-dark.png
+|   |   |       |   |   logo-light.png
+|   |   |       |   |   logo-sm.png
+|   |   |       |   |   rocket.png
+|   |   |       |   |   
+|   |   |       |   +---demo
+|   |   |       |   |       analytical-sidebar-dark-rtl.png
+|   |   |       |   |       analytical-sidebar-dark.png
+|   |   |       |   |       analytical-sidebar-rtl.png
+|   |   |       |   |       analytical-sidebar.png
+|   |   |       |   |       ecommerc-sidebar-dark-rtl.png
+|   |   |       |   |       ecommerc-sidebar-dark.png
+|   |   |       |   |       ecommerc-sidebar-rtl.png
+|   |   |       |   |       ecommerce.png
+|   |   |       |   |       
+|   |   |       |   +---gallery
+|   |   |       |   |       1.jpg
+|   |   |       |   |       2.jpg
+|   |   |       |   |       3.jpg
+|   |   |       |   |       4.jpg
+|   |   |       |   |       5.jpg
+|   |   |       |   |       6.jpg
+|   |   |       |   |       7.jpg
+|   |   |       |   |       8.jpg
+|   |   |       |   |       9.jpg
+|   |   |       |   |       
+|   |   |       |   +---landing
+|   |   |       |   |   |   bg-pattern.svg
+|   |   |       |   |   |   dashboard.png
+|   |   |       |   |   |   features.jpg
+|   |   |       |   |   |   
+|   |   |       |   |   \---client
+|   |   |       |   |           clients-logo-1.svg
+|   |   |       |   |           clients-logo-2.svg
+|   |   |       |   |           clients-logo-3.svg
+|   |   |       |   |           clients-logo-4.svg
+|   |   |       |   |           clients-logo-5.svg
+|   |   |       |   |           
+|   |   |       |   +---products
+|   |   |       |   |       bags.jpg
+|   |   |       |   |       camera.jpg
+|   |   |       |   |       dresses.jpg
+|   |   |       |   |       headphone.jpg
+|   |   |       |   |       nike-shoes.jpg
+|   |   |       |   |       shoes.jpg
+|   |   |       |   |       
+|   |   |       |   +---small
+|   |   |       |   |       img-1.jpg
+|   |   |       |   |       img-10.jpg
+|   |   |       |   |       img-11.jpg
+|   |   |       |   |       img-2.jpg
+|   |   |       |   |       img-3.jpg
+|   |   |       |   |       img-4.jpg
+|   |   |       |   |       img-5.jpg
+|   |   |       |   |       img-6.jpg
+|   |   |       |   |       img-7.jpg
+|   |   |       |   |       img-8.jpg
+|   |   |       |   |       img-9.jpg
+|   |   |       |   |       responsive.jpg
+|   |   |       |   |       
+|   |   |       |   +---svg
+|   |   |       |   |       404-error.svg
+|   |   |       |   |       429-error.svg
+|   |   |       |   |       500-error.svg
+|   |   |       |   |       503-error.svg
+|   |   |       |   |       card-bg.svg
+|   |   |       |   |       coming-soon.svg
+|   |   |       |   |       confirmation-email.svg
+|   |   |       |   |       logout.svg
+|   |   |       |   |       maintenance-1.svg
+|   |   |       |   |       maintenance.svg
+|   |   |       |   |       offline.svg
+|   |   |       |   |       
+|   |   |       |   \---users
+|   |   |       |           profile.jpg
+|   |   |       |           user-10.jpg
+|   |   |       |           user-11.jpg
+|   |   |       |           user-12.jpg
+|   |   |       |           user-13.jpg
+|   |   |       |           user-14.jpg
+|   |   |       |           user-15.jpg
+|   |   |       |           user-2.jpg
+|   |   |       |           user-3.jpg
+|   |   |       |           user-4.jpg
+|   |   |       |           user-5.jpg
+|   |   |       |           user-6.jpg
+|   |   |       |           user-7.jpg
+|   |   |       |           user-8.jpg
+|   |   |       |           user-9.jpg
+|   |   |       |           user.jpg
+|   |   |       |           
+|   |   |       +---js
+|   |   |       |   |   app.js
+|   |   |       |   |   
+|   |   |       |   \---pages
+|   |   |       |           analytics-dashboard.init.js
+|   |   |       |           apexcharts-area.init.js
+|   |   |       |           apexcharts-bar.init.js
+|   |   |       |           apexcharts-boxplot.init.js
+|   |   |       |           apexcharts-bubble.init.js
+|   |   |       |           apexcharts-candlestick.init.js
+|   |   |       |           apexcharts-column.init.js
+|   |   |       |           apexcharts-funnel.init.js
+|   |   |       |           apexcharts-heatmap.init.js
+|   |   |       |           apexcharts-line.init.js
+|   |   |       |           apexcharts-mixed.init.js
+|   |   |       |           apexcharts-pie.init.js
+|   |   |       |           apexcharts-polararea.init.js
+|   |   |       |           apexcharts-radar.init.js
+|   |   |       |           apexcharts-radialbar.init.js
+|   |   |       |           apexcharts-range-area.init.js
+|   |   |       |           apexcharts-scatter.init.js
+|   |   |       |           apexcharts-timeline.init.js
+|   |   |       |           apexcharts-treemap.init.js
+|   |   |       |           canada-map.js
+|   |   |       |           coming-soon.init.js
+|   |   |       |           datatable.init.js
+|   |   |       |           demo.calendar.js
+|   |   |       |           ecommerce-dashboard.init.js
+|   |   |       |           form-picker.js
+|   |   |       |           glightbox.init.js
+|   |   |       |           google-maps-init.js
+|   |   |       |           gumshoe.init.js
+|   |   |       |           iraq-map.js
+|   |   |       |           landing.init.js
+|   |   |       |           quilljs.init.js
+|   |   |       |           russia-map.js
+|   |   |       |           spain-map.js
+|   |   |       |           swiper.init.js
+|   |   |       |           us-lcc-en-map.js
+|   |   |       |           us-merc-en-map.js
+|   |   |       |           us-mill-en-map.js
+|   |   |       |           vector-maps.init.js
+|   |   |       |           widgets.init.js
+|   |   |       |           
+|   |   |       \---libs
+|   |   |           +---apexcharts
+|   |   |           |   |   apexcharts.amd.js
+|   |   |           |   |   apexcharts.common.js
+|   |   |           |   |   apexcharts.css
+|   |   |           |   |   apexcharts.esm.js
+|   |   |           |   |   apexcharts.min.js
+|   |   |           |   |   
+|   |   |           |   \---locales
+|   |   |           |           ar.json
+|   |   |           |           be-cyrl.json
+|   |   |           |           be-latn.json
+|   |   |           |           ca.json
+|   |   |           |           cs.json
+|   |   |           |           da.json
+|   |   |           |           de.json
+|   |   |           |           el.json
+|   |   |           |           en.json
+|   |   |           |           es.json
+|   |   |           |           et.json
+|   |   |           |           fa.json
+|   |   |           |           fi.json
+|   |   |           |           fr.json
+|   |   |           |           he.json
+|   |   |           |           hi.json
+|   |   |           |           hr.json
+|   |   |           |           hu.json
+|   |   |           |           hy.json
+|   |   |           |           id.json
+|   |   |           |           it.json
+|   |   |           |           ja.json
+|   |   |           |           ka.json
+|   |   |           |           ko.json
+|   |   |           |           lt.json
+|   |   |           |           lv.json
+|   |   |           |           ms.json
+|   |   |           |           nb.json
+|   |   |           |           nl.json
+|   |   |           |           pl.json
+|   |   |           |           pt-br.json
+|   |   |           |           pt.json
+|   |   |           |           rs.json
+|   |   |           |           ru.json
+|   |   |           |           se.json
+|   |   |           |           sk.json
+|   |   |           |           sl.json
+|   |   |           |           sq.json
+|   |   |           |           th.json
+|   |   |           |           tr.json
+|   |   |           |           ua.json
+|   |   |           |           zh-cn.json
+|   |   |           |           zh-tw.json
+|   |   |           |           
+|   |   |           +---bootstrap
+|   |   |           |   +---css
+|   |   |           |   |       bootstrap-grid.min.css
+|   |   |           |   |       bootstrap-grid.rtl.min.css
+|   |   |           |   |       bootstrap-reboot.min.css
+|   |   |           |   |       bootstrap-reboot.rtl.min.css
+|   |   |           |   |       bootstrap-utilities.min.css
+|   |   |           |   |       bootstrap-utilities.rtl.min.css
+|   |   |           |   |       bootstrap.min.css
+|   |   |           |   |       bootstrap.rtl.min.css
+|   |   |           |   |       
+|   |   |           |   \---js
+|   |   |           |           bootstrap.bundle.min.js
+|   |   |           |           bootstrap.esm.min.js
+|   |   |           |           bootstrap.min.js
+|   |   |           |           
+|   |   |           +---datatables.net
+|   |   |           |   |   License.txt
+|   |   |           |   |   
+|   |   |           |   +---js
+|   |   |           |   |       jquery.dataTables.min.js
+|   |   |           |   |       
+|   |   |           |   +---node_modules
+|   |   |           |   |   \---jquery
+|   |   |           |   |       |   AUTHORS.txt
+|   |   |           |   |       |   jquery.min.js
+|   |   |           |   |       |   jquery.slim.min.js
+|   |   |           |   |       |   LICENSE.txt
+|   |   |           |   |       |   
+|   |   |           |   |       +---dist
+|   |   |           |   |       +---external
+|   |   |           |   |       |   \---sizzle
+|   |   |           |   |       |       |   LICENSE.txt
+|   |   |           |   |       |       |   sizzle.min.js
+|   |   |           |   |       |       |   
+|   |   |           |   |       |       \---dist
+|   |   |           |   |       \---src
+|   |   |           |   \---types
+|   |   |           +---datatables.net-bs5
+|   |   |           |   |   License.txt
+|   |   |           |   |   
+|   |   |           |   +---css
+|   |   |           |   |       dataTables.bootstrap5.min.css
+|   |   |           |   |       
+|   |   |           |   +---images
+|   |   |           |   |       favicon.ico
+|   |   |           |   |       sort_asc.png
+|   |   |           |   |       sort_asc_disabled.png
+|   |   |           |   |       sort_both.png
+|   |   |           |   |       sort_desc.png
+|   |   |           |   |       sort_desc_disabled.png
+|   |   |           |   |       
+|   |   |           |   +---js
+|   |   |           |   |       dataTables.bootstrap5.min.js
+|   |   |           |   |       
+|   |   |           |   +---node_modules
+|   |   |           |   |   \---jquery
+|   |   |           |   |       |   AUTHORS.txt
+|   |   |           |   |       |   jquery.min.js
+|   |   |           |   |       |   jquery.slim.min.js
+|   |   |           |   |       |   LICENSE.txt
+|   |   |           |   |       |   
+|   |   |           |   |       +---dist
+|   |   |           |   |       +---external
+|   |   |           |   |       |   \---sizzle
+|   |   |           |   |       |       |   LICENSE.txt
+|   |   |           |   |       |       |   sizzle.min.js
+|   |   |           |   |       |       |   
+|   |   |           |   |       |       \---dist
+|   |   |           |   |       \---src
+|   |   |           |   \---types
+|   |   |           +---datatables.net-buttons
+|   |   |           |   |   License.txt
+|   |   |           |   |   
+|   |   |           |   +---js
+|   |   |           |   |       buttons.colVis.min.js
+|   |   |           |   |       buttons.flash.min.js
+|   |   |           |   |       buttons.html5.min.js
+|   |   |           |   |       buttons.print.min.js
+|   |   |           |   |       dataTables.buttons.min.js
+|   |   |           |   |       
+|   |   |           |   +---node_modules
+|   |   |           |   |   \---jquery
+|   |   |           |   |       |   AUTHORS.txt
+|   |   |           |   |       |   jquery.min.js
+|   |   |           |   |       |   jquery.slim.min.js
+|   |   |           |   |       |   LICENSE.txt
+|   |   |           |   |       |   
+|   |   |           |   |       +---dist
+|   |   |           |   |       +---external
+|   |   |           |   |       |   \---sizzle
+|   |   |           |   |       |       |   LICENSE.txt
+|   |   |           |   |       |       |   sizzle.min.js
+|   |   |           |   |       |       |   
+|   |   |           |   |       |       \---dist
+|   |   |           |   |       \---src
+|   |   |           |   \---types
+|   |   |           +---datatables.net-buttons-bs5
+|   |   |           |   |   License.txt
+|   |   |           |   |   
+|   |   |           |   +---css
+|   |   |           |   |       buttons.bootstrap5.min.css
+|   |   |           |   |       
+|   |   |           |   +---js
+|   |   |           |   |       buttons.bootstrap5.min.js
+|   |   |           |   |       
+|   |   |           |   +---node_modules
+|   |   |           |   |   \---jquery
+|   |   |           |   |       |   AUTHORS.txt
+|   |   |           |   |       |   jquery.min.js
+|   |   |           |   |       |   jquery.slim.min.js
+|   |   |           |   |       |   LICENSE.txt
+|   |   |           |   |       |   
+|   |   |           |   |       +---dist
+|   |   |           |   |       +---external
+|   |   |           |   |       |   \---sizzle
+|   |   |           |   |       |       |   LICENSE.txt
+|   |   |           |   |       |       |   sizzle.min.js
+|   |   |           |   |       |       |   
+|   |   |           |   |       |       \---dist
+|   |   |           |   |       \---src
+|   |   |           |   \---types
+|   |   |           +---datatables.net-keytable
+|   |   |           |   |   License.txt
+|   |   |           |   |   
+|   |   |           |   +---js
+|   |   |           |   |       dataTables.keyTable.min.js
+|   |   |           |   |       
+|   |   |           |   \---node_modules
+|   |   |           |       \---jquery
+|   |   |           |           |   AUTHORS.txt
+|   |   |           |           |   jquery.min.js
+|   |   |           |           |   jquery.slim.min.js
+|   |   |           |           |   LICENSE.txt
+|   |   |           |           |   
+|   |   |           |           +---dist
+|   |   |           |           +---external
+|   |   |           |           |   \---sizzle
+|   |   |           |           |       |   LICENSE.txt
+|   |   |           |           |       |   sizzle.min.js
+|   |   |           |           |       |   
+|   |   |           |           |       \---dist
+|   |   |           |           \---src
+|   |   |           +---datatables.net-keytable-bs5
+|   |   |           |   |   License.txt
+|   |   |           |   |   
+|   |   |           |   +---css
+|   |   |           |   |       keyTable.bootstrap5.min.css
+|   |   |           |   |       
+|   |   |           |   +---js
+|   |   |           |   |       keyTable.bootstrap5.min.js
+|   |   |           |   |       
+|   |   |           |   \---node_modules
+|   |   |           |       \---jquery
+|   |   |           |           |   AUTHORS.txt
+|   |   |           |           |   jquery.min.js
+|   |   |           |           |   jquery.slim.min.js
+|   |   |           |           |   LICENSE.txt
+|   |   |           |           |   
+|   |   |           |           +---dist
+|   |   |           |           +---external
+|   |   |           |           |   \---sizzle
+|   |   |           |           |       |   LICENSE.txt
+|   |   |           |           |       |   sizzle.min.js
+|   |   |           |           |       |   
+|   |   |           |           |       \---dist
+|   |   |           |           \---src
+|   |   |           +---datatables.net-responsive
+|   |   |           |   |   License.txt
+|   |   |           |   |   
+|   |   |           |   +---js
+|   |   |           |   |       dataTables.responsive.min.js
+|   |   |           |   |       
+|   |   |           |   \---node_modules
+|   |   |           |       \---jquery
+|   |   |           |           |   AUTHORS.txt
+|   |   |           |           |   jquery.min.js
+|   |   |           |           |   jquery.slim.min.js
+|   |   |           |           |   LICENSE.txt
+|   |   |           |           |   
+|   |   |           |           +---dist
+|   |   |           |           +---external
+|   |   |           |           |   \---sizzle
+|   |   |           |           |       |   LICENSE.txt
+|   |   |           |           |       |   sizzle.min.js
+|   |   |           |           |       |   
+|   |   |           |           |       \---dist
+|   |   |           |           \---src
+|   |   |           +---datatables.net-responsive-bs5
+|   |   |           |   |   License.txt
+|   |   |           |   |   
+|   |   |           |   +---css
+|   |   |           |   |       responsive.bootstrap5.min.css
+|   |   |           |   |       
+|   |   |           |   +---js
+|   |   |           |   |       responsive.bootstrap5.min.js
+|   |   |           |   |       
+|   |   |           |   \---node_modules
+|   |   |           |       \---jquery
+|   |   |           |           |   AUTHORS.txt
+|   |   |           |           |   jquery.min.js
+|   |   |           |           |   jquery.slim.min.js
+|   |   |           |           |   LICENSE.txt
+|   |   |           |           |   
+|   |   |           |           +---dist
+|   |   |           |           +---external
+|   |   |           |           |   \---sizzle
+|   |   |           |           |       |   LICENSE.txt
+|   |   |           |           |       |   sizzle.min.js
+|   |   |           |           |       |   
+|   |   |           |           |       \---dist
+|   |   |           |           \---src
+|   |   |           +---datatables.net-select
+|   |   |           |   |   License.txt
+|   |   |           |   |   
+|   |   |           |   +---js
+|   |   |           |   |       dataTables.select.min.js
+|   |   |           |   |       
+|   |   |           |   +---node_modules
+|   |   |           |   |   \---jquery
+|   |   |           |   |       |   AUTHORS.txt
+|   |   |           |   |       |   jquery.min.js
+|   |   |           |   |       |   jquery.slim.min.js
+|   |   |           |   |       |   LICENSE.txt
+|   |   |           |   |       |   
+|   |   |           |   |       +---dist
+|   |   |           |   |       +---external
+|   |   |           |   |       |   \---sizzle
+|   |   |           |   |       |       |   LICENSE.txt
+|   |   |           |   |       |       |   sizzle.min.js
+|   |   |           |   |       |       |   
+|   |   |           |   |       |       \---dist
+|   |   |           |   |       \---src
+|   |   |           |   \---types
+|   |   |           +---datatables.net-select-bs5
+|   |   |           |   |   License.txt
+|   |   |           |   |   
+|   |   |           |   +---css
+|   |   |           |   |       select.bootstrap5.min.css
+|   |   |           |   |       
+|   |   |           |   +---js
+|   |   |           |   |       select.bootstrap5.min.js
+|   |   |           |   |       
+|   |   |           |   +---node_modules
+|   |   |           |   |   \---jquery
+|   |   |           |   |       |   AUTHORS.txt
+|   |   |           |   |       |   jquery.min.js
+|   |   |           |   |       |   jquery.slim.min.js
+|   |   |           |   |       |   LICENSE.txt
+|   |   |           |   |       |   
+|   |   |           |   |       +---dist
+|   |   |           |   |       +---external
+|   |   |           |   |       |   \---sizzle
+|   |   |           |   |       |       |   LICENSE.txt
+|   |   |           |   |       |       |   sizzle.min.js
+|   |   |           |   |       |       |   
+|   |   |           |   |       |       \---dist
+|   |   |           |   |       \---src
+|   |   |           |   \---types
+|   |   |           +---dropzone
+|   |   |           |   |   basic.css
+|   |   |           |   |   dropzone-amd-module.js
+|   |   |           |   |   dropzone.css
+|   |   |           |   |   dropzone.js
+|   |   |           |   |   
+|   |   |           |   \---min
+|   |   |           |           basic.min.css
+|   |   |           |           dropzone-amd-module.min.js
+|   |   |           |           dropzone.min.css
+|   |   |           |           dropzone.min.js
+|   |   |           |           
+|   |   |           +---feather-icons
+|   |   |           |   |   feather-sprite.svg
+|   |   |           |   |   feather.min.js
+|   |   |           |   |   icons.json
+|   |   |           |   |   
+|   |   |           |   \---icons
+|   |   |           |           activity.svg
+|   |   |           |           airplay.svg
+|   |   |           |           alert-circle.svg
+|   |   |           |           alert-octagon.svg
+|   |   |           |           alert-triangle.svg
+|   |   |           |           align-center.svg
+|   |   |           |           align-justify.svg
+|   |   |           |           align-left.svg
+|   |   |           |           align-right.svg
+|   |   |           |           anchor.svg
+|   |   |           |           aperture.svg
+|   |   |           |           archive.svg
+|   |   |           |           arrow-down-circle.svg
+|   |   |           |           arrow-down-left.svg
+|   |   |           |           arrow-down-right.svg
+|   |   |           |           arrow-down.svg
+|   |   |           |           arrow-left-circle.svg
+|   |   |           |           arrow-left.svg
+|   |   |           |           arrow-right-circle.svg
+|   |   |           |           arrow-right.svg
+|   |   |           |           arrow-up-circle.svg
+|   |   |           |           arrow-up-left.svg
+|   |   |           |           arrow-up-right.svg
+|   |   |           |           arrow-up.svg
+|   |   |           |           at-sign.svg
+|   |   |           |           award.svg
+|   |   |           |           bar-chart-2.svg
+|   |   |           |           bar-chart.svg
+|   |   |           |           battery-charging.svg
+|   |   |           |           battery.svg
+|   |   |           |           bell-off.svg
+|   |   |           |           bell.svg
+|   |   |           |           bluetooth.svg
+|   |   |           |           bold.svg
+|   |   |           |           book-open.svg
+|   |   |           |           book.svg
+|   |   |           |           bookmark.svg
+|   |   |           |           box.svg
+|   |   |           |           briefcase.svg
+|   |   |           |           calendar.svg
+|   |   |           |           camera-off.svg
+|   |   |           |           camera.svg
+|   |   |           |           cast.svg
+|   |   |           |           check-circle.svg
+|   |   |           |           check-square.svg
+|   |   |           |           check.svg
+|   |   |           |           chevron-down.svg
+|   |   |           |           chevron-left.svg
+|   |   |           |           chevron-right.svg
+|   |   |           |           chevron-up.svg
+|   |   |           |           chevrons-down.svg
+|   |   |           |           chevrons-left.svg
+|   |   |           |           chevrons-right.svg
+|   |   |           |           chevrons-up.svg
+|   |   |           |           chrome.svg
+|   |   |           |           circle.svg
+|   |   |           |           clipboard.svg
+|   |   |           |           clock.svg
+|   |   |           |           cloud-drizzle.svg
+|   |   |           |           cloud-lightning.svg
+|   |   |           |           cloud-off.svg
+|   |   |           |           cloud-rain.svg
+|   |   |           |           cloud-snow.svg
+|   |   |           |           cloud.svg
+|   |   |           |           code.svg
+|   |   |           |           codepen.svg
+|   |   |           |           codesandbox.svg
+|   |   |           |           coffee.svg
+|   |   |           |           columns.svg
+|   |   |           |           command.svg
+|   |   |           |           compass.svg
+|   |   |           |           copy.svg
+|   |   |           |           corner-down-left.svg
+|   |   |           |           corner-down-right.svg
+|   |   |           |           corner-left-down.svg
+|   |   |           |           corner-left-up.svg
+|   |   |           |           corner-right-down.svg
+|   |   |           |           corner-right-up.svg
+|   |   |           |           corner-up-left.svg
+|   |   |           |           corner-up-right.svg
+|   |   |           |           cpu.svg
+|   |   |           |           credit-card.svg
+|   |   |           |           crop.svg
+|   |   |           |           crosshair.svg
+|   |   |           |           database.svg
+|   |   |           |           delete.svg
+|   |   |           |           disc.svg
+|   |   |           |           divide-circle.svg
+|   |   |           |           divide-square.svg
+|   |   |           |           divide.svg
+|   |   |           |           dollar-sign.svg
+|   |   |           |           download-cloud.svg
+|   |   |           |           download.svg
+|   |   |           |           dribbble.svg
+|   |   |           |           droplet.svg
+|   |   |           |           edit-2.svg
+|   |   |           |           edit-3.svg
+|   |   |           |           edit.svg
+|   |   |           |           external-link.svg
+|   |   |           |           eye-off.svg
+|   |   |           |           eye.svg
+|   |   |           |           facebook.svg
+|   |   |           |           fast-forward.svg
+|   |   |           |           feather.svg
+|   |   |           |           figma.svg
+|   |   |           |           file-minus.svg
+|   |   |           |           file-plus.svg
+|   |   |           |           file-text.svg
+|   |   |           |           file.svg
+|   |   |           |           film.svg
+|   |   |           |           filter.svg
+|   |   |           |           flag.svg
+|   |   |           |           folder-minus.svg
+|   |   |           |           folder-plus.svg
+|   |   |           |           folder.svg
+|   |   |           |           framer.svg
+|   |   |           |           frown.svg
+|   |   |           |           gift.svg
+|   |   |           |           git-branch.svg
+|   |   |           |           git-commit.svg
+|   |   |           |           git-merge.svg
+|   |   |           |           git-pull-request.svg
+|   |   |           |           github.svg
+|   |   |           |           gitlab.svg
+|   |   |           |           globe.svg
+|   |   |           |           grid.svg
+|   |   |           |           hard-drive.svg
+|   |   |           |           hash.svg
+|   |   |           |           headphones.svg
+|   |   |           |           heart.svg
+|   |   |           |           help-circle.svg
+|   |   |           |           hexagon.svg
+|   |   |           |           home.svg
+|   |   |           |           image.svg
+|   |   |           |           inbox.svg
+|   |   |           |           info.svg
+|   |   |           |           instagram.svg
+|   |   |           |           italic.svg
+|   |   |           |           key.svg
+|   |   |           |           layers.svg
+|   |   |           |           layout.svg
+|   |   |           |           life-buoy.svg
+|   |   |           |           link-2.svg
+|   |   |           |           link.svg
+|   |   |           |           linkedin.svg
+|   |   |           |           list.svg
+|   |   |           |           loader.svg
+|   |   |           |           lock.svg
+|   |   |           |           log-in.svg
+|   |   |           |           log-out.svg
+|   |   |           |           mail.svg
+|   |   |           |           map-pin.svg
+|   |   |           |           map.svg
+|   |   |           |           maximize-2.svg
+|   |   |           |           maximize.svg
+|   |   |           |           meh.svg
+|   |   |           |           menu.svg
+|   |   |           |           message-circle.svg
+|   |   |           |           message-square.svg
+|   |   |           |           mic-off.svg
+|   |   |           |           mic.svg
+|   |   |           |           minimize-2.svg
+|   |   |           |           minimize.svg
+|   |   |           |           minus-circle.svg
+|   |   |           |           minus-square.svg
+|   |   |           |           minus.svg
+|   |   |           |           monitor.svg
+|   |   |           |           moon.svg
+|   |   |           |           more-horizontal.svg
+|   |   |           |           more-vertical.svg
+|   |   |           |           mouse-pointer.svg
+|   |   |           |           move.svg
+|   |   |           |           music.svg
+|   |   |           |           navigation-2.svg
+|   |   |           |           navigation.svg
+|   |   |           |           octagon.svg
+|   |   |           |           package.svg
+|   |   |           |           paperclip.svg
+|   |   |           |           pause-circle.svg
+|   |   |           |           pause.svg
+|   |   |           |           pen-tool.svg
+|   |   |           |           percent.svg
+|   |   |           |           phone-call.svg
+|   |   |           |           phone-forwarded.svg
+|   |   |           |           phone-incoming.svg
+|   |   |           |           phone-missed.svg
+|   |   |           |           phone-off.svg
+|   |   |           |           phone-outgoing.svg
+|   |   |           |           phone.svg
+|   |   |           |           pie-chart.svg
+|   |   |           |           play-circle.svg
+|   |   |           |           play.svg
+|   |   |           |           plus-circle.svg
+|   |   |           |           plus-square.svg
+|   |   |           |           plus.svg
+|   |   |           |           pocket.svg
+|   |   |           |           power.svg
+|   |   |           |           printer.svg
+|   |   |           |           radio.svg
+|   |   |           |           refresh-ccw.svg
+|   |   |           |           refresh-cw.svg
+|   |   |           |           repeat.svg
+|   |   |           |           rewind.svg
+|   |   |           |           rotate-ccw.svg
+|   |   |           |           rotate-cw.svg
+|   |   |           |           rss.svg
+|   |   |           |           save.svg
+|   |   |           |           scissors.svg
+|   |   |           |           search.svg
+|   |   |           |           send.svg
+|   |   |           |           server.svg
+|   |   |           |           settings.svg
+|   |   |           |           share-2.svg
+|   |   |           |           share.svg
+|   |   |           |           shield-off.svg
+|   |   |           |           shield.svg
+|   |   |           |           shopping-bag.svg
+|   |   |           |           shopping-cart.svg
+|   |   |           |           shuffle.svg
+|   |   |           |           sidebar.svg
+|   |   |           |           skip-back.svg
+|   |   |           |           skip-forward.svg
+|   |   |           |           slack.svg
+|   |   |           |           slash.svg
+|   |   |           |           sliders.svg
+|   |   |           |           smartphone.svg
+|   |   |           |           smile.svg
+|   |   |           |           speaker.svg
+|   |   |           |           square.svg
+|   |   |           |           star.svg
+|   |   |           |           stop-circle.svg
+|   |   |           |           sun.svg
+|   |   |           |           sunrise.svg
+|   |   |           |           sunset.svg
+|   |   |           |           table.svg
+|   |   |           |           tablet.svg
+|   |   |           |           tag.svg
+|   |   |           |           target.svg
+|   |   |           |           terminal.svg
+|   |   |           |           thermometer.svg
+|   |   |           |           thumbs-down.svg
+|   |   |           |           thumbs-up.svg
+|   |   |           |           toggle-left.svg
+|   |   |           |           toggle-right.svg
+|   |   |           |           tool.svg
+|   |   |           |           trash-2.svg
+|   |   |           |           trash.svg
+|   |   |           |           trello.svg
+|   |   |           |           trending-down.svg
+|   |   |           |           trending-up.svg
+|   |   |           |           triangle.svg
+|   |   |           |           truck.svg
+|   |   |           |           tv.svg
+|   |   |           |           twitch.svg
+|   |   |           |           twitter.svg
+|   |   |           |           type.svg
+|   |   |           |           umbrella.svg
+|   |   |           |           underline.svg
+|   |   |           |           unlock.svg
+|   |   |           |           upload-cloud.svg
+|   |   |           |           upload.svg
+|   |   |           |           user-check.svg
+|   |   |           |           user-minus.svg
+|   |   |           |           user-plus.svg
+|   |   |           |           user-x.svg
+|   |   |           |           user.svg
+|   |   |           |           users.svg
+|   |   |           |           video-off.svg
+|   |   |           |           video.svg
+|   |   |           |           voicemail.svg
+|   |   |           |           volume-1.svg
+|   |   |           |           volume-2.svg
+|   |   |           |           volume-x.svg
+|   |   |           |           volume.svg
+|   |   |           |           watch.svg
+|   |   |           |           wifi-off.svg
+|   |   |           |           wifi.svg
+|   |   |           |           wind.svg
+|   |   |           |           x-circle.svg
+|   |   |           |           x-octagon.svg
+|   |   |           |           x-square.svg
+|   |   |           |           x.svg
+|   |   |           |           youtube.svg
+|   |   |           |           zap-off.svg
+|   |   |           |           zap.svg
+|   |   |           |           zoom-in.svg
+|   |   |           |           zoom-out.svg
+|   |   |           |           
+|   |   |           +---flatpickr
+|   |   |           |   |   flatpickr.min.css
+|   |   |           |   |   flatpickr.min.js
+|   |   |           |   |   ie.css
+|   |   |           |   |   
+|   |   |           |   +---esm
+|   |   |           |   |   |   index.js
+|   |   |           |   |   |   
+|   |   |           |   |   +---l10n
+|   |   |           |   |   |       ar.js
+|   |   |           |   |   |       at.js
+|   |   |           |   |   |       az.js
+|   |   |           |   |   |       be.js
+|   |   |           |   |   |       bg.js
+|   |   |           |   |   |       bn.js
+|   |   |           |   |   |       bs.js
+|   |   |           |   |   |       cat.js
+|   |   |           |   |   |       cs.js
+|   |   |           |   |   |       cy.js
+|   |   |           |   |   |       da.js
+|   |   |           |   |   |       de.js
+|   |   |           |   |   |       default.js
+|   |   |           |   |   |       eo.js
+|   |   |           |   |   |       es.js
+|   |   |           |   |   |       et.js
+|   |   |           |   |   |       fa.js
+|   |   |           |   |   |       fi.js
+|   |   |           |   |   |       fo.js
+|   |   |           |   |   |       fr.js
+|   |   |           |   |   |       ga.js
+|   |   |           |   |   |       gr.js
+|   |   |           |   |   |       he.js
+|   |   |           |   |   |       hi.js
+|   |   |           |   |   |       hr.js
+|   |   |           |   |   |       hu.js
+|   |   |           |   |   |       id.js
+|   |   |           |   |   |       index.js
+|   |   |           |   |   |       is.js
+|   |   |           |   |   |       it.js
+|   |   |           |   |   |       ja.js
+|   |   |           |   |   |       ka.js
+|   |   |           |   |   |       km.js
+|   |   |           |   |   |       ko.js
+|   |   |           |   |   |       kz.js
+|   |   |           |   |   |       lt.js
+|   |   |           |   |   |       lv.js
+|   |   |           |   |   |       mk.js
+|   |   |           |   |   |       mn.js
+|   |   |           |   |   |       ms.js
+|   |   |           |   |   |       my.js
+|   |   |           |   |   |       nl.js
+|   |   |           |   |   |       no.js
+|   |   |           |   |   |       pa.js
+|   |   |           |   |   |       pl.js
+|   |   |           |   |   |       pt.js
+|   |   |           |   |   |       ro.js
+|   |   |           |   |   |       ru.js
+|   |   |           |   |   |       si.js
+|   |   |           |   |   |       sk.js
+|   |   |           |   |   |       sl.js
+|   |   |           |   |   |       sq.js
+|   |   |           |   |   |       sr-cyr.js
+|   |   |           |   |   |       sr.js
+|   |   |           |   |   |       sv.js
+|   |   |           |   |   |       th.js
+|   |   |           |   |   |       tr.js
+|   |   |           |   |   |       uk.js
+|   |   |           |   |   |       uz.js
+|   |   |           |   |   |       uz_latn.js
+|   |   |           |   |   |       vn.js
+|   |   |           |   |   |       zh-tw.js
+|   |   |           |   |   |       zh.js
+|   |   |           |   |   |       
+|   |   |           |   |   +---plugins
+|   |   |           |   |   |   |   minMaxTimePlugin.js
+|   |   |           |   |   |   |   momentPlugin.js
+|   |   |           |   |   |   |   rangePlugin.js
+|   |   |           |   |   |   |   scrollPlugin.js
+|   |   |           |   |   |   |   
+|   |   |           |   |   |   +---confirmDate
+|   |   |           |   |   |   |       confirmDate.js
+|   |   |           |   |   |   |       
+|   |   |           |   |   |   +---labelPlugin
+|   |   |           |   |   |   |       labelPlugin.js
+|   |   |           |   |   |   |       
+|   |   |           |   |   |   +---monthSelect
+|   |   |           |   |   |   |       index.js
+|   |   |           |   |   |   |       
+|   |   |           |   |   |   \---weekSelect
+|   |   |           |   |   |           weekSelect.js
+|   |   |           |   |   |           
+|   |   |           |   |   +---types
+|   |   |           |   |   |       globals.js
+|   |   |           |   |   |       instance.js
+|   |   |           |   |   |       locale.js
+|   |   |           |   |   |       options.js
+|   |   |           |   |   |       
+|   |   |           |   |   \---utils
+|   |   |           |   |           dates.js
+|   |   |           |   |           dom.js
+|   |   |           |   |           formatting.js
+|   |   |           |   |           index.js
+|   |   |           |   |           polyfills.js
+|   |   |           |   |           
+|   |   |           |   +---l10n
+|   |   |           |   |       ar.js
+|   |   |           |   |       at.js
+|   |   |           |   |       az.js
+|   |   |           |   |       be.js
+|   |   |           |   |       bg.js
+|   |   |           |   |       bn.js
+|   |   |           |   |       bs.js
+|   |   |           |   |       cat.js
+|   |   |           |   |       cs.js
+|   |   |           |   |       cy.js
+|   |   |           |   |       da.js
+|   |   |           |   |       de.js
+|   |   |           |   |       default.js
+|   |   |           |   |       eo.js
+|   |   |           |   |       es.js
+|   |   |           |   |       et.js
+|   |   |           |   |       fa.js
+|   |   |           |   |       fi.js
+|   |   |           |   |       fo.js
+|   |   |           |   |       fr.js
+|   |   |           |   |       ga.js
+|   |   |           |   |       gr.js
+|   |   |           |   |       he.js
+|   |   |           |   |       hi.js
+|   |   |           |   |       hr.js
+|   |   |           |   |       hu.js
+|   |   |           |   |       id.js
+|   |   |           |   |       index.js
+|   |   |           |   |       is.js
+|   |   |           |   |       it.js
+|   |   |           |   |       ja.js
+|   |   |           |   |       ka.js
+|   |   |           |   |       km.js
+|   |   |           |   |       ko.js
+|   |   |           |   |       kz.js
+|   |   |           |   |       lt.js
+|   |   |           |   |       lv.js
+|   |   |           |   |       mk.js
+|   |   |           |   |       mn.js
+|   |   |           |   |       ms.js
+|   |   |           |   |       my.js
+|   |   |           |   |       nl.js
+|   |   |           |   |       no.js
+|   |   |           |   |       pa.js
+|   |   |           |   |       pl.js
+|   |   |           |   |       pt.js
+|   |   |           |   |       ro.js
+|   |   |           |   |       ru.js
+|   |   |           |   |       si.js
+|   |   |           |   |       sk.js
+|   |   |           |   |       sl.js
+|   |   |           |   |       sq.js
+|   |   |           |   |       sr-cyr.js
+|   |   |           |   |       sr.js
+|   |   |           |   |       sv.js
+|   |   |           |   |       th.js
+|   |   |           |   |       tr.js
+|   |   |           |   |       uk.js
+|   |   |           |   |       uz.js
+|   |   |           |   |       uz_latn.js
+|   |   |           |   |       vn.js
+|   |   |           |   |       zh-tw.js
+|   |   |           |   |       zh.js
+|   |   |           |   |       
+|   |   |           |   +---plugins
+|   |   |           |   |   |   minMaxTimePlugin.js
+|   |   |           |   |   |   momentPlugin.js
+|   |   |           |   |   |   rangePlugin.js
+|   |   |           |   |   |   scrollPlugin.js
+|   |   |           |   |   |   
+|   |   |           |   |   +---confirmDate
+|   |   |           |   |   |       confirmDate.css
+|   |   |           |   |   |       confirmDate.js
+|   |   |           |   |   |       
+|   |   |           |   |   +---labelPlugin
+|   |   |           |   |   |       labelPlugin.js
+|   |   |           |   |   |       
+|   |   |           |   |   +---monthSelect
+|   |   |           |   |   |       index.js
+|   |   |           |   |   |       style.css
+|   |   |           |   |   |       
+|   |   |           |   |   \---weekSelect
+|   |   |           |   |           weekSelect.js
+|   |   |           |   |           
+|   |   |           |   +---themes
+|   |   |           |   |       airbnb.css
+|   |   |           |   |       confetti.css
+|   |   |           |   |       dark.css
+|   |   |           |   |       light.css
+|   |   |           |   |       material_blue.css
+|   |   |           |   |       material_green.css
+|   |   |           |   |       material_orange.css
+|   |   |           |   |       material_red.css
+|   |   |           |   |       
+|   |   |           |   +---types
+|   |   |           |   \---utils
+|   |   |           +---fullcalendar
+|   |   |           |       index.cjs
+|   |   |           |       index.global.min.js
+|   |   |           |       index.js
+|   |   |           |       
+|   |   |           +---glightbox
+|   |   |           |   +---css
+|   |   |           |   |       glightbox.min.css
+|   |   |           |   |       
+|   |   |           |   \---js
+|   |   |           |           glightbox.min.js
+|   |   |           |           
+|   |   |           +---gmaps
+|   |   |           |   |   gmaps.min.js
+|   |   |           |   |   jsdoc.json
+|   |   |           |   |   umd.hbs
+|   |   |           |   |   yarn-error.log
+|   |   |           |   |   
+|   |   |           |   +---docs
+|   |   |           |   +---examples
+|   |   |           |   +---lib
+|   |   |           |   |       gmaps.controls.js
+|   |   |           |   |       gmaps.core.js
+|   |   |           |   |       gmaps.events.js
+|   |   |           |   |       gmaps.geofences.js
+|   |   |           |   |       gmaps.geometry.js
+|   |   |           |   |       gmaps.layers.js
+|   |   |           |   |       gmaps.map_types.js
+|   |   |           |   |       gmaps.markers.js
+|   |   |           |   |       gmaps.native_extensions.js
+|   |   |           |   |       gmaps.overlays.js
+|   |   |           |   |       gmaps.routes.js
+|   |   |           |   |       gmaps.static.js
+|   |   |           |   |       gmaps.streetview.js
+|   |   |           |   |       gmaps.styles.js
+|   |   |           |   |       gmaps.utils.js
+|   |   |           |   |       
+|   |   |           |   \---test
+|   |   |           +---gumshoejs
+|   |   |           |       gumshoe.min.js
+|   |   |           |       gumshoe.polyfills.min.js
+|   |   |           |       
+|   |   |           +---jquery
+|   |   |           |       jquery.min.js
+|   |   |           |       jquery.slim.min.js
+|   |   |           |       
+|   |   |           +---jquery-countdown
+|   |   |           |       jquery.countdown.min.js
+|   |   |           |       
+|   |   |           +---jquery.counterup
+|   |   |           |   |   counterup.jquery.json
+|   |   |           |   |   jquery.counterup.min.js
+|   |   |           |   |   
+|   |   |           |   +---demo
+|   |   |           |   \---node_modules
+|   |   |           |       \---jquery
+|   |   |           |           |   AUTHORS.txt
+|   |   |           |           |   jquery.min.js
+|   |   |           |           |   jquery.slim.min.js
+|   |   |           |           |   LICENSE.txt
+|   |   |           |           |   
+|   |   |           |           +---dist
+|   |   |           |           +---external
+|   |   |           |           |   \---sizzle
+|   |   |           |           |       |   LICENSE.txt
+|   |   |           |           |       |   sizzle.min.js
+|   |   |           |           |       |   
+|   |   |           |           |       \---dist
+|   |   |           |           \---src
+|   |   |           +---jsvectormap
+|   |   |           |   +---css
+|   |   |           |   |       jsvectormap.min.css
+|   |   |           |   |       
+|   |   |           |   +---js
+|   |   |           |   |       jsvectormap.min.js
+|   |   |           |   |       
+|   |   |           |   \---maps
+|   |   |           |           world-merc.js
+|   |   |           |           world.js
+|   |   |           |           
+|   |   |           +---moment
+|   |   |           |   |   ender.js
+|   |   |           |   |   moment.js
+|   |   |           |   |   package.js
+|   |   |           |   |   
+|   |   |           |   +---locale
+|   |   |           |   |       af.js
+|   |   |           |   |       ar-dz.js
+|   |   |           |   |       ar-kw.js
+|   |   |           |   |       ar-ly.js
+|   |   |           |   |       ar-ma.js
+|   |   |           |   |       ar-sa.js
+|   |   |           |   |       ar-tn.js
+|   |   |           |   |       ar.js
+|   |   |           |   |       az.js
+|   |   |           |   |       be.js
+|   |   |           |   |       bg.js
+|   |   |           |   |       bm.js
+|   |   |           |   |       bn.js
+|   |   |           |   |       bo.js
+|   |   |           |   |       br.js
+|   |   |           |   |       bs.js
+|   |   |           |   |       ca.js
+|   |   |           |   |       cs.js
+|   |   |           |   |       cv.js
+|   |   |           |   |       cy.js
+|   |   |           |   |       da.js
+|   |   |           |   |       de-at.js
+|   |   |           |   |       de-ch.js
+|   |   |           |   |       de.js
+|   |   |           |   |       dv.js
+|   |   |           |   |       el.js
+|   |   |           |   |       en-au.js
+|   |   |           |   |       en-ca.js
+|   |   |           |   |       en-gb.js
+|   |   |           |   |       en-ie.js
+|   |   |           |   |       en-il.js
+|   |   |           |   |       en-nz.js
+|   |   |           |   |       eo.js
+|   |   |           |   |       es-do.js
+|   |   |           |   |       es-us.js
+|   |   |           |   |       es.js
+|   |   |           |   |       et.js
+|   |   |           |   |       eu.js
+|   |   |           |   |       fa.js
+|   |   |           |   |       fi.js
+|   |   |           |   |       fo.js
+|   |   |           |   |       fr-ca.js
+|   |   |           |   |       fr-ch.js
+|   |   |           |   |       fr.js
+|   |   |           |   |       fy.js
+|   |   |           |   |       gd.js
+|   |   |           |   |       gl.js
+|   |   |           |   |       gom-latn.js
+|   |   |           |   |       gu.js
+|   |   |           |   |       he.js
+|   |   |           |   |       hi.js
+|   |   |           |   |       hr.js
+|   |   |           |   |       hu.js
+|   |   |           |   |       hy-am.js
+|   |   |           |   |       id.js
+|   |   |           |   |       is.js
+|   |   |           |   |       it.js
+|   |   |           |   |       ja.js
+|   |   |           |   |       jv.js
+|   |   |           |   |       ka.js
+|   |   |           |   |       kk.js
+|   |   |           |   |       km.js
+|   |   |           |   |       kn.js
+|   |   |           |   |       ko.js
+|   |   |           |   |       ky.js
+|   |   |           |   |       lb.js
+|   |   |           |   |       lo.js
+|   |   |           |   |       lt.js
+|   |   |           |   |       lv.js
+|   |   |           |   |       me.js
+|   |   |           |   |       mi.js
+|   |   |           |   |       mk.js
+|   |   |           |   |       ml.js
+|   |   |           |   |       mn.js
+|   |   |           |   |       mr.js
+|   |   |           |   |       ms-my.js
+|   |   |           |   |       ms.js
+|   |   |           |   |       mt.js
+|   |   |           |   |       my.js
+|   |   |           |   |       nb.js
+|   |   |           |   |       ne.js
+|   |   |           |   |       nl-be.js
+|   |   |           |   |       nl.js
+|   |   |           |   |       nn.js
+|   |   |           |   |       pa-in.js
+|   |   |           |   |       pl.js
+|   |   |           |   |       pt-br.js
+|   |   |           |   |       pt.js
+|   |   |           |   |       ro.js
+|   |   |           |   |       ru.js
+|   |   |           |   |       sd.js
+|   |   |           |   |       se.js
+|   |   |           |   |       si.js
+|   |   |           |   |       sk.js
+|   |   |           |   |       sl.js
+|   |   |           |   |       sq.js
+|   |   |           |   |       sr-cyrl.js
+|   |   |           |   |       sr.js
+|   |   |           |   |       ss.js
+|   |   |           |   |       sv.js
+|   |   |           |   |       sw.js
+|   |   |           |   |       ta.js
+|   |   |           |   |       te.js
+|   |   |           |   |       tet.js
+|   |   |           |   |       tg.js
+|   |   |           |   |       th.js
+|   |   |           |   |       tl-ph.js
+|   |   |           |   |       tlh.js
+|   |   |           |   |       tr.js
+|   |   |           |   |       tzl.js
+|   |   |           |   |       tzm-latn.js
+|   |   |           |   |       tzm.js
+|   |   |           |   |       ug-cn.js
+|   |   |           |   |       uk.js
+|   |   |           |   |       ur.js
+|   |   |           |   |       uz-latn.js
+|   |   |           |   |       uz.js
+|   |   |           |   |       vi.js
+|   |   |           |   |       x-pseudo.js
+|   |   |           |   |       yo.js
+|   |   |           |   |       zh-cn.js
+|   |   |           |   |       zh-hk.js
+|   |   |           |   |       zh-tw.js
+|   |   |           |   |       
+|   |   |           |   +---min
+|   |   |           |   |       locales.min.js
+|   |   |           |   |       moment-with-locales.min.js
+|   |   |           |   |       moment.min.js
+|   |   |           |   |       
+|   |   |           |   \---src
+|   |   |           +---node-waves
+|   |   |           |       waves.min.css
+|   |   |           |       waves.min.js
+|   |   |           |       
+|   |   |           +---peity
+|   |   |           |       jquery.peity.min.js
+|   |   |           |       LICENCE
+|   |   |           |       
+|   |   |           +---quill
+|   |   |           |       quill.bubble.css
+|   |   |           |       quill.core.css
+|   |   |           |       quill.core.js
+|   |   |           |       quill.min.js
+|   |   |           |       quill.snow.css
+|   |   |           |       
+|   |   |           +---simplebar
+|   |   |           |       simplebar-core.esm.js
+|   |   |           |       simplebar.esm.js
+|   |   |           |       simplebar.min.css
+|   |   |           |       simplebar.min.js
+|   |   |           |       simplebar.umd.js
+|   |   |           |       
+|   |   |           +---swiper
+|   |   |           |   |   postinstall.js
+|   |   |           |   |   swiper-bundle.esm.browser.min.js
+|   |   |           |   |   swiper-bundle.esm.js
+|   |   |           |   |   swiper-bundle.min.css
+|   |   |           |   |   swiper-bundle.min.js
+|   |   |           |   |   swiper.esm.js
+|   |   |           |   |   swiper.min.css
+|   |   |           |   |   
+|   |   |           |   +---angular
+|   |   |           |   |   +---angular
+|   |   |           |   |   |   \---src
+|   |   |           |   |   +---esm2020
+|   |   |           |   |   |   |   swiper-angular.mjs
+|   |   |           |   |   |   |   swiper_angular.mjs
+|   |   |           |   |   |   |   
+|   |   |           |   |   |   \---angular
+|   |   |           |   |   |       \---src
+|   |   |           |   |   +---fesm2015
+|   |   |           |   |   |       swiper_angular.mjs
+|   |   |           |   |   |       
+|   |   |           |   |   \---fesm2020
+|   |   |           |   |           swiper_angular.mjs
+|   |   |           |   |           
+|   |   |           |   +---components-shared
+|   |   |           |   |       get-changed-params.js
+|   |   |           |   |       get-params.js
+|   |   |           |   |       mount-swiper.js
+|   |   |           |   |       params-list.js
+|   |   |           |   |       update-on-virtual-data.js
+|   |   |           |   |       update-swiper.js
+|   |   |           |   |       utils.js
+|   |   |           |   |       
+|   |   |           |   +---core
+|   |   |           |   |   |   core.js
+|   |   |           |   |   |   defaults.js
+|   |   |           |   |   |   events-emitter.js
+|   |   |           |   |   |   moduleExtendParams.js
+|   |   |           |   |   |   
+|   |   |           |   |   +---breakpoints
+|   |   |           |   |   |       getBreakpoint.js
+|   |   |           |   |   |       index.js
+|   |   |           |   |   |       setBreakpoint.js
+|   |   |           |   |   |       
+|   |   |           |   |   +---check-overflow
+|   |   |           |   |   |       index.js
+|   |   |           |   |   |       
+|   |   |           |   |   +---classes
+|   |   |           |   |   |       addClasses.js
+|   |   |           |   |   |       index.js
+|   |   |           |   |   |       removeClasses.js
+|   |   |           |   |   |       
+|   |   |           |   |   +---events
+|   |   |           |   |   |       index.js
+|   |   |           |   |   |       onClick.js
+|   |   |           |   |   |       onResize.js
+|   |   |           |   |   |       onScroll.js
+|   |   |           |   |   |       onTouchEnd.js
+|   |   |           |   |   |       onTouchMove.js
+|   |   |           |   |   |       onTouchStart.js
+|   |   |           |   |   |       
+|   |   |           |   |   +---grab-cursor
+|   |   |           |   |   |       index.js
+|   |   |           |   |   |       setGrabCursor.js
+|   |   |           |   |   |       unsetGrabCursor.js
+|   |   |           |   |   |       
+|   |   |           |   |   +---images
+|   |   |           |   |   |       index.js
+|   |   |           |   |   |       loadImage.js
+|   |   |           |   |   |       preloadImages.js
+|   |   |           |   |   |       
+|   |   |           |   |   +---loop
+|   |   |           |   |   |       index.js
+|   |   |           |   |   |       loopCreate.js
+|   |   |           |   |   |       loopDestroy.js
+|   |   |           |   |   |       loopFix.js
+|   |   |           |   |   |       
+|   |   |           |   |   +---modules
+|   |   |           |   |   |   +---observer
+|   |   |           |   |   |   |       observer.js
+|   |   |           |   |   |   |       
+|   |   |           |   |   |   \---resize
+|   |   |           |   |   |           resize.js
+|   |   |           |   |   |           
+|   |   |           |   |   +---slide
+|   |   |           |   |   |       index.js
+|   |   |           |   |   |       slideNext.js
+|   |   |           |   |   |       slidePrev.js
+|   |   |           |   |   |       slideReset.js
+|   |   |           |   |   |       slideTo.js
+|   |   |           |   |   |       slideToClickedSlide.js
+|   |   |           |   |   |       slideToClosest.js
+|   |   |           |   |   |       slideToLoop.js
+|   |   |           |   |   |       
+|   |   |           |   |   +---transition
+|   |   |           |   |   |       index.js
+|   |   |           |   |   |       setTransition.js
+|   |   |           |   |   |       transitionEmit.js
+|   |   |           |   |   |       transitionEnd.js
+|   |   |           |   |   |       transitionStart.js
+|   |   |           |   |   |       
+|   |   |           |   |   +---translate
+|   |   |           |   |   |       getTranslate.js
+|   |   |           |   |   |       index.js
+|   |   |           |   |   |       maxTranslate.js
+|   |   |           |   |   |       minTranslate.js
+|   |   |           |   |   |       setTranslate.js
+|   |   |           |   |   |       translateTo.js
+|   |   |           |   |   |       
+|   |   |           |   |   \---update
+|   |   |           |   |           index.js
+|   |   |           |   |           updateActiveIndex.js
+|   |   |           |   |           updateAutoHeight.js
+|   |   |           |   |           updateClickedSlide.js
+|   |   |           |   |           updateProgress.js
+|   |   |           |   |           updateSize.js
+|   |   |           |   |           updateSlides.js
+|   |   |           |   |           updateSlidesClasses.js
+|   |   |           |   |           updateSlidesOffset.js
+|   |   |           |   |           updateSlidesProgress.js
+|   |   |           |   |           
+|   |   |           |   +---modules
+|   |   |           |   |   +---a11y
+|   |   |           |   |   |       a11y.js
+|   |   |           |   |   |       a11y.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---autoplay
+|   |   |           |   |   |       autoplay.js
+|   |   |           |   |   |       autoplay.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---controller
+|   |   |           |   |   |       controller.js
+|   |   |           |   |   |       controller.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---effect-cards
+|   |   |           |   |   |       effect-cards.js
+|   |   |           |   |   |       effect-cards.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---effect-coverflow
+|   |   |           |   |   |       effect-coverflow.js
+|   |   |           |   |   |       effect-coverflow.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---effect-creative
+|   |   |           |   |   |       effect-creative.js
+|   |   |           |   |   |       effect-creative.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---effect-cube
+|   |   |           |   |   |       effect-cube.js
+|   |   |           |   |   |       effect-cube.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---effect-fade
+|   |   |           |   |   |       effect-fade.js
+|   |   |           |   |   |       effect-fade.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---effect-flip
+|   |   |           |   |   |       effect-flip.js
+|   |   |           |   |   |       effect-flip.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---free-mode
+|   |   |           |   |   |       free-mode.js
+|   |   |           |   |   |       free-mode.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---grid
+|   |   |           |   |   |       grid.js
+|   |   |           |   |   |       grid.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---hash-navigation
+|   |   |           |   |   |       hash-navigation.js
+|   |   |           |   |   |       hash-navigation.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---history
+|   |   |           |   |   |       history.js
+|   |   |           |   |   |       history.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---keyboard
+|   |   |           |   |   |       keyboard.js
+|   |   |           |   |   |       keyboard.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---lazy
+|   |   |           |   |   |       lazy.js
+|   |   |           |   |   |       lazy.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---manipulation
+|   |   |           |   |   |   |   manipulation.js
+|   |   |           |   |   |   |   manipulation.min.css
+|   |   |           |   |   |   |   
+|   |   |           |   |   |   \---methods
+|   |   |           |   |   |           addSlide.js
+|   |   |           |   |   |           appendSlide.js
+|   |   |           |   |   |           prependSlide.js
+|   |   |           |   |   |           removeAllSlides.js
+|   |   |           |   |   |           removeSlide.js
+|   |   |           |   |   |           
+|   |   |           |   |   +---mousewheel
+|   |   |           |   |   |       mousewheel.js
+|   |   |           |   |   |       mousewheel.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---navigation
+|   |   |           |   |   |       navigation.js
+|   |   |           |   |   |       navigation.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---pagination
+|   |   |           |   |   |       pagination.js
+|   |   |           |   |   |       pagination.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---parallax
+|   |   |           |   |   |       parallax.js
+|   |   |           |   |   |       parallax.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---scrollbar
+|   |   |           |   |   |       scrollbar.js
+|   |   |           |   |   |       scrollbar.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---thumbs
+|   |   |           |   |   |       thumbs.js
+|   |   |           |   |   |       thumbs.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   +---virtual
+|   |   |           |   |   |       virtual.js
+|   |   |           |   |   |       virtual.min.css
+|   |   |           |   |   |       
+|   |   |           |   |   \---zoom
+|   |   |           |   |           zoom.js
+|   |   |           |   |           zoom.min.css
+|   |   |           |   |           
+|   |   |           |   +---react
+|   |   |           |   |       context.js
+|   |   |           |   |       get-children.js
+|   |   |           |   |       index.js
+|   |   |           |   |       loop.js
+|   |   |           |   |       swiper-react.js
+|   |   |           |   |       swiper-slide.js
+|   |   |           |   |       swiper.js
+|   |   |           |   |       use-isomorphic-layout-effect.js
+|   |   |           |   |       virtual.js
+|   |   |           |   |       
+|   |   |           |   +---shared
+|   |   |           |   |       calc-looped-slides.js
+|   |   |           |   |       classes-to-selector.js
+|   |   |           |   |       create-element-if-not-defined.js
+|   |   |           |   |       create-shadow.js
+|   |   |           |   |       dom.js
+|   |   |           |   |       effect-init.js
+|   |   |           |   |       effect-target.js
+|   |   |           |   |       effect-virtual-transition-end.js
+|   |   |           |   |       get-browser.js
+|   |   |           |   |       get-device.js
+|   |   |           |   |       get-support.js
+|   |   |           |   |       utils.js
+|   |   |           |   |       
+|   |   |           |   +---solid
+|   |   |           |   |       context.js
+|   |   |           |   |       get-children.js
+|   |   |           |   |       index.js
+|   |   |           |   |       loop.js
+|   |   |           |   |       swiper-slide.js
+|   |   |           |   |       swiper-slide.jsx
+|   |   |           |   |       swiper-solid.js
+|   |   |           |   |       swiper.js
+|   |   |           |   |       swiper.jsx
+|   |   |           |   |       virtual.js
+|   |   |           |   |       
+|   |   |           |   +---svelte
+|   |   |           |   |       index.js
+|   |   |           |   |       swiper-slide.svelte
+|   |   |           |   |       swiper-svelte.js
+|   |   |           |   |       swiper.svelte
+|   |   |           |   |       
+|   |   |           |   +---types
+|   |   |           |   |   \---modules
+|   |   |           |   \---vue
+|   |   |           |           context.js
+|   |   |           |           get-children.js
+|   |   |           |           loop.js
+|   |   |           |           swiper-slide.js
+|   |   |           |           swiper-vue.js
+|   |   |           |           swiper.js
+|   |   |           |           virtual.js
+|   |   |           |           
+|   |   |           \---waypoints
+|   |   |               |   licenses.txt
+|   |   |               |   testem.json
+|   |   |               |   
+|   |   |               +---lib
+|   |   |               |   |   jquery.waypoints.min.js
+|   |   |               |   |   noframework.waypoints.min.js
+|   |   |               |   |   waypoints.debug.js
+|   |   |               |   |   zepto.waypoints.min.js
+|   |   |               |   |   
+|   |   |               |   \---shortcuts
+|   |   |               |           infinite.min.js
+|   |   |               |           inview.min.js
+|   |   |               |           sticky.min.js
+|   |   |               |           
+|   |   |               +---src
+|   |   |               \---test
+|   |   +---Documentation
+|   |   |   |   changelog.html
+|   |   |   |   favicon.ico
+|   |   |   |   folder-structure.html
+|   |   |   |   getting-started.html
+|   |   |   |   index.html
+|   |   |   |   resources-plugins.html
+|   |   |   |   support.html
+|   |   |   |   
+|   |   |   +---css
+|   |   |   |       bootstrap.css
+|   |   |   |       bootstrap.min.css
+|   |   |   |       materialdesignicons.min.css
+|   |   |   |       prettify.css
+|   |   |   |       styles.css
+|   |   |   |       
+|   |   |   +---fonts
+|   |   |   |       materialdesignicons-webfont.eot
+|   |   |   |       materialdesignicons-webfont.svg
+|   |   |   |       materialdesignicons-webfont.ttf
+|   |   |   |       materialdesignicons-webfont.woff
+|   |   |   |       materialdesignicons-webfont.woff2
+|   |   |   |       
+|   |   |   +---images
+|   |   |   |       logo-dark.png
+|   |   |   |       logo-light.png
+|   |   |   |       
+|   |   |   \---js
+|   |   |           bootstrap.js
+|   |   |           bootstrap.min.js
+|   |   |           jquery.easing.min.js
+|   |   |           jquery.js
+|   |   |           prettify.js
+|   |   |           
+|   |   \---src
+|   |       +---fonts
+|   |       |       materialdesignicons-webfont.eot
+|   |       |       materialdesignicons-webfont.ttf
+|   |       |       materialdesignicons-webfont.woff
+|   |       |       materialdesignicons-webfont.woff2
+|   |       |       
+|   |       +---html
+|   |       |   |   auth-confirm-mail.html
+|   |       |   |   auth-lock-screen.html
+|   |       |   |   auth-login.html
+|   |       |   |   auth-logout.html
+|   |       |   |   auth-recoverpw.html
+|   |       |   |   auth-register.html
+|   |       |   |   calendar.html
+|   |       |   |   charts-area.html
+|   |       |   |   charts-bar.html
+|   |       |   |   charts-boxplot.html
+|   |       |   |   charts-bubble.html
+|   |       |   |   charts-candlestick.html
+|   |       |   |   charts-chartist.html
+|   |       |   |   charts-chartjs.html
+|   |       |   |   charts-column.html
+|   |       |   |   charts-flot.html
+|   |       |   |   charts-funnel.html
+|   |       |   |   charts-heatmap.html
+|   |       |   |   charts-line.html
+|   |       |   |   charts-mixed.html
+|   |       |   |   charts-morris.html
+|   |       |   |   charts-pie.html
+|   |       |   |   charts-polararea.html
+|   |       |   |   charts-radar.html
+|   |       |   |   charts-radialbar.html
+|   |       |   |   charts-rangearea.html
+|   |       |   |   charts-scatter.html
+|   |       |   |   charts-sparklines.html
+|   |       |   |   charts-timeline.html
+|   |       |   |   charts-treemap.html
+|   |       |   |   contacts-profile.html
+|   |       |   |   ecommerce-sidebar-dark-rtl.html
+|   |       |   |   ecommerce-sidebar-dark.html
+|   |       |   |   ecommerce-sidebar-rtl.html
+|   |       |   |   ecommerce.html
+|   |       |   |   email-verification.html
+|   |       |   |   error-404.html
+|   |       |   |   error-429.html
+|   |       |   |   error-500.html
+|   |       |   |   error-503.html
+|   |       |   |   extended-carousel.html
+|   |       |   |   extended-notifications.html
+|   |       |   |   extended-offcanvas.html
+|   |       |   |   extended-range-slider.html
+|   |       |   |   extended-scrollbar.html
+|   |       |   |   extended-scrollspy.html
+|   |       |   |   forms-advanced.html
+|   |       |   |   forms-elements.html
+|   |       |   |   forms-pickers.html
+|   |       |   |   forms-quilljs.html
+|   |       |   |   forms-validation.html
+|   |       |   |   icons-feather.html
+|   |       |   |   icons-mdi.html
+|   |       |   |   index-sidebar-dark-rtl.html
+|   |       |   |   index-sidebar-dark.html
+|   |       |   |   index-sidebar-rtl.html
+|   |       |   |   index.html
+|   |       |   |   maps-google.html
+|   |       |   |   maps-vector.html
+|   |       |   |   offline-page.html
+|   |       |   |   pages-coming-soon.html
+|   |       |   |   pages-faqs.html
+|   |       |   |   pages-gallery.html
+|   |       |   |   pages-invoice.html
+|   |       |   |   pages-maintenance.html
+|   |       |   |   pages-pricing.html
+|   |       |   |   pages-profile.html
+|   |       |   |   pages-starter.html
+|   |       |   |   pages-timeline.html
+|   |       |   |   preview.html
+|   |       |   |   tables-basic.html
+|   |       |   |   tables-datatables.html
+|   |       |   |   ui-accordions.html
+|   |       |   |   ui-alerts.html
+|   |       |   |   ui-badges.html
+|   |       |   |   ui-breadcrumb.html
+|   |       |   |   ui-buttons.html
+|   |       |   |   ui-cards.html
+|   |       |   |   ui-carousel.html
+|   |       |   |   ui-collapse.html
+|   |       |   |   ui-dropdowns.html
+|   |       |   |   ui-general.html
+|   |       |   |   ui-grid.html
+|   |       |   |   ui-images.html
+|   |       |   |   ui-list.html
+|   |       |   |   ui-modals.html
+|   |       |   |   ui-offcanvas.html
+|   |       |   |   ui-pagination.html
+|   |       |   |   ui-placeholders.html
+|   |       |   |   ui-popovers.html
+|   |       |   |   ui-progress.html
+|   |       |   |   ui-scrollspy.html
+|   |       |   |   ui-spinners.html
+|   |       |   |   ui-tabs.html
+|   |       |   |   ui-tooltips.html
+|   |       |   |   ui-typography.html
+|   |       |   |   ui-video.html
+|   |       |   |   widgets.html
+|   |       |   |   
+|   |       |   \---partials
+|   |       |           body.html
+|   |       |           footer.html
+|   |       |           head-css.html
+|   |       |           menu.html
+|   |       |           sidebar.html
+|   |       |           title-meta.html
+|   |       |           topbar.html
+|   |       |           vendor.html
+|   |       |           
+|   |       +---images
+|   |       |   |   authentication.svg
+|   |       |   |   favicon.ico
+|   |       |   |   instagram.png
+|   |       |   |   logo-dark.png
+|   |       |   |   logo-light.png
+|   |       |   |   logo-sm.png
+|   |       |   |   rocket.png
+|   |       |   |   
+|   |       |   +---demo
+|   |       |   |       analytical-sidebar-dark-rtl.png
+|   |       |   |       analytical-sidebar-dark.png
+|   |       |   |       analytical-sidebar-rtl.png
+|   |       |   |       analytical-sidebar.png
+|   |       |   |       ecommerc-sidebar-dark-rtl.png
+|   |       |   |       ecommerc-sidebar-dark.png
+|   |       |   |       ecommerc-sidebar-rtl.png
+|   |       |   |       ecommerce.png
+|   |       |   |       
+|   |       |   +---gallery
+|   |       |   |       1.jpg
+|   |       |   |       2.jpg
+|   |       |   |       3.jpg
+|   |       |   |       4.jpg
+|   |       |   |       5.jpg
+|   |       |   |       6.jpg
+|   |       |   |       7.jpg
+|   |       |   |       8.jpg
+|   |       |   |       9.jpg
+|   |       |   |       
+|   |       |   +---landing
+|   |       |   |   |   bg-pattern.svg
+|   |       |   |   |   dashboard.png
+|   |       |   |   |   features.jpg
+|   |       |   |   |   
+|   |       |   |   \---client
+|   |       |   |           clients-logo-1.svg
+|   |       |   |           clients-logo-2.svg
+|   |       |   |           clients-logo-3.svg
+|   |       |   |           clients-logo-4.svg
+|   |       |   |           clients-logo-5.svg
+|   |       |   |           
+|   |       |   +---products
+|   |       |   |       bags.jpg
+|   |       |   |       camera.jpg
+|   |       |   |       dresses.jpg
+|   |       |   |       headphone.jpg
+|   |       |   |       nike-shoes.jpg
+|   |       |   |       shoes.jpg
+|   |       |   |       
+|   |       |   +---small
+|   |       |   |       img-1.jpg
+|   |       |   |       img-10.jpg
+|   |       |   |       img-11.jpg
+|   |       |   |       img-2.jpg
+|   |       |   |       img-3.jpg
+|   |       |   |       img-4.jpg
+|   |       |   |       img-5.jpg
+|   |       |   |       img-6.jpg
+|   |       |   |       img-7.jpg
+|   |       |   |       img-8.jpg
+|   |       |   |       img-9.jpg
+|   |       |   |       responsive.jpg
+|   |       |   |       
+|   |       |   +---svg
+|   |       |   |       404-error.svg
+|   |       |   |       429-error.svg
+|   |       |   |       500-error.svg
+|   |       |   |       503-error.svg
+|   |       |   |       card-bg.svg
+|   |       |   |       coming-soon.svg
+|   |       |   |       confirmation-email.svg
+|   |       |   |       logout.svg
+|   |       |   |       maintenance-1.svg
+|   |       |   |       maintenance.svg
+|   |       |   |       offline.svg
+|   |       |   |       
+|   |       |   \---users
+|   |       |           profile.jpg
+|   |       |           user-10.jpg
+|   |       |           user-11.jpg
+|   |       |           user-12.jpg
+|   |       |           user-13.jpg
+|   |       |           user-14.jpg
+|   |       |           user-15.jpg
+|   |       |           user-2.jpg
+|   |       |           user-3.jpg
+|   |       |           user-4.jpg
+|   |       |           user-5.jpg
+|   |       |           user-6.jpg
+|   |       |           user-7.jpg
+|   |       |           user-8.jpg
+|   |       |           user-9.jpg
+|   |       |           user.jpg
+|   |       |           
+|   |       +---js
+|   |       |   |   app.js
+|   |       |   |   
+|   |       |   \---pages
+|   |       |           analytics-dashboard.init.js
+|   |       |           apexcharts-area.init.js
+|   |       |           apexcharts-bar.init.js
+|   |       |           apexcharts-boxplot.init.js
+|   |       |           apexcharts-bubble.init.js
+|   |       |           apexcharts-candlestick.init.js
+|   |       |           apexcharts-column.init.js
+|   |       |           apexcharts-funnel.init.js
+|   |       |           apexcharts-heatmap.init.js
+|   |       |           apexcharts-line.init.js
+|   |       |           apexcharts-mixed.init.js
+|   |       |           apexcharts-pie.init.js
+|   |       |           apexcharts-polararea.init.js
+|   |       |           apexcharts-radar.init.js
+|   |       |           apexcharts-radialbar.init.js
+|   |       |           apexcharts-range-area.init.js
+|   |       |           apexcharts-scatter.init.js
+|   |       |           apexcharts-timeline.init.js
+|   |       |           apexcharts-treemap.init.js
+|   |       |           canada-map.js
+|   |       |           coming-soon.init.js
+|   |       |           datatable.init.js
+|   |       |           demo.calendar.js
+|   |       |           ecommerce-dashboard.init.js
+|   |       |           form-picker.js
+|   |       |           glightbox.init.js
+|   |       |           google-maps-init.js
+|   |       |           gumshoe.init.js
+|   |       |           iraq-map.js
+|   |       |           landing.init.js
+|   |       |           quilljs.init.js
+|   |       |           russia-map.js
+|   |       |           spain-map.js
+|   |       |           swiper.init.js
+|   |       |           us-lcc-en-map.js
+|   |       |           us-merc-en-map.js
+|   |       |           us-mill-en-map.js
+|   |       |           vector-maps.init.js
+|   |       |           widgets.init.js
+|   |       |           
+|   |       \---scss
+|   |           |   app.scss
+|   |           |   icons.scss
+|   |           |   _custom-variables.scss
+|   |           |   _variables.scss
+|   |           |   
+|   |           \---custom
+|   |               +---components
+|   |               |       _accordions.scss
+|   |               |       _alert.scss
+|   |               |       _avatar.scss
+|   |               |       _badge.scss
+|   |               |       _breadcrumb.scss
+|   |               |       _buttons.scss
+|   |               |       _card.scss
+|   |               |       _dropdown.scss
+|   |               |       _forms.scss
+|   |               |       _helper.scss
+|   |               |       _modal.scss
+|   |               |       _nav.scss
+|   |               |       _pagination.scss
+|   |               |       _popover.scss
+|   |               |       _progress.scss
+|   |               |       _reboot.scss
+|   |               |       _tables.scss
+|   |               |       _tabs.scss
+|   |               |       _type.scss
+|   |               |       _utilities.scss
+|   |               |       _widgets.scss
+|   |               |       
+|   |               +---extended
+|   |               |       _scrollspy.scss
+|   |               |       
+|   |               +---pages
+|   |               |       _authentication.scss
+|   |               |       _coming-soon.scss
+|   |               |       _faq.scss
+|   |               |       _gallery.scss
+|   |               |       _landing-page.scss
+|   |               |       _maintenance.scss
+|   |               |       _pricing.scss
+|   |               |       _profile.scss
+|   |               |       _timeline.scss
+|   |               |       
+|   |               +---plugins
+|   |               |   |   _calendar.scss
+|   |               |   |   _custom-icons.scss
+|   |               |   |   _icons.scss
+|   |               |   |   _maps.scss
+|   |               |   |   _simplebar.scss
+|   |               |   |   
+|   |               |   \---icons
+|   |               |           _materialdesignicons.scss
+|   |               |           
+|   |               \---structure
+|   |                       _footer.scss
+|   |                       _general.scss
+|   |                       _menu.scss
+|   |                       _page-head.scss
+|   |                       _topbar.scss
+|   |                       
+|   +---assets
+|   |   +---css
+|   |   |       animate.css
+|   |   |       bootsnav.css
+|   |   |       bootstrap.min.css
+|   |   |       flaticon-set.css
+|   |   |       font-awesome.min.css
+|   |   |       magnific-popup.css
+|   |   |       owl.carousel.min.css
+|   |   |       owl.theme.default.min.css
+|   |   |       plugins.min.css
+|   |   |       responsive.css
+|   |   |       
+|   |   +---fonts
+|   |   |       fa-brands-400.eot
+|   |   |       fa-brands-400.ttf
+|   |   |       fa-brands-400.woff
+|   |   |       fa-brands-400.woff2
+|   |   |       fa-regular-400.eot
+|   |   |       fa-regular-400.ttf
+|   |   |       fa-regular-400.woff
+|   |   |       fa-regular-400.woff2
+|   |   |       fa-solid-900.eot
+|   |   |       fa-solid-900.ttf
+|   |   |       fa-solid-900.woff
+|   |   |       fa-solid-900.woff2
+|   |   |       Flaticon.ttf
+|   |   |       Flaticon.woff
+|   |   |       Flaticon.woff2
+|   |   |       
+|   |   +---img
+|   |   |   |   100x100.png
+|   |   |   |   1500x500.png
+|   |   |   |   1500x700.png
+|   |   |   |   150x80.png
+|   |   |   |   1990x800.png
+|   |   |   |   2440x1578.png
+|   |   |   |   350x500.png
+|   |   |   |   500x700-light.png
+|   |   |   |   500x700.png
+|   |   |   |   700x800.png
+|   |   |   |   800x1300.png
+|   |   |   |   800x1400.png
+|   |   |   |   800x1500.png
+|   |   |   |   800x600.png
+|   |   |   |   800x700.png
+|   |   |   |   800x800-dark.png
+|   |   |   |   800x800.png
+|   |   |   |   ajax-loader.gif
+|   |   |   |   brush.svg
+|   |   |   |   error.gif
+|   |   |   |   favicon.png
+|   |   |   |   logo-light.png
+|   |   |   |   logo.png
+|   |   |   |   preloader.gif
+|   |   |   |   shape.svg
+|   |   |   |   success.gif
+|   |   |   |   waves-shape-2.svg
+|   |   |   |   waves-shape.svg
+|   |   |   |   
+|   |   |   \---bg
+|   |   |           1.svg
+|   |   |           2.svg
+|   |   |           3.svg
+|   |   |           4.svg
+|   |   |           
+|   |   +---js
+|   |   |   |   bootsnav.js
+|   |   |   |   bootstrap.min.js
+|   |   |   |   Chart.min.js
+|   |   |   |   count-to.js
+|   |   |   |   custom-chart.js
+|   |   |   |   equal-height.min.js
+|   |   |   |   imagesloaded.pkgd.min.js
+|   |   |   |   isotope.pkgd.min.js
+|   |   |   |   jquery-1.12.4.min.js
+|   |   |   |   jquery.appear.js
+|   |   |   |   jquery.easing.min.js
+|   |   |   |   jquery.magnific-popup.min.js
+|   |   |   |   main.js
+|   |   |   |   modernizr.custom.13711.js
+|   |   |   |   owl.carousel.min.js
+|   |   |   |   plugins.min.js
+|   |   |   |   progress-bar.min.js
+|   |   |   |   wow.min.js
+|   |   |   |   
+|   |   |   \---html5
+|   |   |           html5shiv.min.js
+|   |   |           respond.min.js
+|   |   |           
+|   |   \---mail
+|   |           contact.php
+|   |           
+|   \---documentation
+|       |   index.html
+|       |   style.css
+|       |   
+|       \---assets
+|           +---css
+|           |       plugins.min.css
+|           |       
+|           +---fonts
+|           |       fa-brands-400.eot
+|           |       fa-brands-400.ttf
+|           |       fa-brands-400.woff
+|           |       fa-brands-400.woff2
+|           |       fa-regular-400.eot
+|           |       fa-regular-400.ttf
+|           |       fa-regular-400.woff
+|           |       fa-regular-400.woff2
+|           |       fa-solid-900.eot
+|           |       fa-solid-900.ttf
+|           |       fa-solid-900.woff
+|           |       fa-solid-900.woff2
+|           |       Flaticon.ttf
+|           |       Flaticon.woff
+|           |       
+|           +---img
+|           |       favicon.png
+|           |       logo.png
+|           |       mail.png
+|           |       section.png
+|           |       
+|           \---js
+|                   plugins.min.js
+|                   
+\---old
+    |   app.py
+    |   README.md
+    |   yolo_infer.py
+    |   
+    +---model
+    |       23.5_yolov8m_caithien_v2.pt
+    |       best.pt
+    |       
+    +---static
+    |       index.css
+    |       style.css
+    |       style1.css
+    |       style2.css
+    |       test.css
+    |       
+    \---templates
+            detectcamera.html
+            detectpicture.html
+            detectvideo.html
+            index.html
+            

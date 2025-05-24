@@ -1,83 +1,29 @@
-from ultralytics import YOLO
-from flask import Flask, request, jsonify, render_template
-from PIL import Image
-import base64
-import io
+from flask import Flask
+from backend.config import Config
+from backend.extensions import db
+from backend.extensions import test_db_connection
 
-app = Flask(__name__)
-model = YOLO('model/23.5_yolov8m_caithien_v2.pt')
+from backend.routes.web_routes import web_bp
+from backend.routes.admin_routes import admin_bp
 
-@app.route('/')
-def home():
-    return render_template('index.html')
 
-@app.route('/camera')
-def camera():
-    return render_template('detectcamera.html')
 
-@app.route('/picture')
-def picture():
-    return render_template('detectpicture.html')
+app = Flask(__name__, static_folder="frontend", template_folder="frontend")
 
-@app.route('/video')
-def video():
-    return render_template('detectvideo.html')
+# Cấu hình từ .env
+app.config.from_object(Config)
 
-@app.route('/predict', methods=['POST'])
-def predict():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file part'}), 400
+# Khởi tạo DB
+db.init_app(app)
 
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
+# Blueprint
+app.register_blueprint(web_bp)
+app.register_blueprint(admin_bp)
 
-    try:
-        image = Image.open(file.stream).convert('RGB')
-        results = model(image)
-        detections = []
+# 👉 Kiểm tra kết nối DB khi app khởi động
+with app.app_context():
+    test_db_connection()
 
-        for result in results:
-            for box in result.boxes.data.tolist():
-                x1, y1, x2, y2, score, cls = box
-                detections.append({
-                    'bbox': [x1, y1, x2, y2],
-                    'confidence': float(score),
-                    'class_id': int(cls),
-                    'label': model.names[int(cls)]
-                })
-
-        return jsonify({'detections': detections})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/detect-frame', methods=['POST'])
-def detect_frame():
-    data = request.get_json()
-    if not data or 'image' not in data:
-        return jsonify({'error': 'No image provided'}), 400
-
-    try:
-        image_data = data['image'].split(',')[1] 
-        img_bytes = base64.b64decode(image_data)
-        image = Image.open(io.BytesIO(img_bytes)).convert('RGB')
-
-        results = model(image)
-        detections = []
-
-        for result in results:
-            for box in result.boxes.data.tolist():
-                x1, y1, x2, y2, score, cls = box
-                detections.append({
-                    'bbox': [x1, y1, x2, y2],
-                    'confidence': float(score),
-                    'class_id': int(cls),
-                    'label': model.names[int(cls)]
-                })
-
-        return jsonify({'detections': detections})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='localhost', port=8000)

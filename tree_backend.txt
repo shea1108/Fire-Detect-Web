@@ -1,0 +1,18 @@
+Folder PATH listing for volume IT
+Volume serial number is 20C3-4E62
+D:\CT472_TTTT\FIRE-DETECT-WEB\BACKEND
+|   config.py
+|   extensions.py
+|   __init__.py
+|   
++---auth
++---databases
++---logs
++---models
++---routes
++---services
++---utils
+\---YOLO
+        23.5_yolov8m_caithien_v2.pt
+        best.pt
+        
