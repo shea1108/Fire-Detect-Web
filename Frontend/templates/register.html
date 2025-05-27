@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Đăng Ký</title>
+  <link rel="stylesheet" href="/static/login.css" />
+</head>
+<body>
+
+<div id="main-content">
+  <h2>Đăng Ký</h2>
+  <form id="register-form">
+    <input type="text" placeholder="Họ và tên" name="user_name" required />
+    <input type="email" placeholder="Email" name="user_email" required />
+    <input type="text" placeholder="Số điện thoại" name="user_phone_num" />
+    <input type="password" placeholder="Mật khẩu" name="user_password" required />
+    <select name="user_role" required>
+      <option value="">Chọn vai trò</option>
+      <option value="admin">Admin</option>
+      <option value="user">User</option>
+    </select>
+    <button class="detect-btn" type="submit">Đăng Ký</button>
+  </form>
+
+  <p style="margin-top: 30px;">Đã có tài khoản? <a href="/login">Đăng nhập tại đây</a></p>
+</div>
+
+<script>
+  document.getElementById('register-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const jsonData = {};
+    formData.forEach((val, key) => jsonData[key] = val);
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(jsonData)
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("Đăng ký thành công!");
+        e.target.reset();
+      } else {
+        alert(data.error || "Đăng ký thất bại");
+      }
+    } catch (err) {
+      alert("Lỗi kết nối đến máy chủ.");
+    }
+  });
+</script>
+
+</body>
+</html>
