@@ -3,6 +3,11 @@ from flask import jsonify
 import uuid
 from flask_bcrypt import Bcrypt
 
+import base64
+import io
+from PIL import Image
+from flask_socketio import SocketIO, emit
+
 bcrypt = Bcrypt()
 
 def register_user(data):
@@ -43,3 +48,5 @@ def login_user(data):
         return jsonify({'message': 'Đăng nhập thành công', 'user_id': user.user_id}), 200
     else:
         return jsonify({'error': 'Email hoặc mật khẩu không đúng'}), 401
+
+

@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, render_template
+from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
@@ -6,6 +7,9 @@ from dotenv import load_dotenv
 from ultralytics import YOLO
 from PIL import Image
 import base64, io, os, uuid
+import eventlet
+from flask_socketio import SocketIO, emit
+
 
 # --- Load .env ---
 load_dotenv()
@@ -16,14 +20,14 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 app = Flask(__name__, template_folder='templates')
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SECRET_KEY'] = SECRET_KEY
-
+socketio = SocketIO(app, cors_allowed_origins="*")
 # --- Extensions ---
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 CORS(app)
 
 # --- YOLO Model ---
-model = YOLO('../Yolo/23.5_yolov8m_caithien_v2.pt')
+model = YOLO('../Yolo/best.pt')
 
 # --- User Model ---
 class User(db.Model):
@@ -74,6 +78,31 @@ def login():
     if user and bcrypt.check_password_hash(user.user_password, data['user_password']):
         return jsonify({"message": "Đăng nhập thành công"})
     return jsonify({"error": "Sai email hoặc mật khẩu"}), 401
+
+
+@socketio.on('frame')
+def handle_frame(data):
+    # Decode the base64 image
+    image_data = base64.b64decode(data.split(',')[1])
+    image = Image.open(io.BytesIO(image_data)).convert('RGB')
+
+    # Perform detection using your YOLO model
+    results = model(image)
+    detections = []
+
+    for result in results:
+        for box in result.boxes.data.tolist():
+            x1, y1, x2, y2, score, cls = box
+            detections.append({
+                'bbox': [x1, y1, x2, y2],
+                'confidence': float(score),
+                'class_id': int(cls),
+                'label': model.names[int(cls)]
+            })
+
+    # Send detections back to the client
+    emit('detections', {'detections': detections})
+
 
 # --- Giao diện ---
 @app.route('/')
@@ -163,4 +192,4 @@ with app.app_context():
 
 # --- Chạy ứng dụng ---
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True)
+    socketio.run(app, debug=True)
