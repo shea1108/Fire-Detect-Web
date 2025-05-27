@@ -1,0 +1,104 @@
+<!-- @format -->
+chạy fire_detect_db.sql --- đã sửa 
+
+CHỈ CẦN RUN ở / 
+
+python app.py
+
+
+
+🧠 Tổng quan kiến trúc
+Project sử dụng Flask (Python backend) chia làm 2 phần lớn:
+
+/frontend/: giao diện người dùng (UI/UX)
+
+/backend/: xử lý nghiệp vụ (auth, predict, socket, database...)
+
+📁 Chi tiết các thành phần
+app.py (ở thư mục gốc)
+Điểm khởi chạy chính của ứng dụng.
+
+Gọi hàm create_app() trong backend/**init**.py để khởi tạo Flask App.
+
+Chạy qua socketio.run(app) để xử lý real-time bằng WebSocket.
+
+.env và config.py
+.env: chứa DATABASE_URL, SECRET_KEY để cấu hình bảo mật và DB.
+
+config.py: nếu muốn tách cấu hình Flask riêng ra, nên khai báo ở đây.
+
+requirements.txt
+Khai báo thư viện cần thiết: Flask, SQLAlchemy, Bcrypt, Flask-CORS, SocketIO, Ultralytics (YOLO), dotenv…
+
+
+
+📦 backend/: Phần xử lý chính (business logic)
+**init**.py
+Tạo Flask app với config, đăng ký extension (db, bcrypt, socketio) và các Blueprints:
+
+auth: xác thực (login, register)
+
+routes: render các trang giao diện (login, register, detect)
+
+predict: nhận diện lửa bằng YOLO
+
+socketio: xử lý frame real-time
+
+admin: giao diện quản trị
+
+extensions.py
+Tách db, bcrypt, socketio ra để dùng lại trong nhiều nơi (DRY principle).
+
+Models/users_model.py
+Định nghĩa bảng User trong CSDL.
+
+Bao gồm các trường: user_id, user_name, user_email, user_password, user_role (admin/user)...
+
+Controllers/auth_controller.py
+Logic xử lý register_user() và login_user().
+
+bcrypt dùng để hash mật khẩu.
+
+Khi login thành công sẽ trả về JSON gồm message, user_id, user_role (dùng để redirect về / hay /admin).
+
+Routes/
+auth.py
+Xử lý các route: /api/auth/register, /api/auth/login
+
+Gọi tới auth_controller.py.
+
+predict.py
+Route /predict để xử lý ảnh tĩnh bằng YOLOv8.
+
+socketio.py
+Lắng nghe frame real-time qua WebSocket, dùng YOLO để detect ngay trong camera.
+
+admin/routes.py
+Tạo các route trong /admin/...
+
+Ví dụ: /admin/index, /admin/users, /admin/charts-pie,...
+
+Load template HTML động từ thư mục frontend/templates/admin.
+
+🎨 frontend/: Phần giao diện người dùng
+templates/
+Chứa các file HTML của cả user và admin.
+
+templates/admin/
+Các template quản trị: index.html, charts-pie.html, users.html, ...
+
+Dùng bộ giao diện đẹp (template UI Kit như Tapeli).
+
+templates/ (gốc)
+login.html, register.html, detectcamera.html, ...
+
+Dành cho user thường.
+
+static/
+static/
+CSS user: style.css, login.css
+
+static/admin/assets/
+CSS, JS, ảnh, icon... cho giao diện admin.
+
+Đã được bạn chuyển thành /static/admin/assets/ để dùng đúng đường dẫn Flask.
