@@ -3,7 +3,7 @@ from PIL import Image
 import base64, io
 from ultralytics import YOLO
 
-model = YOLO('Yolo/24.5_fire_detect_improve_v4.pt')
+model = YOLO('Yolo/29.5_v4_caitien.pt')
 
 def register_socketio(socketio):
     @socketio.on('frame')
