@@ -4,7 +4,7 @@ import io, base64
 from ultralytics import YOLO
 
 bp = Blueprint('predict', __name__)
-model = YOLO('Yolo/best.pt')
+model = YOLO('Yolo/29.5_v4_caitien.pt')
 
 @bp.route('/predict', methods=['POST'])
 def predict():

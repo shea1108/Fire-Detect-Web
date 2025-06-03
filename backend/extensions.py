@@ -4,4 +4,4 @@ from flask_socketio import SocketIO
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
-socketio = SocketIO(cors_allowed_origins="*")
+socketio = SocketIO(cors_allowed_origins="*", async_mode='threading')
