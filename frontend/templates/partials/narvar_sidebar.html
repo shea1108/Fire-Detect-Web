@@ -79,17 +79,26 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="detect-image.html" class="nav-link">
+                                    <a
+                                        href="detect-image.html"
+                                        class="nav-link"
+                                    >
                                         Detect Picture
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="detect-video.html" class="nav-link">
+                                    <a
+                                        href="detect-video.html"
+                                        class="nav-link"
+                                    >
                                         Detect Video
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="detect-camera.html" class="nav-link">
+                                    <a
+                                        href="detect-camera.html"
+                                        class="nav-link"
+                                    >
                                         Detect Camera
                                     </a>
                                 </li>
@@ -259,22 +268,6 @@
 </div>
 <!-- End Navbar Area -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!-- Start Sidebar Modal -->
 <div class="sidebar-modal">
     <div
@@ -314,7 +307,6 @@
                 </div>
 
                 <div class="modal-body">
-                    
                     <div class="sidebar-modal-widget">
                         <h3 class="title">Additional Links</h3>
                         <ul>
@@ -328,10 +320,34 @@
                                 <a href="faq.html">FAQ</a>
                             </li>
                             <li>
-                                <a href="log-out.html">Logout</a>
+                                <a id="logout-btn">Logout</a>
                             </li>
                         </ul>
                     </div>
+                    <script>
+                        document.getElementById('logout-btn').onclick =
+                            async () => {
+                                try {
+                                    const res = await fetch(
+                                        '/api/auth/logout',
+                                        {
+                                            method: 'POST',
+                                            credentials: 'include', // Bắt buộc để gửi session cookie
+                                        }
+                                    );
+                                    const data = await res.json();
+                                    if (res.ok) {
+                                        alert('Đăng xuất thành công');
+                                        window.location.href = '/'; // Chuyển hướng về trang chủ hoặc login
+                                    } else {
+                                        alert(data.error || 'Lỗi đăng xuất');
+                                    }
+                                } catch (err) {
+                                    console.error(err);
+                                    alert('Lỗi mạng khi đăng xuất');
+                                }
+                            };
+                    </script>
 
                     <!-- <div class="sidebar-modal-widget">
                         <h3 class="title">Contact Info</h3>

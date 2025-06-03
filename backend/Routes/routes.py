@@ -40,3 +40,4 @@ def render_new_frontend_page(page):
     if os.path.exists(full_path):
         return render_template(page)  # Không có dấu /
     return f"404 - {page} not found", 404
+
