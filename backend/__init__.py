@@ -6,6 +6,10 @@ from dotenv import load_dotenv
 
 from backend.extensions import db, bcrypt, socketio
 
+from backend.Routes import auth, predict, socketio as socket
+from backend.Routes.admin import routes as admin_routes
+
+
 def create_app():
     load_dotenv()
 
@@ -18,20 +22,21 @@ def create_app():
     bcrypt.init_app(app)
     CORS(app)
 
-    # Đảm bảo models đã được import để SQLAlchemy tạo bảng
+
     from backend.Models.users_model import User
+    from backend.Models.devices_model import Device
+    from backend.Models.logs_model import Log
+    from backend.Models.models_model import Model
 
     with app.app_context():
         db.create_all()
 
-    from backend.Routes import auth, predict, socketio as socket
-    from backend.Routes.admin import routes as admin_routes
 
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(routes.bp)
     app.register_blueprint(predict.bp)
-    app.register_blueprint(admin_routes.bp)  # ✅ đăng ký admin
+    app.register_blueprint(admin_routes.bp) 
     socket.register_socketio(socketio)
 
     return app
