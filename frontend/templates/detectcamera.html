@@ -183,7 +183,11 @@
       tempCanvas.toBlob(blob => {
         const reader = new FileReader();
         reader.onloadend = () => {
-          socket.emit('frame', reader.result);
+          socket.emit('frame', {
+              image: reader.result,
+              dev_id: 'test-device',
+              model_id: 'test-model'
+            })
         };
         reader.readAsDataURL(blob);
       }, 'image/jpeg');
@@ -194,6 +198,12 @@
       statusEl.textContent = data.detections?.length ? "🔥 Phát hiện cháy!" : "✅ Không phát hiện cháy.";
 
       if (data.detections && data.detections.length > 0) {
+          socket.emit('save_log', {
+            confidence: data.detections[0].confidence,
+            base64Image: tempCanvas.toDataURL('image/jpeg'),
+            dev_id: 'test-device',
+            model_id: 'test-model'
+          });
         ctx.strokeStyle = 'red';
         ctx.lineWidth = 3;
         ctx.font = '18px Arial';
