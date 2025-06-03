@@ -1,4 +1,4 @@
-from backend.Models.users_model import User
+from backend.Models.users import User
 from backend.extensions import db, bcrypt  
 from flask import jsonify
 

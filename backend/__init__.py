@@ -19,7 +19,7 @@ def create_app():
     CORS(app)
 
     # Đảm bảo models đã được import để SQLAlchemy tạo bảng
-    from backend.Models.users_model import User
+    from backend.Models.users import User
 
     with app.app_context():
         db.create_all()

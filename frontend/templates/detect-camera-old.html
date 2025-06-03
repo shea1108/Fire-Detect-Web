@@ -1,0 +1,944 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>🔥 Phát hiện cháy thời gian thực</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+        />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 20px;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 20px;
+                padding: 30px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+                backdrop-filter: blur(10px);
+            }
+
+            .header {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+
+            .header h1 {
+                color: #2c3e50;
+                font-size: 2.5rem;
+                margin-bottom: 10px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .header p {
+                color: #7f8c8d;
+                font-size: 1.1rem;
+            }
+
+            .main-content {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 30px;
+                align-items: start;
+            }
+
+            .video-section {
+                text-align: center;
+            }
+
+            #videoWrapper {
+                position: relative;
+                display: inline-block;
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+                background: #000;
+                margin-bottom: 20px;
+            }
+
+            video {
+                width: 100%;
+                max-width: 640px;
+                height: auto;
+                display: block;
+            }
+
+            canvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                pointer-events: none;
+                width: 100%;
+                height: 100%;
+                z-index: 10;
+            }
+
+            .controls {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 15px;
+                flex-wrap: wrap;
+                margin-bottom: 20px;
+            }
+
+            .control-group {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .control-group label {
+                font-weight: 600;
+                color: #2c3e50;
+            }
+
+            select {
+                padding: 10px 15px;
+                border: 2px solid #e0e0e0;
+                border-radius: 10px;
+                background: white;
+                font-size: 14px;
+                min-width: 150px;
+                transition: all 0.3s ease;
+            }
+
+            select:focus {
+                outline: none;
+                border-color: #3498db;
+                box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            }
+
+            .btn {
+                padding: 12px 24px;
+                border: none;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 16px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                text-decoration: none;
+                min-width: 120px;
+                justify-content: center;
+            }
+
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            }
+
+            .btn-primary {
+                background: linear-gradient(135deg, #3498db, #2980b9);
+                color: white;
+            }
+
+            .btn-success {
+                background: linear-gradient(135deg, #27ae60, #2ecc71);
+                color: white;
+            }
+
+            .btn-danger {
+                background: linear-gradient(135deg, #e74c3c, #c0392b);
+                color: white;
+            }
+
+            .btn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+            .side-panel {
+                min-width: 300px;
+                background: rgba(255, 255, 255, 0.7);
+                border-radius: 15px;
+                padding: 20px;
+                backdrop-filter: blur(5px);
+            }
+
+            .status-card {
+                background: white;
+                border-radius: 12px;
+                padding: 20px;
+                margin-bottom: 20px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+            }
+
+            .status-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            }
+
+            .status-title {
+                font-size: 18px;
+                font-weight: 600;
+                margin-bottom: 10px;
+                color: #2c3e50;
+            }
+
+            .status-content {
+                font-size: 16px;
+                font-weight: 500;
+                padding: 10px 15px;
+                border-radius: 8px;
+                text-align: center;
+            }
+
+            .status-ready {
+                background: linear-gradient(135deg, #d4edda, #c3e6cb);
+                color: #155724;
+            }
+            .status-detecting {
+                background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+                color: #856404;
+            }
+            .status-fire {
+                background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+                color: #721c24;
+                animation: pulse 1s infinite;
+            }
+            .status-safe {
+                background: linear-gradient(135deg, #d1ecf1, #b8daff);
+                color: #0c5460;
+            }
+            .status-error {
+                background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+                color: #721c24;
+            }
+
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.05);
+                }
+                100% {
+                    transform: scale(1);
+                }
+            }
+
+            .detection-info {
+                background: white;
+                border-radius: 12px;
+                padding: 20px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                display: none;
+            }
+
+            .detection-info.active {
+                display: block;
+                animation: slideInUp 0.3s ease;
+            }
+
+            @keyframes slideInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .detection-count {
+                font-size: 20px;
+                font-weight: bold;
+                margin-bottom: 15px;
+                color: #e74c3c;
+                text-align: center;
+            }
+
+            .detection-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                justify-content: center;
+            }
+
+            .detection-item {
+                background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 500;
+                box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+            }
+
+            .stats-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin-top: 15px;
+            }
+
+            .stat-item {
+                background: #f8f9fa;
+                padding: 10px;
+                border-radius: 8px;
+                text-align: center;
+            }
+
+            .stat-value {
+                font-size: 18px;
+                font-weight: bold;
+                color: #2c3e50;
+            }
+
+            .stat-label {
+                font-size: 12px;
+                color: #7f8c8d;
+                margin-top: 2px;
+            }
+
+            .connection-indicator {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 8px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 500;
+                z-index: 1000;
+            }
+
+            .connected {
+                background: #27ae60;
+                color: white;
+            }
+
+            .disconnected {
+                background: #e74c3c;
+                color: white;
+                animation: pulse 1s infinite;
+            }
+
+            @media (max-width: 768px) {
+                .main-content {
+                    grid-template-columns: 1fr;
+                }
+
+                .side-panel {
+                    min-width: auto;
+                }
+
+                .header h1 {
+                    font-size: 2rem;
+                }
+
+                .controls {
+                    flex-direction: column;
+                }
+
+                .control-group {
+                    width: 100%;
+                    justify-content: center;
+                }
+            }
+
+            .loading-spinner {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                border: 3px solid #f3f3f3;
+                border-top: 3px solid #3498db;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .hidden {
+                display: none !important;
+            }
+
+            .fade-in {
+                animation: fadeIn 0.5s ease-in;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="connection-indicator disconnected" id="connectionStatus">
+            <i class="fas fa-wifi"></i> Đang kết nối...
+        </div>
+
+        <div class="container fade-in">
+            <div class="header">
+                <h1>
+                    <i class="fas fa-fire"></i> Phát hiện Cháy Thời Gian Thực
+                </h1>
+                <p>
+                    Hệ thống AI phát hiện cháy sử dụng camera với công nghệ
+                    YOLOv8
+                </p>
+            </div>
+
+            <div class="main-content">
+                <div class="video-section">
+                    <div id="videoWrapper">
+                        <video id="video" autoplay muted playsinline></video>
+                        <canvas id="canvas"></canvas>
+                        <canvas id="temp-canvas" style="display: none"></canvas>
+                    </div>
+
+                    <div class="controls">
+                        <div class="control-group" id="camera-options">
+                            <label for="camera-select">
+                                <i class="fas fa-camera"></i> Chọn camera:
+                            </label>
+                            <select id="camera-select"></select>
+                        </div>
+
+                        <button id="start-camera-btn" class="btn btn-success">
+                            <i class="fas fa-play"></i> Bắt đầu
+                        </button>
+
+                        <button
+                            id="stop-camera-btn"
+                            class="btn btn-danger hidden"
+                        >
+                            <i class="fas fa-stop"></i> Dừng
+                        </button>
+                    </div>
+                </div>
+
+                <div class="side-panel">
+                    <div class="status-card">
+                        <div class="status-title">
+                            <i class="fas fa-info-circle"></i> Trạng thái hệ
+                            thống
+                        </div>
+                        <div id="status" class="status-content status-ready">
+                            🥒 Vui lòng nhấn "Bắt đầu" để kích hoạt camera
+                        </div>
+                    </div>
+
+                    <div class="detection-info" id="detectionInfo">
+                        <div class="status-title">
+                            <i class="fas fa-exclamation-triangle"></i> Cảnh báo
+                            cháy
+                        </div>
+                        <div id="detection-count" class="detection-count"></div>
+                        <div id="detection-list" class="detection-list"></div>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="status-title">
+                            <i class="fas fa-chart-bar"></i> Thống kê
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value" id="frame-count">0</div>
+                                <div class="stat-label">Khung hình</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="detection-total">
+                                    0
+                                </div>
+                                <div class="stat-label">Phát hiện</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="fps-count">0</div>
+                                <div class="stat-label">FPS</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="uptime">0s</div>
+                                <div class="stat-label">Thời gian</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Initialize Socket.IO connection
+            const socket = io();
+
+            // DOM elements
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const tempCanvas = document.getElementById('temp-canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            const cameraSelect = document.getElementById('camera-select');
+            const statusEl = document.getElementById('status');
+            const startBtn = document.getElementById('start-camera-btn');
+            const stopBtn = document.getElementById('stop-camera-btn');
+            const detectionInfo = document.getElementById('detectionInfo');
+            const detectionCount = document.getElementById('detection-count');
+            const detectionList = document.getElementById('detection-list');
+            const connectionStatus =
+                document.getElementById('connectionStatus');
+
+            // Stats elements
+            const frameCountEl = document.getElementById('frame-count');
+            const detectionTotalEl = document.getElementById('detection-total');
+            const fpsCountEl = document.getElementById('fps-count');
+            const uptimeEl = document.getElementById('uptime');
+
+            // State variables
+            let currentStream = null;
+            let detectionInterval = null;
+            let isDetecting = false;
+            let frameCount = 0;
+            let totalDetections = 0;
+            let startTime = Date.now();
+            let lastFrameTime = Date.now();
+
+            // Utility functions
+            function isMobile() {
+                return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            }
+
+            function hasGetUserMedia() {
+                return !!(
+                    navigator.mediaDevices &&
+                    navigator.mediaDevices.getUserMedia
+                );
+            }
+
+            function updateStatus(message, className) {
+                statusEl.textContent = message;
+                statusEl.className = `status-content ${className}`;
+            }
+
+            function updateConnectionStatus(connected) {
+                if (connected) {
+                    connectionStatus.className =
+                        'connection-indicator connected';
+                    connectionStatus.innerHTML =
+                        '<i class="fas fa-wifi"></i> Đã kết nối';
+                } else {
+                    connectionStatus.className =
+                        'connection-indicator disconnected';
+                    connectionStatus.innerHTML =
+                        '<i class="fas fa-wifi"></i> Mất kết nối';
+                }
+            }
+
+            function updateStats() {
+                const now = Date.now();
+                const elapsed = (now - startTime) / 1000;
+                const fps = frameCount / elapsed;
+
+                frameCountEl.textContent = frameCount;
+                detectionTotalEl.textContent = totalDetections;
+                fpsCountEl.textContent = fps.toFixed(1);
+                uptimeEl.textContent = elapsed.toFixed(0) + 's';
+            }
+
+            // Camera functions
+            async function listCameras() {
+                try {
+                    // Request permission first
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: true,
+                    });
+                    stream.getTracks().forEach((track) => track.stop());
+
+                    const devices =
+                        await navigator.mediaDevices.enumerateDevices();
+                    const videoDevices = devices.filter(
+                        (d) => d.kind === 'videoinput'
+                    );
+
+                    cameraSelect.innerHTML = '';
+                    videoDevices.forEach((device, index) => {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId;
+                        option.text = device.label || `Camera ${index + 1}`;
+                        cameraSelect.appendChild(option);
+                    });
+
+                    return videoDevices.length > 0;
+                } catch (err) {
+                    console.error('Error listing cameras:', err);
+                    updateStatus(
+                        '❌ Không thể truy cập danh sách camera',
+                        'status-error'
+                    );
+                    return false;
+                }
+            }
+
+            async function startCamera(deviceId = null) {
+                if (!hasGetUserMedia()) {
+                    updateStatus(
+                        '❌ Trình duyệt không hỗ trợ camera',
+                        'status-error'
+                    );
+                    return;
+                }
+
+                // Stop current stream if exists
+                if (currentStream) {
+                    currentStream.getTracks().forEach((track) => track.stop());
+                    currentStream = null;
+                }
+
+                // Determine constraints
+                let constraints;
+                if (isMobile()) {
+                    constraints = {
+                        video: {
+                            facingMode: { ideal: 'environment' },
+                            width: { ideal: 640 },
+                            height: { ideal: 480 },
+                        },
+                        audio: false,
+                    };
+                } else if (deviceId) {
+                    constraints = {
+                        video: {
+                            deviceId: { exact: deviceId },
+                            width: { ideal: 640 },
+                            height: { ideal: 480 },
+                        },
+                        audio: false,
+                    };
+                } else {
+                    constraints = {
+                        video: {
+                            width: { ideal: 640 },
+                            height: { ideal: 480 },
+                        },
+                        audio: false,
+                    };
+                }
+
+                try {
+                    updateStatus('📸 Đang mở camera...', 'status-detecting');
+                    startBtn.innerHTML =
+                        '<span class="loading-spinner"></span> Đang mở...';
+                    startBtn.disabled = true;
+
+                    const stream = await navigator.mediaDevices.getUserMedia(
+                        constraints
+                    );
+                    video.srcObject = stream;
+
+                    video.onloadedmetadata = () => {
+                        // Set canvas dimensions to match video
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        tempCanvas.width = video.videoWidth;
+                        tempCanvas.height = video.videoHeight;
+
+                        updateStatus('📸 Camera đã sẵn sàng', 'status-ready');
+
+                        // Update button states
+                        startBtn.classList.add('hidden');
+                        stopBtn.classList.remove('hidden');
+
+                        // Reset stats
+                        frameCount = 0;
+                        totalDetections = 0;
+                        startTime = Date.now();
+
+                        // Start detection
+                        startDetection();
+                    };
+
+                    currentStream = stream;
+                } catch (err) {
+                    console.error('Camera error:', err);
+                    updateStatus(
+                        '❌ Không thể mở camera: ' + err.message,
+                        'status-error'
+                    );
+                    startBtn.innerHTML = '<i class="fas fa-play"></i> Bắt đầu';
+                    startBtn.disabled = false;
+                }
+            }
+
+            function stopCamera() {
+                if (currentStream) {
+                    currentStream.getTracks().forEach((track) => track.stop());
+                    currentStream = null;
+                }
+
+                video.srcObject = null;
+                stopDetection();
+
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Update UI
+                startBtn.classList.remove('hidden');
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Bắt đầu';
+                startBtn.disabled = false;
+                stopBtn.classList.add('hidden');
+                detectionInfo.classList.remove('active');
+
+                updateStatus('🥒 Camera đã dừng', 'status-ready');
+            }
+
+            // Detection functions
+            function startDetection() {
+                if (detectionInterval) return;
+
+                isDetecting = true;
+                detectionInterval = setInterval(() => {
+                    if (video.readyState === 4 && isDetecting) {
+                        sendFrameWebSocket();
+                    }
+                }, 500); // Send frame every 500ms
+            }
+
+            function stopDetection() {
+                isDetecting = false;
+                if (detectionInterval) {
+                    clearInterval(detectionInterval);
+                    detectionInterval = null;
+                }
+            }
+
+            function sendFrameWebSocket() {
+                try {
+                    if (!video.videoWidth || !video.videoHeight) return;
+
+                    // Draw video frame to temporary canvas
+                    tempCanvas.width = video.videoWidth;
+                    tempCanvas.height = video.videoHeight;
+                    tempCtx.drawImage(
+                        video,
+                        0,
+                        0,
+                        tempCanvas.width,
+                        tempCanvas.height
+                    );
+
+                    updateStatus('🕒 Đang phát hiện...', 'status-detecting');
+
+                    // Convert to blob and send via WebSocket
+                    tempCanvas.toBlob(
+                        (blob) => {
+                            if (!blob) return;
+
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                                socket.emit('frame', reader.result);
+                                frameCount++;
+                                updateStats();
+                            };
+                            reader.readAsDataURL(blob);
+                        },
+                        'image/jpeg',
+                        0.7
+                    ); // Reduce quality for better performance
+                } catch (err) {
+                    console.error('Error sending frame:', err);
+                }
+            }
+
+            // Socket event handlers
+            socket.on('connect', () => {
+                console.log('Connected to server');
+                updateConnectionStatus(true);
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Disconnected from server');
+                updateConnectionStatus(false);
+                updateStatus('❌ Mất kết nối với server', 'status-error');
+            });
+
+            socket.on('detections', (data) => {
+                try {
+                    // Clear previous drawings
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    const detections = data.detections || [];
+                    const hasDetections = detections.length > 0;
+
+                    // Update total detections count
+                    if (hasDetections) {
+                        totalDetections += detections.length;
+                    }
+
+                    // Update status
+                    if (hasDetections) {
+                        updateStatus('🔥 Phát hiện cháy!', 'status-fire');
+                        detectionInfo.classList.add('active');
+                        detectionCount.textContent = `Phát hiện ${detections.length} vùng cháy`;
+                    } else {
+                        updateStatus('✅ Không phát hiện cháy', 'status-safe');
+                        detectionInfo.classList.remove('active');
+                    }
+
+                    // Draw detection boxes and labels
+                    if (hasDetections) {
+                        ctx.strokeStyle = '#ff0000';
+                        ctx.lineWidth = 3;
+                        ctx.font = 'bold 16px Arial';
+                        ctx.fillStyle = '#ff0000';
+                        ctx.shadowColor = '#000000';
+                        ctx.shadowBlur = 2;
+
+                        // Clear detection list
+                        detectionList.innerHTML = '';
+
+                        detections.forEach((det, index) => {
+                            const [x1, y1, x2, y2] = det.bbox;
+                            const width = x2 - x1;
+                            const height = y2 - y1;
+
+                            // Draw bounding box
+                            ctx.strokeRect(x1, y1, width, height);
+
+                            // Draw label and confidence
+                            const label = det.label || 'Fire';
+                            const confidence = (det.confidence * 100).toFixed(
+                                1
+                            );
+                            const text = `${label}: ${confidence}%`;
+
+                            // Background for text
+                            const textMetrics = ctx.measureText(text);
+                            ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
+                            ctx.fillRect(
+                                x1,
+                                y1 - 30,
+                                textMetrics.width + 10,
+                                25
+                            );
+
+                            // Text
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillText(text, x1 + 5, y1 - 10);
+
+                            // Add to detection list
+                            const detItem = document.createElement('div');
+                            detItem.className = 'detection-item';
+                            detItem.innerHTML = `<i class="fas fa-fire"></i> ${label} (${confidence}%)`;
+                            detectionList.appendChild(detItem);
+                        });
+                    }
+
+                    updateStats();
+                } catch (err) {
+                    console.error('Error processing detections:', err);
+                }
+            });
+
+            socket.on('error', (data) => {
+                console.error('Server error:', data.message);
+                updateStatus('❌ Lỗi: ' + data.message, 'status-error');
+            });
+
+            // Event listeners
+            startBtn.addEventListener('click', async () => {
+                const selectedDeviceId = cameraSelect.value;
+                await startCamera(selectedDeviceId);
+            });
+
+            stopBtn.addEventListener('click', () => {
+                stopCamera();
+            });
+
+            cameraSelect.addEventListener('change', async () => {
+                if (currentStream) {
+                    await startCamera(cameraSelect.value);
+                }
+            });
+
+            // Initialize app
+            async function init() {
+                if (!hasGetUserMedia()) {
+                    updateStatus(
+                        '❌ Trình duyệt không hỗ trợ camera',
+                        'status-error'
+                    );
+                    document.getElementById('camera-options').style.display =
+                        'none';
+                    startBtn.style.display = 'none';
+                    return;
+                }
+
+                try {
+                    const hasCameras = await listCameras();
+                    if (!hasCameras) {
+                        updateStatus(
+                            '❌ Không tìm thấy camera nào',
+                            'status-error'
+                        );
+                        return;
+                    }
+
+                    // On mobile, hide camera selection
+                    if (isMobile()) {
+                        document.getElementById(
+                            'camera-options'
+                        ).style.display = 'none';
+                    }
+                } catch (err) {
+                    console.error('Initialization error:', err);
+                    updateStatus('❌ Lỗi khởi tạo ứng dụng', 'status-error');
+                }
+            }
+
+            // Start when page loads
+            window.addEventListener('load', () => {
+                init();
+                setInterval(updateStats, 1000); // Update stats every second
+            });
+
+            // Handle page visibility change
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    stopDetection();
+                } else if (currentStream && video.readyState === 4) {
+                    startDetection();
+                }
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                if (video.videoWidth && video.videoHeight) {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                }
+            });
+        </script>
+    </body>
+</html>
