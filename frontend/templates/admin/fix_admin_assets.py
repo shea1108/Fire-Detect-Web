@@ -4,8 +4,8 @@ import os
 html_folder = './'
 
 # Chuỗi cần thay
-old_path = 'assets/'
-new_path = '/static/admin/assets/'
+old_path = '/static/admin/static/'
+new_path = '/static/admin/'
 
 # Tìm và sửa tất cả các file .html trong thư mục admin
 def fix_asset_paths(folder, old, new):
