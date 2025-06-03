@@ -1,0 +1,131 @@
+ * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family: sans-serif;
+                background: linear-gradient(to right, #667eea, #764ba2);
+                min-height: 100vh;
+                padding: 20px;
+                color: #2c3e50;
+            }
+            .container {
+                display: grid;
+                grid-template-columns: 3fr 1fr;
+                gap: 20px;
+                background: #fff;
+                border-radius: 15px;
+                padding: 20px;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            }
+            .video-area {
+                width: 1024px;
+                height: 640px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            video,
+            canvas {
+                width: 1024px;
+                height: 640px;
+                border-radius: 10px;
+                object-fit: cover; /* đảm bảo không bị co méo */
+            }
+
+            /* .video-area {
+                position: relative;
+            }
+            video,
+            canvas {
+                width: 100%;
+                border-radius: 10px;
+            } */
+            canvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 10;
+                pointer-events: none;
+            }
+            .controls {
+                margin-top: 10px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                align-items: center;
+            }
+            .controls select,
+            .controls button {
+                padding: 8px 12px;
+                border-radius: 6px;
+                border: 1px solid #ccc;
+                font-weight: 600;
+            }
+            .stats {
+                background: #f8f9fa;
+                border-radius: 10px;
+                padding: 15px;
+            }
+            .stats h3 {
+                font-size: 1.2rem;
+                margin-bottom: 10px;
+            }
+            .stat {
+                margin: 5px 0;
+                font-size: 0.95rem;
+            }
+            .status {
+                margin: 15px 0;
+                padding: 10px;
+                border-radius: 8px;
+                font-weight: bold;
+                text-align: center;
+            }
+            .status.ready {
+                background: #d4edda;
+                color: #155724;
+            }
+            .status.fire {
+                background: #f8d7da;
+                color: #721c24;
+                animation: pulse 1s infinite;
+            }
+            .status.safe {
+                background: #d1ecf1;
+                color: #0c5460;
+            }
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.05);
+                }
+                100% {
+                    transform: scale(1);
+                }
+            }
+            @media (max-width: 768px) {
+                .container {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            /* new */
+            /* Khi fullscreen: video và canvas chiếm toàn bộ */
+            :fullscreen .video-area,
+            :-webkit-full-screen .video-area {
+                width: 100vw !important;
+                height: 100vh !important;
+            }
+
+            :fullscreen video,
+            :fullscreen canvas,
+            :-webkit-full-screen video,
+            :-webkit-full-screen canvas {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover;
+            }
