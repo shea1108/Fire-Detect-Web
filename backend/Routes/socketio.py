@@ -1,4 +1,3 @@
-import os 
 from flask_socketio import emit
 from PIL import Image
 import base64
@@ -10,59 +9,25 @@ import logging
 import time
 import torch
 
-
-
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
-# Load available models from Yolo/ directory
-MODEL_DIR = 'Yolo'
-available_models = [f for f in os.listdir(MODEL_DIR) if f.endswith('.pt')]
-current_model_name = available_models[0] if available_models else None
-model = YOLO(os.path.join(MODEL_DIR, current_model_name)) if current_model_name else None
-if model:
-    model.to('cuda')
-    logger.info(f"Model '{current_model_name}' loaded successfully")
-else:
-    logger.error("No YOLO model found")
-
-
-def load_model(name):
-    global model, current_model_name
-    try:
-        model_path = os.path.join(MODEL_DIR, name)
-        new_model = YOLO(model_path)
-        new_model.to('cuda')
-        model = new_model
-        current_model_name = name
-        logger.info(f"Model '{name}' switched successfully")
-        return True, f"Model '{name}' loaded"
-    except Exception as e:
-        logger.error(f"Failed to load model '{name}': {e}")
-        return False, str(e)
-    
+# Load YOLO model once at startup
+try:
+    model = YOLO('Yolo/29.5_v4_caitien.pt')
+    model.to('cuda')  # ép sử dụng GPU
+    logger.info("YOLO model loaded successfully")
+except Exception as e:
+    logger.error(f"Failed to load YOLO model: {e}")
+    model = None
 
 def register_socketio(socketio):
     @socketio.on('connect')
     def handle_connect():
         logger.info("Client connected")
         emit('status', {'message': 'Connected to fire detection server'})
-        emit('available_models', {'models': available_models, 'current': current_model_name})
     
-    @socketio.on('change_model')
-    def handle_change_model(data):
-        name = data.get('model')
-        if name not in available_models:
-            emit('error', {'message': 'Model not found'})
-            return
-        ok, msg = load_model(name)
-        if ok:
-            emit('model_changed', {'message': msg})
-        else:
-            emit('error', {'message': msg})
-   
     @socketio.on('disconnect')
     def handle_disconnect():
         logger.info("Client disconnected")

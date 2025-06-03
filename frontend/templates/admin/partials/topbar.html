@@ -325,7 +325,10 @@
                         <div class="dropdown-divider"></div>
 
                         <!-- item-->
-                        <a id="logout-btn" class="dropdown-item notify-item">
+                        <a
+                            href="auth-logout.html"
+                            class="dropdown-item notify-item"
+                        >
                             <i
                                 class="mdi mdi-location-exit fs-16 align-middle"
                             ></i>
@@ -337,23 +340,3 @@
         </div>
     </div>
 </div>
-<script>
-    document.getElementById('logout-btn').onclick = async () => {
-        try {
-            const res = await fetch('/api/auth/logout', {
-                method: 'POST',
-                credentials: 'include', // Bắt buộc để gửi session cookie
-            });
-            const data = await res.json();
-            if (res.ok) {
-                alert('Đăng xuất thành công');
-                window.location.href = '/'; // Chuyển hướng về trang chủ hoặc login
-            } else {
-                alert(data.error || 'Lỗi đăng xuất');
-            }
-        } catch (err) {
-            console.error(err);
-            alert('Lỗi mạng khi đăng xuất');
-        }
-    };
-</script>
