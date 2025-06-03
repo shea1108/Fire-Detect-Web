@@ -1,0 +1,371 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>🔥 Realtime Fire Detection</title>
+        <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+        />
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family: sans-serif;
+                background: linear-gradient(to right, #667eea, #764ba2);
+                min-height: 100vh;
+                padding: 20px;
+                color: #2c3e50;
+            }
+            .container {
+                display: grid;
+                grid-template-columns: 3fr 1fr;
+                gap: 20px;
+                background: #fff;
+                border-radius: 15px;
+                padding: 20px;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            }
+            .video-area {
+                width: 1024px;
+                height: 640px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            video,
+            canvas {
+                width: 1024px;
+                height: 640px;
+                border-radius: 10px;
+                object-fit: cover; /* đảm bảo không bị co méo */
+            }
+
+            /* .video-area {
+                position: relative;
+            }
+            video,
+            canvas {
+                width: 100%;
+                border-radius: 10px;
+            } */
+            canvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 10;
+                pointer-events: none;
+            }
+            .controls {
+                margin-top: 10px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                align-items: center;
+            }
+            .controls select,
+            .controls button {
+                padding: 8px 12px;
+                border-radius: 6px;
+                border: 1px solid #ccc;
+                font-weight: 600;
+            }
+            .stats {
+                background: #f8f9fa;
+                border-radius: 10px;
+                padding: 15px;
+            }
+            .stats h3 {
+                font-size: 1.2rem;
+                margin-bottom: 10px;
+            }
+            .stat {
+                margin: 5px 0;
+                font-size: 0.95rem;
+            }
+            .status {
+                margin: 15px 0;
+                padding: 10px;
+                border-radius: 8px;
+                font-weight: bold;
+                text-align: center;
+            }
+            .status.ready {
+                background: #d4edda;
+                color: #155724;
+            }
+            .status.fire {
+                background: #f8d7da;
+                color: #721c24;
+                animation: pulse 1s infinite;
+            }
+            .status.safe {
+                background: #d1ecf1;
+                color: #0c5460;
+            }
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.05);
+                }
+                100% {
+                    transform: scale(1);
+                }
+            }
+            @media (max-width: 768px) {
+                .container {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            /* new */
+            /* Khi fullscreen: video và canvas chiếm toàn bộ */
+            :fullscreen .video-area,
+            :-webkit-full-screen .video-area {
+                width: 100vw !important;
+                height: 100vh !important;
+            }
+
+            :fullscreen video,
+            :fullscreen canvas,
+            :-webkit-full-screen video,
+            :-webkit-full-screen canvas {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <!-- Camera & Canvas -->
+            <div>
+                <div class="video-area">
+                    <video id="video" autoplay muted playsinline></video>
+                    <canvas id="canvas"></canvas>
+                    <canvas id="temp-canvas" style="display: none"></canvas>
+                    <button
+                        id="fullscreen-btn"
+                        
+                        style="
+                            position: absolute;
+                            bottom: 10px;
+                            right: 10px;
+                            z-index: 20;
+                            padding: 6px 12px;
+                            border: none;
+                            border-radius: 5px;
+                            background: rgba(0, 0, 0, 0.6);
+                            color: white;
+                            cursor: pointer;
+                        "
+                    >
+                        <i class="fas fa-expand"></i> Fullscreen
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats">
+                <h3>📊 Thống kê</h3>
+                <div id="status" class="status ready">
+                    🥒 Vui lòng nhấn "Bắt đầu"
+                </div>
+                <div class="stat">
+                    Khung hình: <span id="frame-count">0</span>
+                </div>
+                <div class="stat">
+                    Phát hiện: <span id="detect-count">0</span>
+                </div>
+                <div class="stat">FPS: <span id="fps">0</span></div>
+                <div class="stat">Thời gian: <span id="uptime">0s</span></div>
+
+                <!-- Controls được chuyển sang đây -->
+                <div class="controls" style="margin-top: 20px">
+                    <select id="camera-select"></select>
+                    <button id="start-btn">Bắt đầu</button>
+                    <button id="stop-btn" style="display: none">Dừng</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const socket = io();
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const tempCanvas = document.getElementById('temp-canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            const cameraSelect = document.getElementById('camera-select');
+            const startBtn = document.getElementById('start-btn');
+            const stopBtn = document.getElementById('stop-btn');
+            const statusEl = document.getElementById('status');
+            const frameCountEl = document.getElementById('frame-count');
+            const detectCountEl = document.getElementById('detect-count');
+            const fpsEl = document.getElementById('fps');
+            const uptimeEl = document.getElementById('uptime');
+
+            let currentStream,
+                interval,
+                startTime = Date.now(),
+                frameCount = 0,
+                detectCount = 0;
+
+            async function listCameras() {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const cams = devices.filter((d) => d.kind === 'videoinput');
+                cameraSelect.innerHTML = '';
+                cams.forEach((cam, i) => {
+                    const opt = document.createElement('option');
+                    opt.value = cam.deviceId;
+                    opt.textContent = cam.label || `Camera ${i + 1}`;
+                    cameraSelect.appendChild(opt);
+                });
+            }
+
+            async function startCamera(id) {
+                if (currentStream) stopCamera();
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { deviceId: id ? { exact: id } : undefined },
+                    audio: false,
+                });
+                video.srcObject = stream;
+                currentStream = stream;
+                video.onloadedmetadata = () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    tempCanvas.width = video.videoWidth;
+                    tempCanvas.height = video.videoHeight;
+                    detectCount = frameCount = 0;
+                    startTime = Date.now();
+                    startDetection();
+                    statusEl.textContent = '📸 Camera đã sẵn sàng';
+                    statusEl.className = 'status ready';
+                    startBtn.style.display = 'none';
+                    stopBtn.style.display = 'inline-block';
+                };
+            }
+
+            function stopCamera() {
+                if (currentStream)
+                    currentStream.getTracks().forEach((t) => t.stop());
+                currentStream = null;
+                stopDetection();
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                startBtn.style.display = 'inline-block';
+                stopBtn.style.display = 'none';
+                statusEl.textContent = '🥒 Đã dừng camera';
+                statusEl.className = 'status ready';
+            }
+
+            function startDetection() {
+                interval = setInterval(() => {
+                    if (!video.videoWidth) return;
+                    tempCtx.drawImage(
+                        video,
+                        0,
+                        0,
+                        tempCanvas.width,
+                        tempCanvas.height
+                    );
+                    tempCanvas.toBlob((blob) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            socket.emit('frame', reader.result);
+                            frameCount++;
+                            updateStats();
+                        };
+                        reader.readAsDataURL(blob);
+                    }, 'image/jpeg');
+                }, 500);
+            }
+
+            function stopDetection() {
+                clearInterval(interval);
+            }
+
+            socket.on('detections', (data) => {
+                const dets = data.detections || [];
+                const hasFire = dets.length > 0;
+                if (hasFire) detectCount += dets.length;
+
+                statusEl.textContent = hasFire
+                    ? '🔥 Phát hiện cháy!'
+                    : '✅ Không phát hiện cháy';
+                statusEl.className = `status ${hasFire ? 'fire' : 'safe'}`;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                dets.forEach((det) => {
+                    const [x1, y1, x2, y2] = det.bbox;
+                    ctx.strokeStyle = 'red';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+                    ctx.font = '14px Arial';
+                    ctx.fillStyle = 'red';
+                    ctx.fillText(
+                        `${det.label}: ${(det.confidence * 100).toFixed(1)}%`,
+                        x1,
+                        y1 - 5
+                    );
+                });
+            });
+
+            function updateStats() {
+                const elapsed = (Date.now() - startTime) / 1000;
+                const fps = frameCount / elapsed;
+                frameCountEl.textContent = frameCount;
+                detectCountEl.textContent = detectCount;
+                fpsEl.textContent = fps.toFixed(1);
+                uptimeEl.textContent = Math.floor(elapsed) + 's';
+            }
+            // Fullscreen handler
+            document.getElementById('fullscreen-btn').onclick = () => {
+                const videoArea = document.querySelector('.video-area');
+                if (videoArea.requestFullscreen) {
+                    videoArea.requestFullscreen();
+                } else if (videoArea.webkitRequestFullscreen) {
+                    videoArea.webkitRequestFullscreen();
+                } else if (videoArea.msRequestFullscreen) {
+                    videoArea.msRequestFullscreen();
+                }
+            };
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+
+            fullscreenBtn.onclick = () => {
+                const videoArea = document.querySelector('.video-area');
+                if (
+                    document.fullscreenElement === videoArea ||
+                    document.webkitFullscreenElement === videoArea
+                ) {
+                    // Thoát fullscreen
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
+                } else {
+                    // Vào fullscreen
+                    if (videoArea.requestFullscreen) {
+                        videoArea.requestFullscreen();
+                    } else if (videoArea.webkitRequestFullscreen) {
+                        videoArea.webkitRequestFullscreen();
+                    }
+                }
+            };
+
+            startBtn.onclick = () => startCamera(cameraSelect.value);
+            stopBtn.onclick = () => stopCamera();
+            cameraSelect.onchange = () => startCamera(cameraSelect.value);
+
+            window.addEventListener('load', listCameras);
+        </script>
+    </body>
+</html>

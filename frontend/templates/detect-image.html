@@ -1,0 +1,100 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% include ('partials/head.html')%}
+    </head>
+    <body>
+        <!-- Start Navbar Sidebar Area -->
+        {% include ('partials/narvar_sidebar.html') %}
+        <!-- End Navbar Sidebar Modal -->
+
+        <!-- Client Area -->
+        <div class="client-area ptb-100">
+            <div class="container">
+                <div class="section-title text-center mb-5">
+                    <h2 class="fw-bold" style="color: #0b1e8f">
+                        🔥 Detect Image
+                    </h2>
+                    <p class="text-muted">
+                        Chọn một bức ảnh và để hệ thống tự động phát hiện cháy
+                        trong ảnh.
+                    </p>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-6 text-center">
+                        <input
+                            type="file"
+                            id="imageUpload"
+                            accept="image/*"
+                            class="form-control mb-3 shadow-sm"
+                        />
+
+                        <div
+                            id="container"
+                            class="position-relative d-inline-block mb-3"
+                            style="max-width: 100%"
+                        >
+                            <img
+                                id="preview"
+                                src=""
+                                alt="Preview"
+                                class="img-fluid rounded border shadow"
+                                style="
+                                    max-height: 400px;
+                                    object-fit: contain;
+                                    display: none;
+                                "
+                            />
+                            <canvas
+                                id="uploadCanvas"
+                                class="position-absolute top-0 start-0"
+                                style="z-index: 10; pointer-events: none"
+                            ></canvas>
+                        </div>
+                        <br />
+                        <button
+                            id="detectBtn"
+                            class="btn btn-danger px-4 py-2 fw-semibold shadow"
+                            disabled
+                        >
+                            🔍 Detect
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Client Area End -->
+
+        <!-- Footer Area -->
+        {% include ('partials/footer.html') %}
+        <!-- Footer Area End -->
+
+        <!-- Jquery Min JS -->
+        <script src="/static/assets/js/jquery.min.js"></script>
+        <!-- Bootstrap Bundle Min JS -->
+        <script src="/static/assets/js/bootstrap.bundle.min.js"></script>
+        <!-- Meanmenu JS -->
+        <script src="/static/assets/js/meanmenu.min.js"></script>
+        <!-- Owl Carousel JS -->
+        <script src="/static/assets/js/owl.carousel.min.js"></script>
+        <!-- Magnific Popup JS -->
+        <script src="/static/assets/js/jquery.magnific-popup.min.js"></script>
+        <!-- Wow JS -->
+        <script src="/static/assets/js/wow.min.js"></script>
+        <!-- Ajaxchimp Min JS -->
+        <script src="/static/assets/js/jquery.ajaxchimp.min.js"></script>
+        <!-- Form Validator Min JS -->
+        <script src="/static/assets/js/form-validator.min.js"></script>
+        <!-- Contact Form JS -->
+        <script src="/static/assets/js/contact-form-script.js"></script>
+        <!-- Custom JS -->
+        <script src="/static/assets/js/custom.js"></script>
+
+        <!-- Dự đoán ảnh -->
+        <script src="/static/predict/predict_image.js"></script>
+    </body>
+</html>
