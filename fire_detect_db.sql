@@ -27,6 +27,7 @@ CREATE TABLE devices (
     dev_location   VARCHAR(255),
     dev_ip_address VARCHAR(50),
     dev_status     BOOLEAN      NOT NULL,
+	dev_hardware_id VARCHAR(255) NOT NULL,
     dev_create_at  TIMESTAMP    NOT NULL DEFAULT NOW(),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
         ON DELETE CASCADE ON UPDATE CASCADE
@@ -104,3 +105,6 @@ CREATE TABLE user_platforms (
     FOREIGN KEY (plat_id) REFERENCES platforms(plat_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+INSERT INTO models (model_id, model_name, model_path, model_config, model_status)
+VALUES (1, 'YOLO_Fire_Detection_v1', '/Yolo/best.pt', 'default_config', TRUE);
