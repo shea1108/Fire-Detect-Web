@@ -106,5 +106,7 @@ CREATE TABLE user_platforms (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO models (model_id, model_name, model_path, model_config, model_status)
-VALUES (1, 'YOLO_Fire_Detection_v1', '/Yolo/best.pt', 'default_config', TRUE);
+INSERT INTO models (model_name, model_path, model_config, model_status) VALUES
+('Fire_Detect 1.3', 'Yolo/best.pt', '{}', TRUE),
+('Fire_Detect 1.2', 'Yolo/best1.pt', '{}', TRUE),
+('Fire_Detect 1.1', 'Yolo/best2.pt', '{}', TRUE);
