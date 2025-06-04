@@ -36,7 +36,7 @@
                             cursor: pointer;
                         "
                     >
-                        <i class="fas fa-expand"></i> Fullscreen
+                        <i class="fas fa-expand"></i> Toàn màn hình
                     </button>
                 </div>
             </div>
@@ -56,7 +56,14 @@
                 <div class="stat">Thời gian: <span id="uptime">0s</span></div>
 
                 <div class="controls" style="margin-top: 20px">
-                    <select id="camera-select"></select>
+                    <div style="margin-bottom: 10px;">
+                        <label for="camera-select">Chọn Camera:</label>
+                        <select id="camera-select"></select>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label for="model-select">Chọn Model:</label>
+                        <select id="model-select"></select>
+                    </div>
                     <button id="start-btn">Bắt đầu</button>
                     <button id="stop-btn" style="display: none">Dừng</button>
                 </div>
@@ -71,6 +78,7 @@
             const tempCanvas = document.getElementById('temp-canvas');
             const tempCtx = tempCanvas.getContext('2d');
             const cameraSelect = document.getElementById('camera-select');
+            const modelSelect = document.getElementById('model-select'); // Thêm biến cho select model
             const startBtn = document.getElementById('start-btn');
             const stopBtn = document.getElementById('stop-btn');
             const statusEl = document.getElementById('status');
@@ -91,7 +99,7 @@
                 const deviceData = {
                     dev_name: devName,
                     user_id: 1, // Thay bằng user_id thực của bạn
-                    dev_id: selectedDeviceId // Gửi deviceId (chuỗi) từ trình duyệt
+                    dev_hardware_id: selectedDeviceId // Gửi deviceId (chuỗi) từ trình duyệt
                 };
 
                 return new Promise((resolve, reject) => {
@@ -109,6 +117,41 @@
                 });
             }
 
+            // Hàm để tải và liệt kê các model từ backend
+            async function listModels() {
+                console.log("Attempting to get models from backend...");
+                return new Promise((resolve, reject) => {
+                    socket.emit('get_models');
+                    socket.once('models_list', data => {
+                        console.log("Received models_list event:", data); // LOG NÀY QUAN TRỌNG
+                        modelSelect.innerHTML = '';
+                        if (data.status === 'success' && data.models && data.models.length > 0) { // Thêm kiểm tra data.models
+                            data.models.forEach(model => {
+                                const option = document.createElement('option');
+                                option.value = model.model_id;
+                                option.text = model.model_name;
+                                modelSelect.appendChild(option);
+                            });
+                            resolve();
+                        } else {
+                            const option = document.createElement('option');
+                            option.text = data.message || "Không tìm thấy model"; // Hiển thị thông báo nếu có
+                            modelSelect.appendChild(option);
+                            startBtn.disabled = true;
+                            console.error("Error fetching models or no models found:", data.message);
+                            reject(new Error(data.message || "No models found."));
+                        }
+                    });
+                    socket.once('error', data => {
+                        console.error("Socket.IO 'error' event during model fetch:", data.message); // LOG NÀY QUAN TRỌNG
+                        const option = document.createElement('option');
+                        option.text = `Lỗi tải model: ${data.message}`;
+                        modelSelect.appendChild(option);
+                        startBtn.disabled = true;
+                        reject(new Error(data.message));
+                    });
+                });
+            }
 
             async function listCameras() {
                 try {
@@ -196,7 +239,7 @@
                             socket.emit('frame', {
                                 image: reader.result,
                                 dev_id: cameraSelect.value,
-                                model_id: 1
+                                model_id: modelSelect.value // Lấy model_id từ phần tử select
                             });
                             frameCount++;
                             updateStats();
@@ -215,12 +258,12 @@
                 statusEl.textContent = data.detections?.length ? "🔥 Phát hiện cháy!" : "✅ Không phát hiện cháy.";
 
                 if (data.detections && data.detections.length > 0) {
-                    // Không cần currentDbDeviceId ở đây nữa vì backend sẽ tự tra cứu
+                    detectCount++; // Tăng số lần phát hiện
                     socket.emit('save_log', {
                         confidence: data.detections[0].confidence,
                         base64Image: tempCanvas.toDataURL('image/jpeg'),
                         dev_id: cameraSelect.value,
-                        model_id: 1
+                        model_id: modelSelect.value // Lấy model_id từ phần tử select khi lưu log
                     });
                     ctx.strokeStyle = 'red';
                     ctx.lineWidth = 3;
@@ -302,6 +345,10 @@
                     alert("Vui lòng đợi thiết bị được đăng ký với server trước khi bắt đầu.");
                     return;
                 }
+                if (!modelSelect.value) { // Kiểm tra xem model đã được chọn chưa
+                    alert("Vui lòng chọn một model trước khi bắt đầu.");
+                    return;
+                }
                 startCamera(cameraSelect.value);
             };
             stopBtn.onclick = () => stopCamera();
@@ -310,12 +357,25 @@
                 const selectedDeviceId = cameraSelect.value;
                 const selectedOption = cameraSelect.options[cameraSelect.selectedIndex];
                 const devName = selectedOption.text || `Camera`;
+                
+                modelSelect.onchange = () => {
+                const selectedModelId = modelSelect.value;
+                const selectedModelName = modelSelect.options[modelSelect.selectedIndex].text;
+
+                console.log(`Model changed to: ${selectedModelName} (ID: ${selectedModelId})`);
+
+                // Gửi thông báo đến backend rằng model đã được thay đổi
+                socket.emit('model_changed', {
+                    model_id: selectedModelId,
+                    model_name: selectedModelName
+                });
+            };
 
                 try {
                     // Gửi thông tin thiết bị lên backend để cập nhật và lấy dev_id (số nguyên) mới
                     await saveDeviceToBackend(selectedDeviceId, devName);
-                    // Sau khi cập nhật thành công, khởi động camera
-                    startCamera(selectedDeviceId);
+                    // Sau khi cập nhật thành công, khởi động camera (hoặc để người dùng tự nhấn bắt đầu)
+                    // startCamera(selectedDeviceId); // Bạn có thể bỏ dòng này nếu muốn người dùng nhấn "Bắt đầu" sau khi chọn camera
                 } catch (error) {
                     console.error("Failed to update device and start camera:", error);
                     statusEl.textContent = `❌ Lỗi cập nhật thiết bị: ${error.message}`;
@@ -323,7 +383,11 @@
                 }
             };
 
-            window.addEventListener('load', listCameras);
+            // Gọi listModels khi trang tải để điền danh sách model
+            window.addEventListener('load', async () => {
+                await listCameras();
+                await listModels();
+            });
         </script>
     </body>
 </html>
