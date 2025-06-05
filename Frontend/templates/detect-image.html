@@ -1,0 +1,140 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% include ('partials/head.html')%}
+        <style>
+            .custom-select {
+                max-width: 350px;
+                margin: 0 auto;
+                border-radius: 10px;
+            }
+
+            #container {
+                max-width: 100%;
+                position: relative;
+            }
+
+            #preview {
+                max-height: 400px;
+                object-fit: contain;
+                display: none;
+                border-radius: 12px;
+            }
+
+            #uploadCanvas {
+                z-index: 10;
+                pointer-events: none;
+            }
+
+            .section-title h2 {
+                font-weight: 700;
+                color: #0b1e8f;
+            }
+
+            .section-title p {
+                color: #666;
+                font-size: 1.05rem;
+            }
+
+            .btn-detect {
+                padding: 0.6rem 2rem;
+                font-weight: 600;
+                font-size: 1.05rem;
+                border-radius: 50px;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Start Navbar Sidebar Area -->
+        {% include ('partials/narvar_sidebar.html') %}
+        <!-- End Navbar Sidebar Modal -->
+
+        <!-- Client Area -->
+        <div class="client-area ptb-100">
+            <div class="container">
+                <div class="section-title text-center mb-5">
+                    <h2>🔥 Dự đoán cháy từ ảnh</h2>
+                    <p>
+                        Chọn một ảnh bất kỳ và hệ thống sẽ tự động phát hiện
+                        ngọn lửa trong đó.
+                    </p>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-6 text-center">
+                        <!-- File Upload -->
+                        <input
+                            type="file"
+                            id="imageUpload"
+                            accept="image/*"
+                            class="form-control mb-3 shadow-sm"
+                        />
+
+                        <!-- Chọn mô hình -->
+                        <select
+                            id="modelSelect"
+                            class="form-select custom-select mb-3 shadow-sm"
+                        >
+                            <option value="">-- Chọn mô hình --</option>
+                        </select>
+
+                        <!-- Ảnh Preview + Canvas -->
+                        <div id="container" class="d-inline-block mb-3 w-100">
+                            <img
+                                id="preview"
+                                src=""
+                                alt="Preview"
+                                class="img-fluid shadow border"
+                            />
+                            <canvas
+                                id="uploadCanvas"
+                                class="position-absolute top-0 start-0 w-100 h-100"
+                            ></canvas>
+                        </div>
+
+                        <!-- Nút Detect -->
+                        <br />
+                        <button
+                            id="detectBtn"
+                            class="btn btn-danger btn-detect shadow"
+                            disabled
+                        >
+                            🔍 Dự đoán
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Client Area End -->
+
+        <!-- Footer Area -->
+        {% include ('partials/footer.html') %}
+        <!-- Footer Area End -->
+
+        <!-- Jquery Min JS -->
+        <script src="/static/assets/js/jquery.min.js"></script>
+        <!-- Bootstrap Bundle Min JS -->
+        <script src="/static/assets/js/bootstrap.bundle.min.js"></script>
+        <!-- Meanmenu JS -->
+        <script src="/static/assets/js/meanmenu.min.js"></script>
+        <!-- Owl Carousel JS -->
+        <script src="/static/assets/js/owl.carousel.min.js"></script>
+        <!-- Magnific Popup JS -->
+        <script src="/static/assets/js/jquery.magnific-popup.min.js"></script>
+        <!-- Wow JS -->
+        <script src="/static/assets/js/wow.min.js"></script>
+        <!-- Ajaxchimp Min JS -->
+        <script src="/static/assets/js/jquery.ajaxchimp.min.js"></script>
+        <!-- Form Validator Min JS -->
+        <script src="/static/assets/js/form-validator.min.js"></script>
+        <!-- Contact Form JS -->
+        <script src="/static/assets/js/contact-form-script.js"></script>
+        <!-- Custom JS -->
+        <script src="/static/assets/js/custom.js"></script>
+
+        <!-- Dự đoán ảnh -->
+        <script src="/static/predict/predict_image.js"></script>
+    </body>
+</html>

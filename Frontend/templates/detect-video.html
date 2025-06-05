@@ -1,0 +1,133 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% include ('partials/head.html')%}
+        <style>
+            #videoWrapper {
+                position: relative;
+                display: inline-block;
+                margin: 0 auto;
+            }
+
+            #previewVideo,
+            #uploadCanvas {
+                height: auto;
+                display: block;
+                border-radius: 12px;
+            }
+            #uploadCanvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                pointer-events: none;
+                z-index: 10;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Start Navbar Sidebar Area -->
+        {% include ('partials/narvar_sidebar.html') %}
+        <!-- End Navbar Sidebar Modal -->
+
+        <!-- Client Area for Video Detection -->
+        <div class="client-area ptb-100">
+            <div class="container">
+                <div class="section-title text-center mb-5">
+                    <h2 class="fw-bold" style="color: #0b1e8f">
+                        🎬 Detect Fire in Video
+                    </h2>
+                    <p class="text-muted">
+                        Tải lên một video và hệ thống sẽ phân tích để phát hiện
+                        cháy trong từng khung hình.
+                    </p>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <label
+                            for="videoUpload"
+                            class="btn btn-outline-primary px-4 py-2 fw-semibold mb-3"
+                        >
+                            📁 Chọn video
+                        </label>
+
+                        <input
+                            type="file"
+                            id="videoUpload"
+                            accept="video/*"
+                            style="display: none"
+                        />
+                        <span
+                            id="FileName"
+                            class="text-muted d-block mb-3"
+                        ></span>
+                        <!-- Thêm trong phần col-lg-8 text-center -->
+                        <div class="mb-3">
+                            <label
+                                for="modelSelect"
+                                class="form-label fw-semibold"
+                                >🎯 Chọn mô hình</label
+                            >
+                            <select
+                                id="modelSelect"
+                                class="form-select shadow-sm"
+                                style="max-width: 300px; margin: 0 auto"
+                            >
+                                <option value="">-- Chọn mô hình --</option>
+                            </select>
+                        </div>
+
+                        <div id="videoWrapper">
+                            <video
+                                id="previewVideo"
+                                controls
+                                class="rounded shadow border"
+                            ></video>
+                            <canvas id="uploadCanvas"></canvas>
+                        </div>
+                        <br />
+                        <button
+                            id="detectBtn"
+                            class="btn btn-danger px-4 py-2 fw-semibold shadow"
+                            disabled
+                        >
+                            🔍 Bắt đầu phát hiện
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Client Area End -->
+
+        <!-- Footer Area -->
+        {% include ('partials/footer.html') %}
+        <!-- Footer Area End -->
+
+        <!-- Jquery Min JS -->
+        <script src="/static/assets/js/jquery.min.js"></script>
+        <!-- Bootstrap Bundle Min JS -->
+        <script src="/static/assets/js/bootstrap.bundle.min.js"></script>
+        <!-- Meanmenu JS -->
+        <script src="/static/assets/js/meanmenu.min.js"></script>
+        <!-- Owl Carousel JS -->
+        <script src="/static/assets/js/owl.carousel.min.js"></script>
+        <!-- Magnific Popup JS -->
+        <script src="/static/assets/js/jquery.magnific-popup.min.js"></script>
+        <!-- Wow JS -->
+        <script src="/static/assets/js/wow.min.js"></script>
+        <!-- Ajaxchimp Min JS -->
+        <script src="/static/assets/js/jquery.ajaxchimp.min.js"></script>
+        <!-- Form Validator Min JS -->
+        <script src="/static/assets/js/form-validator.min.js"></script>
+        <!-- Contact Form JS -->
+        <script src="/static/assets/js/contact-form-script.js"></script>
+        <!-- Custom JS -->
+        <script src="/static/assets/js/custom.js"></script>
+
+        <!-- Dự đoán ảnh -->
+        <script src="/static/predict/predict_video.js"></script>
+    </body>
+</html>
