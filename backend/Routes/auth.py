@@ -28,6 +28,7 @@ def get_current_user():
     if 'user_id' in session:
         return jsonify({
             'user_id': session['user_id'],
+            'user_name': session['user_name'],
             'user_email': session['user_email'],
             'role': session['user_role']
         }), 200

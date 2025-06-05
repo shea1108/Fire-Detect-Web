@@ -1,6 +1,11 @@
 <!-- @format -->
 
 <style>
+    i.bx.bx-user,
+    i.bx.bx-log-out {
+        transform: none !important;
+    }
+
     /* Login Button */
     .btn-login {
         background-color: transparent;
@@ -81,7 +86,7 @@
                 >
                     <ul class="navbar-nav m-auto">
                         <li class="nav-item">
-                            <a href="#" class="nav-link active">
+                            <a href="#" class="nav-link">
                                 Home
                                 <i class="bx bxs-chevron-right"></i>
                             </a>
@@ -193,27 +198,48 @@
                             class="dropdown d-none align-items-center"
                             id="user-info"
                         >
-                            <img
-                                src="https://placehold.co/32x32"
-                                class="user-avatar me-2"
-                            />
-
-                            <a
-                                href="#"
-                                class="dropdown-toggle text-dark fw-semibold"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                            >
-                                <span id="user-name">User</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
+                            <ul class="navbar-nav">
+                                <li class="nav-item dropdown">
                                     <a
-                                        class="dropdown-item"
                                         href="#"
-                                        id="btn-logout"
-                                        >Đăng xuất</a
+                                        class="nav-link dropdown-toggle d-flex align-items-center"
+                                        id="userDropdown"
+                                        role="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
                                     >
+                                        <img
+                                            src="https://placehold.co/32x32"
+                                            class="user-avatar me-2"
+                                            alt="Avatar"
+                                        />
+                                        <span id="user-name" class="fw-semibold"
+                                            >User
+                                        </span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li class="nav-item">
+                                            <a
+                                                href="/profile.html"
+                                                class="nav-link"
+                                            >
+                                                <i class="bx bx-user me-2"></i>
+                                                Thông tin cá nhân
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a
+                                                href="#"
+                                                class="nav-link"
+                                                id="btn-logout"
+                                            >
+                                                <i
+                                                    class="bx bx-log-out me-2"
+                                                ></i>
+                                                Đăng xuất
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
                             </ul>
                         </div>
@@ -369,8 +395,7 @@
             } else {
                 authButtons.classList.add('d-none');
                 userInfo.classList.remove('d-none');
-                document.getElementById('user-name').innerText =
-                    data.user_email;
+                document.getElementById('user-name').innerText = data.user_name;
             }
         } catch (err) {
             console.error('Lỗi kiểm tra đăng nhập:', err);

@@ -41,9 +41,10 @@ def login_user(data):
     if user and bcrypt.check_password_hash(user.user_password, password):
         # Lưu vào session
         session['user_id'] = user.user_id
+        session['user_name'] = user.user_name
         session['user_email'] = user.user_email
         session['user_role'] = user.user_role
-
+        session.permanent = True
         return jsonify({
             'message': 'Đăng nhập thành công',
             'user_id': user.user_id,

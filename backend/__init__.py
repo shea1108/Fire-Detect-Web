@@ -17,14 +17,19 @@ from backend.Models.flatforms_model import Platform
 from backend.Models.notifications_model import Notification
 from backend.Models.notification_models_model import NotificationPlatform
 from backend.Models.user_flatform_model import UserPlatform
-
-
+#Session
+from datetime import timedelta  # thêm import
 def create_app():
     load_dotenv()
 
     app = Flask(__name__, template_folder='../frontend/templates', static_folder='../frontend/static')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
     app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+
+    #Session
+    app.permanent_session_lifetime = timedelta(days=7)  # 👉 giữ session 7 ngày
+
+
 
     socketio.init_app(app)
     db.init_app(app)
