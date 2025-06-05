@@ -24,7 +24,7 @@ async function startCamera() {
 
 async function detectFrame(imageData) {
     try {
-        const res = await fetch('/detect-frame', {
+        const res = await fetch('api/predict/frame', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ image: imageData }),

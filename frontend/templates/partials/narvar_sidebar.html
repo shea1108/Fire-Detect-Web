@@ -1,5 +1,52 @@
 <!-- @format -->
 
+<style>
+    /* Login Button */
+    .btn-login {
+        background-color: transparent;
+        color: #ff4e6a;
+        border: 2px solid #ff4e6a;
+        border-radius: 8px;
+        padding: 6px 16px;
+        font-weight: 600;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn-login:hover {
+        background-color: #ff4e6a;
+        color: white;
+    }
+
+    /* Register Button */
+    .btn-register {
+        background-color: #ff4e6a;
+        color: white;
+        border: 2px solid #ff4e6a;
+        border-radius: 8px;
+        padding: 6px 16px;
+        font-weight: 600;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn-register:hover {
+        background-color: #e83e58;
+        border-color: #e83e58;
+        color: white;
+    }
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    /* Khi navbar dính lên (cuộn xuống), đổi màu chữ user-info */
+    .navbar-area.sticky-nav .dropdown-toggle,
+    .navbar-area.sticky-nav .user-avatar {
+        color: white !important;
+        filter: brightness(0) invert(1); /* đảo màu avatar xám nhạt */
+    }
+</style>
+
 <div class="navbar-area">
     <!-- Menu For Mobile Device -->
     <div class="mobile-nav">
@@ -78,18 +125,28 @@
                                         Register
                                     </a>
                                 </li>
+
                                 <li class="nav-item">
-                                    <a href="detect-image.html" class="nav-link">
+                                    <a
+                                        href="detect-image.html"
+                                        class="nav-link"
+                                    >
                                         Detect Picture
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="detect-video.html" class="nav-link">
+                                    <a
+                                        href="detect-video.html"
+                                        class="nav-link"
+                                    >
                                         Detect Video
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="detect-camera.html" class="nav-link">
+                                    <a
+                                        href="detect-camera.html"
+                                        class="nav-link"
+                                    >
                                         Detect Camera
                                     </a>
                                 </li>
@@ -108,148 +165,57 @@
                                         Terms & Conditions
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a
-                                        href="privacy-policy.html"
-                                        class="nav-link"
-                                    >
-                                        Privacy Policy
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        Level 1
-                                        <i class="bx bx-chevron-right"></i>
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li class="nav-item">
-                                            <a href="#" class="nav-link"
-                                                >Level 2</a
-                                            >
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="#" class="nav-link"
-                                                >Level 2</a
-                                            >
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="#" class="nav-link">
-                                                Level 2
-                                                <i
-                                                    class="bx bx-chevron-right"
-                                                ></i>
-                                            </a>
-                                            <ul class="dropdown-menu">
-                                                <li class="nav-item">
-                                                    <a href="#" class="nav-link"
-                                                        >Level 3</a
-                                                    >
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a href="#" class="nav-link"
-                                                        >Level 3</a
-                                                    >
-                                                </li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </li>
                             </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                Services
-                                <i class="bx bxs-chevron-right"></i>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item">
-                                    <a href="services.html" class="nav-link">
-                                        Services
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a
-                                        href="service-details.html"
-                                        class="nav-link"
-                                    >
-                                        Service Details
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="testimonial.html" class="nav-link">
-                                Testimonial
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                Blog
-                                <i class="bx bxs-chevron-right"></i>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item">
-                                    <a href="blog.html" class="nav-link">
-                                        Blog
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a
-                                        href="blog-details.html"
-                                        class="nav-link"
-                                    >
-                                        Blog Details
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="contact.html" class="nav-link">
-                                Contact
-                            </a>
                         </li>
                     </ul>
 
                     <div class="other-side">
-                        <div class="search-area">
-                            <div class="other-option">
-                                <div class="search-item">
-                                    <a href="#" class="search-btn">
-                                        <i class="flaticon-loupe"></i>
-                                    </a>
-                                    <i class="close-btn bx bx-x"></i>
-                                    <div class="search-overlay search-popup">
-                                        <div class="search-box">
-                                            <form class="search-form">
-                                                <input
-                                                    class="search-input"
-                                                    name="search"
-                                                    placeholder="Search"
-                                                    type="text"
-                                                />
-                                                <button
-                                                    class="search-button"
-                                                    type="submit"
-                                                >
-                                                    <i
-                                                        class="flaticon-loupe"
-                                                    ></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div
+                            id="auth-buttons"
+                            class="auth-buttons d-flex align-items-center"
+                        >
+                            <a
+                                href="/sign-in.html"
+                                class="btn btn-login me-2"
+                                id="btn-login"
+                                >Đăng nhập</a
+                            >
+                            <a
+                                href="/sign-up.html"
+                                class="btn btn-register"
+                                id="btn-register"
+                                >Đăng ký</a
+                            >
                         </div>
 
-                        <div class="modal-menu">
+                        <!-- User Info Dropdown (ẩn ban đầu) -->
+                        <div
+                            class="dropdown d-none align-items-center"
+                            id="user-info"
+                        >
+                            <img
+                                src="https://placehold.co/32x32"
+                                class="user-avatar me-2"
+                            />
+
                             <a
                                 href="#"
-                                data-bs-toggle="modal"
-                                data-bs-target="#myModal2"
+                                class="dropdown-toggle text-dark fw-semibold"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
                             >
-                                <i class="flaticon-menu"></i>
+                                <span id="user-name">User</span>
                             </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        id="btn-logout"
+                                        >Đăng xuất</a
+                                    >
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -258,22 +224,6 @@
     </div>
 </div>
 <!-- End Navbar Area -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <!-- Start Sidebar Modal -->
 <div class="sidebar-modal">
@@ -314,7 +264,6 @@
                 </div>
 
                 <div class="modal-body">
-                    
                     <div class="sidebar-modal-widget">
                         <h3 class="title">Additional Links</h3>
                         <ul>
@@ -328,31 +277,34 @@
                                 <a href="faq.html">FAQ</a>
                             </li>
                             <li>
-                                <a href="log-out.html">Logout</a>
+                                <a id="logout-btn">Logout</a>
                             </li>
                         </ul>
                     </div>
-
-                    <!-- <div class="sidebar-modal-widget">
-                        <h3 class="title">Contact Info</h3>
-                        <ul class="contact-info">
-                            <li>
-                                <i class="flaticon-pin"></i>
-                                Address
-                                <span>28/A Street, New York, USA</span>
-                            </li>
-                            <li>
-                                <i class="flaticon-paper-plane"></i>
-                                Email
-                                <span>info@bonsa.com</span>
-                            </li>
-                            <li>
-                                <i class="flaticon-call"></i>
-                                Phone
-                                <span>+1 123 456 7890, +1 123 454 699</span>
-                            </li>
-                        </ul>
-                    </div> -->
+                    <script>
+                        document.getElementById('logout-btn').onclick =
+                            async () => {
+                                try {
+                                    const res = await fetch(
+                                        '/api/auth/logout',
+                                        {
+                                            method: 'POST',
+                                            credentials: 'include', // Bắt buộc để gửi session cookie
+                                        }
+                                    );
+                                    const data = await res.json();
+                                    if (res.ok) {
+                                        alert('Đăng xuất thành công');
+                                        window.location.href = '/'; // Chuyển hướng về trang chủ hoặc login
+                                    } else {
+                                        alert(data.error || 'Lỗi đăng xuất');
+                                    }
+                                } catch (err) {
+                                    console.error(err);
+                                    alert('Lỗi mạng khi đăng xuất');
+                                }
+                            };
+                    </script>
 
                     <div class="sidebar-modal-widget">
                         <h3 class="title">Connect With Us</h3>
@@ -396,3 +348,44 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', async function () {
+        const authButtons = document.getElementById('auth-buttons');
+        const userInfo = document.getElementById('user-info');
+
+        if (!authButtons || !userInfo) return; // Không có các phần tử này thì thoát
+
+        try {
+            const res = await fetch('/api/auth/me', {
+                method: 'GET',
+                credentials: 'include',
+                headers: { Accept: 'application/json' },
+            });
+            const data = await res.json();
+
+            if (!res.ok || data.error) {
+                authButtons.classList.remove('d-none');
+                userInfo.classList.add('d-none');
+            } else {
+                authButtons.classList.add('d-none');
+                userInfo.classList.remove('d-none');
+                document.getElementById('user-name').innerText =
+                    data.user_email;
+            }
+        } catch (err) {
+            console.error('Lỗi kiểm tra đăng nhập:', err);
+        }
+
+        const logoutBtn = document.getElementById('btn-logout');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async function (e) {
+                e.preventDefault();
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include',
+                });
+                window.location.reload();
+            });
+        }
+    });
+</script>

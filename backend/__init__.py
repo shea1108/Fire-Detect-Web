@@ -18,6 +18,7 @@ from backend.Models.notifications_model import Notification
 from backend.Models.notification_models_model import NotificationPlatform
 from backend.Models.user_flatform_model import UserPlatform
 
+
 def create_app():
     load_dotenv()
 
@@ -35,6 +36,9 @@ def create_app():
 
     from backend.Routes import auth, predict, socketio as socket
     from backend.Routes.admin import routes as admin_routes
+
+    from backend.Routes.models import bp as models_bp
+    app.register_blueprint(models_bp)
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(routes.bp)

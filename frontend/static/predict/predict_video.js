@@ -6,10 +6,30 @@ const previewVideo = document.getElementById('previewVideo');
 const uploadCanvas = document.getElementById('uploadCanvas');
 const uploadCtx = uploadCanvas.getContext('2d');
 const detectBtn = document.getElementById('detectBtn');
+const modelSelect = document.getElementById('modelSelect');
+
 let lastBoxes = [];
 let isDetecting = false;
 let scaleX = 1,
     scaleY = 1;
+
+// 🧠 Load models từ API
+fetch('/api/models/get_all')
+    .then((res) => res.json())
+    .then((data) => {
+        if (data.models) {
+            data.models.forEach((model) => {
+                const opt = document.createElement('option');
+                opt.value = model.model_id;
+                opt.textContent = model.model_name;
+                modelSelect.appendChild(opt);
+            });
+
+            const hasDefault = data.models.some((m) => m.model_id == 1);
+            if (hasDefault) modelSelect.value = '1';
+        }
+    })
+    .catch((err) => console.error('Không load được danh sách mô hình:', err));
 
 function updateCanvasSize() {
     const rect = previewVideo.getBoundingClientRect();
@@ -30,13 +50,13 @@ videoUpload.addEventListener('change', () => {
 
     previewVideo.src = URL.createObjectURL(file);
     detectBtn.disabled = false;
+    fileNameSpan.textContent = file.name;
     previewVideo.style.display = 'block';
 
     previewVideo.addEventListener('loadedmetadata', () => {
         previewVideo.style.display = 'block';
         uploadCanvas.style.display = 'block';
 
-        // Set chiều cao tối đa 400px và scale theo tỷ lệ video
         const maxHeight = 400;
         const aspectRatio = previewVideo.videoWidth / previewVideo.videoHeight;
         const displayHeight = Math.min(maxHeight, previewVideo.videoHeight);
@@ -48,18 +68,22 @@ videoUpload.addEventListener('change', () => {
         uploadCanvas.style.height = displayHeight + 'px';
         uploadCanvas.style.width = displayWidth + 'px';
 
-        // Set lại kích thước nội bộ của canvas để vẽ chính xác
         uploadCanvas.width = previewVideo.videoWidth;
         uploadCanvas.height = previewVideo.videoHeight;
     });
 });
 
 async function detectFrame(imageData) {
+    const modelId = modelSelect.value || '1';
+
     try {
-        const res = await fetch('/detect-frame', {
+        const res = await fetch('/api/predict/detect_video_frame', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: imageData }),
+            body: JSON.stringify({
+                image: imageData,
+                model_id: modelId,
+            }),
         });
         const data = await res.json();
         lastBoxes = data.detections || [];

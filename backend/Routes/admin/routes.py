@@ -1,6 +1,7 @@
 ##### backend/Routes/admin/routes.py
 from flask import Blueprint, render_template
 import os
+from backend.decorators.auth_decorators import admin_required
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -10,10 +11,12 @@ TEMPLATE_FOLDER = os.path.join(os.path.dirname(__file__), '../../../frontend/tem
 
 
 @bp.route('/')
+@admin_required
 def dashboard():
     return render_template('admin/index.html')
 
 @bp.route('/<path:page>')
+@admin_required
 def render_admin_page(page):
     # Nếu người dùng đã truyền đầy đủ .html thì giữ nguyên, nếu chưa thì thêm vào
     if not page.endswith('.html'):

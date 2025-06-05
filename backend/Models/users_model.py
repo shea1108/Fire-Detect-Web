@@ -1,5 +1,4 @@
 from backend.extensions import db
-import uuid
 from datetime import datetime
 
 class User(db.Model):
