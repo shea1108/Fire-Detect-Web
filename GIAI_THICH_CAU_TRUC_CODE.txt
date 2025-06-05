@@ -1,6 +1,12 @@
 <!-- @format -->
 chạy fire_detect_db.sql --- đã sửa 
 
+git rm --cached .env
+git rm --cached certs/cert.pem certs/key.pem
+
+
+
+
 CHỈ CẦN RUN ở / 
 
 python app.py
