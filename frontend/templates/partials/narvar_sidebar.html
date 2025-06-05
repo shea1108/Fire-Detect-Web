@@ -177,7 +177,7 @@
                     <div class="other-side">
                         <div
                             id="auth-buttons"
-                            class="auth-buttons d-flex align-items-center"
+                            class="auth-buttons d-none d-flex align-items-center"
                         >
                             <a
                                 href="/sign-in.html"
@@ -251,135 +251,12 @@
 </div>
 <!-- End Navbar Area -->
 
-<!-- Start Sidebar Modal -->
-<div class="sidebar-modal">
-    <div
-        class="modal right fade"
-        id="myModal2"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="myModalLabel2"
-    >
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button
-                        type="button"
-                        class="close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                    >
-                        <span aria-hidden="true">
-                            <i class="bx bx-x"></i>
-                        </span>
-                    </button>
-                    <h2 class="modal-title" id="myModalLabel2">
-                        <a href="index.html">
-                            <img
-                                src="/static/assets/img/logo.png"
-                                class="modal-logo1"
-                                alt="Logo"
-                            />
-                            <img
-                                src="/static/assets/img/sticky-logo.png"
-                                class="modal-logo2"
-                                alt="Logo"
-                            />
-                        </a>
-                    </h2>
-                </div>
-
-                <div class="modal-body">
-                    <div class="sidebar-modal-widget">
-                        <h3 class="title">Additional Links</h3>
-                        <ul>
-                            <li>
-                                <a href="sign-in.html">Sign In</a>
-                            </li>
-                            <li>
-                                <a href="sign-up.html">Sign Up</a>
-                            </li>
-                            <li>
-                                <a href="faq.html">FAQ</a>
-                            </li>
-                            <li>
-                                <a id="logout-btn">Logout</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <script>
-                        document.getElementById('logout-btn').onclick =
-                            async () => {
-                                try {
-                                    const res = await fetch(
-                                        '/api/auth/logout',
-                                        {
-                                            method: 'POST',
-                                            credentials: 'include', // Bắt buộc để gửi session cookie
-                                        }
-                                    );
-                                    const data = await res.json();
-                                    if (res.ok) {
-                                        alert('Đăng xuất thành công');
-                                        window.location.href = '/'; // Chuyển hướng về trang chủ hoặc login
-                                    } else {
-                                        alert(data.error || 'Lỗi đăng xuất');
-                                    }
-                                } catch (err) {
-                                    console.error(err);
-                                    alert('Lỗi mạng khi đăng xuất');
-                                }
-                            };
-                    </script>
-
-                    <div class="sidebar-modal-widget">
-                        <h3 class="title">Connect With Us</h3>
-                        <ul class="social-list">
-                            <li>
-                                <a
-                                    href="https://www.facebook.com/"
-                                    target="_blank"
-                                >
-                                    <i class="bx bxl-facebook"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="https://twitter.com/i/flow/login"
-                                    target="_blank"
-                                >
-                                    <i class="bx bxl-twitter"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="https://www.youtube.com/"
-                                    target="_blank"
-                                >
-                                    <i class="bx bxl-youtube"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="https://www.instagram.com/accounts/login/"
-                                    target="_blank"
-                                >
-                                    <i class="bx bxl-instagram"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <script>
     document.addEventListener('DOMContentLoaded', async function () {
         const authButtons = document.getElementById('auth-buttons');
         const userInfo = document.getElementById('user-info');
 
-        if (!authButtons || !userInfo) return; // Không có các phần tử này thì thoát
+        if (!authButtons || !userInfo) return;
 
         try {
             const res = await fetch('/api/auth/me', {
@@ -399,6 +276,9 @@
             }
         } catch (err) {
             console.error('Lỗi kiểm tra đăng nhập:', err);
+            // Trong trường hợp lỗi, fallback:
+            authButtons.classList.remove('d-none');
+            userInfo.classList.add('d-none');
         }
 
         const logoutBtn = document.getElementById('btn-logout');
