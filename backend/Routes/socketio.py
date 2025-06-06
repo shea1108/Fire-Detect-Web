@@ -133,11 +133,7 @@ def _save_image_and_get_path(image_data_or_pil, dev_id):
             f.write(image_data_or_pil)
     return filepath
 
-def _save_detection_log(dev_id, model_id, image_path, detections, cooldown_seconds=5):
-    """
-    Lưu một bản ghi Log và nhiều bản ghi LogBbox tương ứng.
-    'detections' là một list các tuple/dict chứa bbox và confidence.
-    """
+def _save_detection_log(dev_id, model_id, orig_image, bbox_image, detections, cooldown_seconds=5):
     if not isinstance(dev_id, int): return False
     now = time.time()
     if now - last_log_times.get(dev_id, 0) < cooldown_seconds:
@@ -145,45 +141,54 @@ def _save_detection_log(dev_id, model_id, image_path, detections, cooldown_secon
         return False
 
     try:
-        # 1. Tạo bản ghi Log chính (không có confidence)
-        new_log = Log(
-            dev_id=dev_id,
-            model_id=model_id,
-            log_image_path=image_path
-        )
+        # 1. Tạo bản ghi log sơ bộ (chưa có path ảnh)
+        new_log = Log(dev_id=dev_id, model_id=model_id)
         db.session.add(new_log)
-        # Flush để lấy log_id cho các bbox sắp tới
-        db.session.flush()
+        db.session.flush()  # Lấy log_id
 
-        # 2. Lặp qua các phát hiện và tạo các bản ghi LogBbox
-        for detection in detections:
-            # Giả sử detection là dict {'bbox': [x1,y1,x2,y2], 'confidence': score}
-            bbox = detection.get('bbox')
-            confidence = detection.get('confidence')
-            
+        log_id = new_log.log_id
+        save_dir = os.path.join('static', 'log_images', str(dev_id))
+        os.makedirs(save_dir, exist_ok=True)
+
+        # 2. Tạo tên file theo định dạng yêu cầu
+        origin_filename = f"{log_id}_origin_model{model_id}_dev{dev_id}.jpg"
+        bbox_filename   = f"{log_id}_bbox_model{model_id}_dev{dev_id}.jpg"
+
+        origin_path = os.path.join(save_dir, origin_filename)
+        bbox_path = os.path.join(save_dir, bbox_filename)
+
+        # 3. Lưu cả 2 ảnh
+        orig_image.save(origin_path)
+        bbox_image.save(bbox_path)
+
+        # 4. Cập nhật lại log_image_path
+        new_log.log_image_path = origin_path
+
+        # 5. Lưu các bbox
+        for det in detections:
+            bbox = det.get('bbox')
+            confidence = det.get('confidence')
             if not bbox or confidence is None: continue
-
             x1, y1, x2, y2 = bbox
             width = x2 - x1
             height = y2 - y1
-            
-            new_bbox = LogBbox(
-                log_id=new_log.log_id, # Sử dụng ID từ log vừa tạo
+
+            db.session.add(LogBbox(
+                log_id=log_id,
                 confidence=float(confidence),
-                x_center=x1 + width / 2.0,
-                y_center=y1 + height / 2.0,
+                x_center=x1 + width / 2,
+                y_center=y1 + height / 2,
                 width=width,
                 height=height
-            )
-            db.session.add(new_bbox)
-        
+            ))
+
         db.session.commit()
         last_log_times[dev_id] = now
-        logger.info(f"🔥 FIRE LOGGED | Device: {dev_id} | Saved {len(detections)} bboxes.")
+        logger.info(f"✅ Log {log_id} saved. Images: origin + bbox.")
         return True
     except Exception as e:
         db.session.rollback()
-        logger.error(f"❌ Error saving detection log: {e}")
+        logger.error(f"❌ Error saving log: {e}")
         return False
 
 # ==============================================================================
@@ -322,7 +327,10 @@ def register_socketio(socketio):
                 
                 # === PHẦN MỚI: VẼ BOUNDING BOX LÊN ẢNH TRƯỚC KHI LƯU ===
                 # Tạo một đối tượng có thể vẽ lên ảnh
-                draw = ImageDraw.Draw(image)
+                image_origin = Image.open(io.BytesIO(image_data)).convert('RGB')
+                bbox_image = image_origin.copy()
+                draw = ImageDraw.Draw(bbox_image)  # ✅ vẽ trực tiếp lên bbox_image
+
                 try:
                     # Thử tải một font chữ cụ thể, nếu không có thì dùng font mặc định
                     font = ImageFont.truetype("arial.ttf", 15)
@@ -348,7 +356,9 @@ def register_socketio(socketio):
                 log_img_path = _save_image_and_get_path(image, device.dev_id)
                 
                 # Hàm lưu log vào CSDL không thay đổi
-                _save_detection_log(device.dev_id, int(model_id), log_img_path, fire_detections)
+                _save_detection_log(dev_id=device.dev_id, model_id=int(model_id),
+                    orig_image=image_origin, bbox_image=bbox_image,
+                    detections=fire_detections)
 
             # --- Phần 4: Gửi kết quả và cập nhật hiệu năng (giữ nguyên) ---
             perf_monitor.update(len(detections))
