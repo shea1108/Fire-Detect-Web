@@ -6,7 +6,7 @@ from backend.Controllers.model_controller import (
 
 bp = Blueprint('models', __name__, url_prefix='/api/models')
 
-@bp.route('/', methods=['GET'])
+@bp.route('/get_all', methods=['GET'])
 def get_models():
     try:
         return get_all_models()

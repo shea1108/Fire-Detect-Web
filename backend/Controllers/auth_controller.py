@@ -1,6 +1,6 @@
 from backend.Models.users_model import User
 from backend.extensions import db, bcrypt  
-from flask import jsonify
+from flask import jsonify, session
 
 
 
@@ -39,6 +39,12 @@ def login_user(data):
 
     user = User.query.filter_by(user_email=email).first()
     if user and bcrypt.check_password_hash(user.user_password, password):
+        # Lưu vào session
+        session['user_id'] = user.user_id
+        session['user_name'] = user.user_name
+        session['user_email'] = user.user_email
+        session['user_role'] = user.user_role
+        session.permanent = True
         return jsonify({
             'message': 'Đăng nhập thành công',
             'user_id': user.user_id,

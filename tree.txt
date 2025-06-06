@@ -13,39 +13,60 @@ D:.
 |   socketio_good.py
 |   tapeli-responsive-bootstrap-5-admin-ui-kit-2024-10-11-11-18-38-utc.zip
 |   tree.txt
-|   [nerver_use]_yolo_infer.py
 |   
 +---backend
 |   |   config.py
 |   |   extensions.py
+|   |   manager.py
 |   |   __init__.py
 |   |   
 |   +---Controllers
 |   |   |   auth_controller.py
+|   |   |   device_controller.py
+|   |   |   log_controller.py
+|   |   |   model_controller.py
 |   |   |   
 |   |   \---__pycache__
 |   |           auth_controller.cpython-39.pyc
+|   |           model_controller.cpython-39.pyc
 |   |           
-|   +---Models
-|   |   |   devices.py
-|   |   |   flatforms.py
-|   |   |   logs.py
-|   |   |   models.py
-|   |   |   notifications.py
-|   |   |   notification_models.py
-|   |   |   users.py
-|   |   |   user_flatform.py
+|   +---decorators
+|   |   |   auth_decorators.py
 |   |   |   
 |   |   \---__pycache__
+|   |           auth_decorators.cpython-39.pyc
+|   |           
+|   +---Models
+|   |   |   devices_model.py
+|   |   |   flatforms_model.py
+|   |   |   logs_model.py
+|   |   |   models_model.py
+|   |   |   notifications_model.py
+|   |   |   notification_models_model.py
+|   |   |   users_model.py
+|   |   |   user_flatform_model.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           devices_model.cpython-39.pyc
+|   |           flatforms_model.cpython-39.pyc
+|   |           logs_model.cpython-39.pyc
+|   |           models_model.cpython-39.pyc
+|   |           notifications_model.cpython-39.pyc
+|   |           notification_models_model.cpython-39.pyc
 |   |           UserModel.cpython-39.pyc
+|   |           users.cpython-39.pyc
 |   |           users_model.cpython-39.pyc
+|   |           user_flatform_model.cpython-39.pyc
+|   |           __init__.cpython-39.pyc
 |   |           
 |   +---Routes
 |   |   |   auth.py
+|   |   |   device.py
+|   |   |   models.py
 |   |   |   predict.py
 |   |   |   routes.py
 |   |   |   socketio.py
-|   |   |   socketio2.py
 |   |   |   
 |   |   +---admin
 |   |   |   |   routes.py
@@ -55,6 +76,7 @@ D:.
 |   |   |           
 |   |   \---__pycache__
 |   |           auth.cpython-39.pyc
+|   |           models.cpython-39.pyc
 |   |           predict.cpython-39.pyc
 |   |           routes.cpython-312.pyc
 |   |           routes.cpython-39.pyc
@@ -64,17 +86,17 @@ D:.
 |   \---__pycache__
 |           extensions.cpython-312.pyc
 |           extensions.cpython-39.pyc
+|           manager.cpython-39.pyc
 |           __init__.cpython-312.pyc
 |           __init__.cpython-39.pyc
 |           
++---certs
+|       cert.pem
+|       key.pem
+|       
 +---frontend
 |   +---static
-|   |   |   index.css
-|   |   |   login.css
-|   |   |   style.css
-|   |   |   style1.css
-|   |   |   style2.css
-|   |   |   test.css
+|   |   |   styleofcamera.css
 |   |   |   
 |   |   +---admin
 |   |   |   \---assets
@@ -1694,20 +1716,17 @@ D:.
 |   |   |   |           t5.png
 |   |   |   |           t6.png
 |   |   |   |           
-|   |   |   +---js
-|   |   |   |       bootstrap.bundle.min.js
-|   |   |   |       contact-form-script.js
-|   |   |   |       custom.js
-|   |   |   |       form-validator.min.js
-|   |   |   |       jquery.ajaxchimp.min.js
-|   |   |   |       jquery.magnific-popup.min.js
-|   |   |   |       jquery.min.js
-|   |   |   |       meanmenu.min.js
-|   |   |   |       owl.carousel.min.js
-|   |   |   |       wow.min.js
-|   |   |   |       
-|   |   |   \---php
-|   |   |           form-process.php
+|   |   |   \---js
+|   |   |           bootstrap.bundle.min.js
+|   |   |           contact-form-script.js
+|   |   |           custom.js
+|   |   |           form-validator.min.js
+|   |   |           jquery.ajaxchimp.min.js
+|   |   |           jquery.magnific-popup.min.js
+|   |   |           jquery.min.js
+|   |   |           meanmenu.min.js
+|   |   |           owl.carousel.min.js
+|   |   |           wow.min.js
 |   |   |           
 |   |   \---predict
 |   |           predict_camera.js
@@ -1715,6 +1734,8 @@ D:.
 |   |           predict_video.js
 |   |           
 |   +---templates
+|   |   |   401.html
+|   |   |   403.html
 |   |   |   404.html
 |   |   |   about.html
 |   |   |   blog-details.html
@@ -1723,22 +1744,16 @@ D:.
 |   |   |   detect-camera.html
 |   |   |   detect-image.html
 |   |   |   detect-video.html
-|   |   |   detectcamera.html
-|   |   |   detectpicture.html
-|   |   |   detectvideo.html
 |   |   |   faq.html
 |   |   |   fix_fe_assets.py
-|   |   |   index-new.html
 |   |   |   index-three.html
 |   |   |   index-two.html
 |   |   |   index.html
-|   |   |   Login.html
 |   |   |   members.html
 |   |   |   portfolio.html
 |   |   |   pricing.html
 |   |   |   privacy-policy.html
 |   |   |   recover-password.html
-|   |   |   register.html
 |   |   |   service-details.html
 |   |   |   services.html
 |   |   |   sign-in.html
@@ -1860,7 +1875,7 @@ D:.
 |           
 \---Yolo
         23.5_yolov8m_caithien_v2.pt
-        24.5_fire_detect_improve_v4.pt
-        29.5_v4_caitien.pt
         best.pt
+        best1.pt
+        best2.pt
         

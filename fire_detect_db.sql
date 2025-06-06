@@ -1,3 +1,4 @@
+
 DROP TABLE IF EXISTS NOTIFICATION_PLATFORMs;
 DROP TABLE IF EXISTS USER_PLATFORMs;
 DROP TABLE IF EXISTS NOTIFICATIONs;
@@ -6,6 +7,7 @@ DROP TABLE IF EXISTS MODELs;
 DROP TABLE IF EXISTS PLATFORMs;
 DROP TABLE IF EXISTS DEVICEs;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS log_bboxes;
 
 -- TABLE: users  
 CREATE TABLE users (
@@ -14,7 +16,7 @@ CREATE TABLE users (
     user_password   VARCHAR(255) NOT NULL,
     user_role       VARCHAR(20)  NOT NULL,
     user_email      VARCHAR(100) UNIQUE NOT NULL,
-    user_phone_num  VARCHAR(10),
+    user_phone_num  VARCHAR(10) UNIQUE,
     user_status     BOOLEAN      NOT NULL,
     user_create_at  TIMESTAMP    NOT NULL DEFAULT NOW()
 );
@@ -46,15 +48,27 @@ CREATE TABLE models (
 -- TABLE: logs
 CREATE TABLE logs (
     log_id              SERIAL PRIMARY KEY,
-    dev_id              INT NOT NULL,
+    dev_id              INT,
     model_id            INT NOT NULL,
-    log_fire_confidence FLOAT CHECK (log_fire_confidence BETWEEN 0 AND 1),
     log_image_path      VARCHAR(255),
     log_create_at       TIMESTAMP    NOT NULL DEFAULT NOW(),
     FOREIGN KEY (dev_id)   REFERENCES devices(dev_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (model_id) REFERENCES models(model_id)
         ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- TABLE: log_bboxes
+CREATE TABLE log_bboxes (
+    bbox_id SERIAL PRIMARY KEY,
+    log_id INTEGER REFERENCES logs(log_id),
+	confidence FLOAT CHECK (confidence BETWEEN 0 AND 1),
+    x_center FLOAT,
+    y_center FLOAT,
+    width FLOAT,
+    height FLOAT,
+	FOREIGN KEY (log_id) REFERENCES logs(log_id)
+    	ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- TABLE: platforms
@@ -110,3 +124,14 @@ INSERT INTO models (model_name, model_path, model_config, model_status) VALUES
 ('Fire_Detect 1.3', 'Yolo/best.pt', '{}', TRUE),
 ('Fire_Detect 1.2', 'Yolo/best1.pt', '{}', TRUE),
 ('Fire_Detect 1.1', 'Yolo/best2.pt', '{}', TRUE);
+
+
+INSERT INTO logs (model_id, log_image_path)
+VALUES (1, 'logs/test_image.jpg');
+
+INSERT INTO notifications (log_id, noti_title, noti_message, noti_is_receive)
+VALUES (3, 'Cảnh báo khẩn cấp', 'Phát hiện lửa tại thiết bị 1.', FALSE);
+
+INSERT INTO platforms (plat_id, plat_name, plat_endpoint)
+VALUES (1, 'Email', NULL);
+

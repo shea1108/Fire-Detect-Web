@@ -52,6 +52,7 @@
                         >
                             📁 Chọn video
                         </label>
+
                         <input
                             type="file"
                             id="videoUpload"
@@ -62,6 +63,21 @@
                             id="FileName"
                             class="text-muted d-block mb-3"
                         ></span>
+                        <!-- Thêm trong phần col-lg-8 text-center -->
+                        <div class="mb-3">
+                            <label
+                                for="modelSelect"
+                                class="form-label fw-semibold"
+                                >🎯 Chọn mô hình</label
+                            >
+                            <select
+                                id="modelSelect"
+                                class="form-select shadow-sm"
+                                style="max-width: 300px; margin: 0 auto"
+                            >
+                                <option value="">-- Chọn mô hình --</option>
+                            </select>
+                        </div>
 
                         <div id="videoWrapper">
                             <video
