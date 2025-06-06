@@ -1,8 +1,12 @@
 <!-- @format -->
 chạy fire_detect_db.sql --- đã sửa 
 
+
+
+Get-ChildItem -Recurse -Include *.pyc | Remove-Item
 git rm --cached .env
 git rm --cached certs/cert.pem certs/key.pem
+
 
 
 

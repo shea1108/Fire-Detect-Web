@@ -11,14 +11,19 @@ import uuid
 
 import numpy as np
 import torch
+
 from backend.Models import Log, db
 from backend.Models.devices_model import Device
 from backend.Models.models_model import Model as ModelDB
+from backend.Models.logbboxs_model import  db, LogBbox
+
+
 from flask import request
 from flask_socketio import emit
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from ultralytics import YOLO
-from backend.manager import model_manager
+
+from backend.manager import model_manager # Giả sử bạn import từ đây
 
 
 # Cấu hình logging để theo dõi hoạt động
@@ -69,6 +74,7 @@ class ModelManager:
             logger.error(f"❌ Failed to load YOLO model from '{model_path}': {e}")
             return None
 
+# Khởi tạo một thực thể duy nhất của ModelManager
 model_manager = ModelManager()
 
 
@@ -106,22 +112,79 @@ class PerformanceMonitor:
 perf_monitor = PerformanceMonitor()
 last_log_times = {}
 
-def save_fire_log(dev_id, model_id, confidence, image_path, cooldown_seconds=5):
+# --- CÁC HÀM TIỆN ÍCH MỚI ĐỂ TRÁNH LẶP CODE ---
+def _get_device_from_hardware_id(hw_id):
+    """Lấy thông tin thiết bị từ DB bằng hardware ID của nó."""
+    if not hw_id:
+        return None
+    return Device.query.filter_by(dev_hardware_id=hw_id).first()
+
+def _save_image_and_get_path(image_data_or_pil, dev_id):
+    """Lưu ảnh (bytes hoặc PIL Image) và trả về đường dẫn tệp."""
+    save_dir = os.path.join('static', 'log_images', str(dev_id))
+    os.makedirs(save_dir, exist_ok=True)
+    filename = f"capture_{uuid.uuid4().hex}.jpg"
+    filepath = os.path.join(save_dir, filename)
+
+    if isinstance(image_data_or_pil, Image.Image):
+        image_data_or_pil.save(filepath)
+    else: # Giả sử là bytes
+        with open(filepath, 'wb') as f:
+            f.write(image_data_or_pil)
+    return filepath
+
+def _save_detection_log(dev_id, model_id, image_path, detections, cooldown_seconds=5):
+    """
+    Lưu một bản ghi Log và nhiều bản ghi LogBbox tương ứng.
+    'detections' là một list các tuple/dict chứa bbox và confidence.
+    """
     if not isinstance(dev_id, int): return False
     now = time.time()
-    if now - last_log_times.get(dev_id, 0) < cooldown_seconds: return False
+    if now - last_log_times.get(dev_id, 0) < cooldown_seconds:
+        logger.info(f"Log skipped for device {dev_id} due to cooldown.")
+        return False
+
     try:
-        new_log = Log(dev_id=dev_id, model_id=model_id, log_fire_confidence=confidence, log_image_path=image_path)
+        # 1. Tạo bản ghi Log chính (không có confidence)
+        new_log = Log(
+            dev_id=dev_id,
+            model_id=model_id,
+            log_image_path=image_path
+        )
         db.session.add(new_log)
+        # Flush để lấy log_id cho các bbox sắp tới
+        db.session.flush()
+
+        # 2. Lặp qua các phát hiện và tạo các bản ghi LogBbox
+        for detection in detections:
+            # Giả sử detection là dict {'bbox': [x1,y1,x2,y2], 'confidence': score}
+            bbox = detection.get('bbox')
+            confidence = detection.get('confidence')
+            
+            if not bbox or confidence is None: continue
+
+            x1, y1, x2, y2 = bbox
+            width = x2 - x1
+            height = y2 - y1
+            
+            new_bbox = LogBbox(
+                log_id=new_log.log_id, # Sử dụng ID từ log vừa tạo
+                confidence=float(confidence),
+                x_center=x1 + width / 2.0,
+                y_center=y1 + height / 2.0,
+                width=width,
+                height=height
+            )
+            db.session.add(new_bbox)
+        
         db.session.commit()
         last_log_times[dev_id] = now
-        logger.info(f"🔥 FIRE LOGGED | Device: {dev_id} | Model: {model_id} | Confidence: {confidence:.2f}")
+        logger.info(f"🔥 FIRE LOGGED | Device: {dev_id} | Saved {len(detections)} bboxes.")
         return True
     except Exception as e:
         db.session.rollback()
-        logger.error(f"❌ Error saving fire log: {e}")
+        logger.error(f"❌ Error saving detection log: {e}")
         return False
-
 
 # ==============================================================================
 # PHẦN 4: ĐĂNG KÝ CÁC SỰ KIỆN SOCKET.IO
@@ -148,12 +211,10 @@ def register_socketio(socketio):
             logger.error(f"❌ Failed to get models from database: {e}")
             emit('models_list', {'status': 'error', 'message': str(e)}, room=request.sid)
 
-
     @socketio.on('save_device')
     def handle_save_device(data):
         dev_name = data.get('dev_name')
         user_id = data.get('user_id')
-        # Sửa lại key để khớp với frontend
         client_hardware_id = data.get('dev_hardware_id') 
 
         if not all([dev_name, user_id, client_hardware_id]):
@@ -162,18 +223,17 @@ def register_socketio(socketio):
             return
             
         try:
-            device = Device.query.filter_by(dev_hardware_id=client_hardware_id).first()
+            # SỬ DỤNG HÀM TIỆN ÍCH
+            device = _get_device_from_hardware_id(client_hardware_id)
             if device:
-                # Nếu thiết bị đã tồn tại, cập nhật tên
                 device.dev_name = dev_name
                 db.session.add(device)
                 dev_id_to_return = device.dev_id
                 logger.info(f"Device updated: HW ID '{client_hardware_id}' -> DB ID {dev_id_to_return}")
             else:
-                # Nếu chưa có, tạo mới
                 new_device = Device(user_id=user_id, dev_name=dev_name, dev_status=True, dev_hardware_id=client_hardware_id)
                 db.session.add(new_device)
-                db.session.flush() # Lấy id trước khi commit
+                db.session.flush()
                 dev_id_to_return = new_device.dev_id
                 logger.info(f"New device created: HW ID '{client_hardware_id}' -> DB ID {dev_id_to_return}")
 
@@ -184,10 +244,10 @@ def register_socketio(socketio):
             logger.error(f"Database error on save_device: {e}")
             emit('save_device_response', {'status': 'error', 'message': f'Database error: {e}'}, room=request.sid)
 
-
     @socketio.on('save_log')
     def handle_save_log(data):
-        # --- LOGIC ĐƯỢC PHỤC HỒI ---
+        # LƯU Ý: Handler này được giữ lại để tương thích ngược. Logic chính để lưu log
+        # giờ đây nằm trong 'handle_frame' để backend chủ động quyết định việc lưu.
         try:
             parsed_data = json.loads(data) if isinstance(data, str) else data
             confidence = parsed_data.get('confidence')
@@ -199,18 +259,14 @@ def register_socketio(socketio):
                 emit('save_log_response', {'status': 'error', 'message': 'Missing data'}, room=request.sid)
                 return
 
-            device = Device.query.filter_by(dev_hardware_id=client_hardware_id).first()
+            device = _get_device_from_hardware_id(client_hardware_id)
             if not device:
                 emit('save_log_response', {'status': 'error', 'message': f"Device not found"}, room=request.sid)
                 return
             
             image_data = base64.b64decode(base64_image.split(',', 1)[1])
-            save_dir = os.path.join('static', 'log_images', str(device.dev_id))
-            os.makedirs(save_dir, exist_ok=True)
-            filename = f"log_{uuid.uuid4().hex}.jpg"
-            filepath = os.path.join(save_dir, filename)
-            with open(filepath, 'wb') as f:
-                f.write(image_data)
+            # SỬ DỤNG HÀM TIỆN ÍCH
+            filepath = _save_image_and_get_path(image_data, device.dev_id)
             
             if save_fire_log(device.dev_id, model_id, float(confidence), filepath):
                 emit('save_log_response', {'status': 'success', 'message': 'Log saved'}, room=request.sid)
@@ -226,46 +282,78 @@ def register_socketio(socketio):
     @socketio.on('frame')
     def handle_frame(data):
         try:
+            # --- Phần 1: Lấy dữ liệu và khởi tạo (giữ nguyên) ---
             parsed_data = json.loads(data) if isinstance(data, str) else data
             image_b64 = parsed_data.get('image')
-            client_hardware_id = parsed_data.get('dev_id', 'unknown_device')
-            model_id = int(parsed_data.get('model_id', 1))
             if not image_b64: return
+            client_hardware_id = parsed_data.get('dev_id')
+            model_id = parsed_data.get('model_id')
 
             current_model = model_manager.get_model(model_id)
             if not current_model:
-                emit('error', {'message': f'Server could not load model ID {model_id}.'}, room=request.sid)
+                emit('error', {'message': f'Server could not load model ID {model_id}.'})
                 return
-                
-            device = Device.query.filter_by(dev_hardware_id=client_hardware_id).first()
+            
+            device = _get_device_from_hardware_id(client_hardware_id)
             if not device: return
 
+            # --- Phần 2: Xử lý ảnh và nhận diện (giữ nguyên) ---
             image_data = base64.b64decode(image_b64.split(',', 1)[1])
             image = Image.open(io.BytesIO(image_data)).convert('RGB')
             
             results = current_model(image, conf=0.25, iou=0.45, verbose=False)
             detections = []
-            
+            fire_detections = []
+
             for result in results:
                 if result.boxes:
                     for box in result.boxes.data.tolist():
                         if len(box) >= 6:
                             x1, y1, x2, y2, score, cls = box
                             label = current_model.names.get(int(cls), 'unknown')
-                            detections.append({'bbox': [x1, y1, x2, y2], 'confidence': score, 'label': label})
+                            detection_data = {'bbox': [x1, y1, x2, y2], 'confidence': score, 'label': label}
+                            detections.append(detection_data)
                             
-                            # --- TÍCH HỢP LẠI VIỆC LƯU LOG KHI PHÁT HIỆN CHÁY ---
                             if label.lower() == 'fire':
-                                # Lưu ảnh tạm thời để lấy đường dẫn
-                                save_dir = os.path.join('static', 'log_images', str(device.dev_id))
-                                os.makedirs(save_dir, exist_ok=True)
-                                log_img_path = os.path.join(save_dir, f"capture_{uuid.uuid4().hex}.jpg")
-                                image.save(log_img_path)
-                                # Gọi hàm lưu log
-                                save_fire_log(device.dev_id, model_id, float(score), log_img_path)
+                                fire_detections.append(detection_data)
 
+            # --- Phần 3: Logic lưu trữ - ĐÂY LÀ NƠI THAY ĐỔI ---
+            if fire_detections:
+                
+                # === PHẦN MỚI: VẼ BOUNDING BOX LÊN ẢNH TRƯỚC KHI LƯU ===
+                # Tạo một đối tượng có thể vẽ lên ảnh
+                draw = ImageDraw.Draw(image)
+                try:
+                    # Thử tải một font chữ cụ thể, nếu không có thì dùng font mặc định
+                    font = ImageFont.truetype("arial.ttf", 15)
+                except IOError:
+                    font = ImageFont.load_default()
+
+                # Lặp qua các phát hiện lửa và vẽ chúng lên ảnh
+                for det in fire_detections:
+                    bbox = det['bbox']
+                    confidence = det['confidence']
+                    
+                    # Vẽ hình chữ nhật
+                    draw.rectangle(bbox, outline="red", width=3)
+                    
+                    # Chuẩn bị và vẽ chữ (confidence score)
+                    text = f"Fire: {(confidence * 100):.1f}%"
+                    text_position = (bbox[0], bbox[1] - 15) # Vị trí ngay trên bounding box
+                    draw.text(text_position, text, fill="red", font=font)
+                # ==========================================================
+
+                # Bây giờ, đối tượng 'image' đã có các bounding box được vẽ lên
+                # Ta truyền tấm ảnh đã được chỉnh sửa này vào hàm lưu file
+                log_img_path = _save_image_and_get_path(image, device.dev_id)
+                
+                # Hàm lưu log vào CSDL không thay đổi
+                _save_detection_log(device.dev_id, int(model_id), log_img_path, fire_detections)
+
+            # --- Phần 4: Gửi kết quả và cập nhật hiệu năng (giữ nguyên) ---
             perf_monitor.update(len(detections))
-            emit('detections', {'detections': detections}, room=request.sid)
+            emit('detections', {'detections': detections})
+            
         except Exception as e:
             logger.error(f"Error in handle_frame: {e}")
-            emit('error', {'message': 'An error occurred on the server.'}, room=request.sid)
+            emit('error', {'message': 'An error occurred on the server.'})

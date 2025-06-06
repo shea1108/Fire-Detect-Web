@@ -12,6 +12,7 @@ from backend.Models.users_model import User
 from backend.Models.devices_model import Device 
 from backend.Models.models_model import Model   
 from backend.Models.logs_model import Log       
+from backend.Models.logbboxs_model import LogBbox   
 
 from backend.Models.flatforms_model import Platform
 from backend.Models.notifications_model import Notification
