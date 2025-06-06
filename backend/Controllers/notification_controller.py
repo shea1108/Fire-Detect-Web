@@ -5,13 +5,12 @@ from backend.Models.notifications_model import Notification
 from backend.Models.notification_models_model import NotificationPlatform
 from datetime import datetime
 
-
 def send_email_notification(noti_id: int, recipient_email: str):
-    if not MAIL_ENABLED:
+    if not current_app.config.get("MAIL_ENABLED", False):
         print("🚫 Gửi email đã bị vô hiệu hóa (MAIL_ENABLED=False).")
         return True, "Gửi email đã bị tắt trong môi trường này."
-    notification = Notification.query.get(noti_id)
 
+    notification = Notification.query.get(noti_id)
     if not notification:
         return False, "Thông báo không tồn tại."
 
@@ -24,19 +23,23 @@ def send_email_notification(noti_id: int, recipient_email: str):
             subject=f"[🔥Cảnh báo] {notification.noti_title}",
             recipients=[recipient_email],
             html=f"""
-            <h3>{notification.noti_title}</h3>
-            <p>{notification.noti_message}</p>
-            <p><i>Gửi lúc: {notification.noti_create_at.strftime('%Y-%m-%d %H:%M:%S')}</i></p>
+                <h3>{notification.noti_title}</h3>
+                <p>{notification.noti_message}</p>
+                <p><i>Gửi lúc: {notification.noti_create_at.strftime('%Y-%m-%d %H:%M:%S')}</i></p>
             """
         )
-
-        # Gửi email
         mail.send(msg)
 
-        # Lưu log vào bảng notification_platforms
+        # 🛡️ Kiểm tra nếu đã có bản ghi, xóa trước để ghi lại
+        existing = NotificationPlatform.query.filter_by(noti_id=noti_id, plat_id=1).first()
+        if existing:
+            db.session.delete(existing)
+            db.session.commit()
+
+        # ✅ Ghi bản ghi mới vào notification_platforms
         record = NotificationPlatform(
             noti_id=noti_id,
-            plat_id=1,  # Giả định 1 là Email
+            plat_id=1,  # Email platform
             np_status=True,
             np_sent_at=datetime.utcnow(),
             np_recipient_address=recipient_email,
@@ -48,6 +51,7 @@ def send_email_notification(noti_id: int, recipient_email: str):
         return True, "Email gửi thành công."
 
     except Exception as e:
+        db.session.rollback()  # 🧯 Quan trọng! Khôi phục session nếu lỗi
         db.session.add(NotificationPlatform(
             noti_id=noti_id,
             plat_id=1,
