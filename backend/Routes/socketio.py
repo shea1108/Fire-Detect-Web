@@ -161,8 +161,9 @@ def _save_detection_log(dev_id, model_id, orig_image, bbox_image, detections, co
         orig_image.save(origin_path)
         bbox_image.save(bbox_path)
 
-        # 4. Cập nhật lại log_image_path
-        new_log.log_image_path = origin_path
+       # 4. Cập nhật lại log_image_path (chuẩn hóa dấu /)
+        new_log.log_image_path = origin_path.replace("\\", "/")
+
 
         # 5. Lưu các bbox
         for det in detections:
@@ -250,9 +251,9 @@ def register_socketio(socketio):
             emit('save_device_response', {'status': 'error', 'message': f'Database error: {e}'}, room=request.sid)
 
     @socketio.on('save_log')
+    @socketio.on('save_log')
     def handle_save_log(data):
-        # LƯU Ý: Handler này được giữ lại để tương thích ngược. Logic chính để lưu log
-        # giờ đây nằm trong 'handle_frame' để backend chủ động quyết định việc lưu.
+        # Lưu log theo kiểu tương thích client cũ (chỉ gửi base64 + confidence)
         try:
             parsed_data = json.loads(data) if isinstance(data, str) else data
             confidence = parsed_data.get('confidence')
@@ -268,18 +269,43 @@ def register_socketio(socketio):
             if not device:
                 emit('save_log_response', {'status': 'error', 'message': f"Device not found"}, room=request.sid)
                 return
-            
+
             image_data = base64.b64decode(base64_image.split(',', 1)[1])
-            # SỬ DỤNG HÀM TIỆN ÍCH
-            filepath = _save_image_and_get_path(image_data, device.dev_id)
-            
-            if save_fire_log(device.dev_id, model_id, float(confidence), filepath):
+            image_origin = Image.open(io.BytesIO(image_data)).convert('RGB')
+            bbox_image = image_origin.copy()
+            draw = ImageDraw.Draw(bbox_image)
+
+            try:
+                font = ImageFont.truetype("arial.ttf", 15)
+            except IOError:
+                font = ImageFont.load_default()
+
+            # Vì client không gửi bbox, ta tạm dùng 1 bbox giả (tuỳ bạn cải tiến sau)
+            dummy_bbox = [50, 50, 200, 200]
+            draw.rectangle(dummy_bbox, outline="red", width=3)
+            draw.text((dummy_bbox[0], dummy_bbox[1] - 15),
+                    f"Fire: {float(confidence) * 100:.1f}%",
+                    fill="red", font=font)
+
+            # Gọi hàm lưu log chính thống
+            success = _save_detection_log(
+                dev_id=device.dev_id,
+                model_id=model_id,
+                orig_image=image_origin,
+                bbox_image=bbox_image,
+                detections=[{'bbox': dummy_bbox, 'confidence': float(confidence)}],
+                cooldown_seconds=2
+            )
+
+            if success:
                 emit('save_log_response', {'status': 'success', 'message': 'Log saved'}, room=request.sid)
             else:
                 emit('save_log_response', {'status': 'info', 'message': 'Log skipped (cooldown)'}, room=request.sid)
+
         except Exception as e:
+            logger.error(f"❌ Error in save_log: {e}")
             emit('save_log_response', {'status': 'error', 'message': str(e)}, room=request.sid)
-    
+
     @socketio.on('get_stats')
     def handle_get_stats():
         emit('stats', perf_monitor.get_stats())
@@ -353,12 +379,12 @@ def register_socketio(socketio):
 
                 # Bây giờ, đối tượng 'image' đã có các bounding box được vẽ lên
                 # Ta truyền tấm ảnh đã được chỉnh sửa này vào hàm lưu file
-                log_img_path = _save_image_and_get_path(image, device.dev_id)
+                # log_img_path = _save_image_and_get_path(image, device.dev_id)
                 
                 # Hàm lưu log vào CSDL không thay đổi
                 _save_detection_log(dev_id=device.dev_id, model_id=int(model_id),
                     orig_image=image_origin, bbox_image=bbox_image,
-                    detections=fire_detections)
+                    detections=fire_detections, cooldown_seconds=2)
 
             # --- Phần 4: Gửi kết quả và cập nhật hiệu năng (giữ nguyên) ---
             perf_monitor.update(len(detections))
