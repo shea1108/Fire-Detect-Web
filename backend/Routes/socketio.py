@@ -278,14 +278,15 @@ def register_socketio(socketio):
     @socketio.on('get_stats')
     def handle_get_stats():
         emit('stats', perf_monitor.get_stats())
-
+    
     @socketio.on('frame')
     def handle_frame(data):
         try:
-            # --- Phần 1: Lấy dữ liệu và khởi tạo (giữ nguyên) ---
+            # --- Phần 1: Lấy dữ liệu và khởi tạo ---
             parsed_data = json.loads(data) if isinstance(data, str) else data
             image_b64 = parsed_data.get('image')
-            if not image_b64: return
+            if not image_b64:
+                return
             client_hardware_id = parsed_data.get('dev_id')
             model_id = parsed_data.get('model_id')
 
@@ -293,14 +294,15 @@ def register_socketio(socketio):
             if not current_model:
                 emit('error', {'message': f'Server could not load model ID {model_id}.'})
                 return
-            
-            device = _get_device_from_hardware_id(client_hardware_id)
-            if not device: return
 
-            # --- Phần 2: Xử lý ảnh và nhận diện (giữ nguyên) ---
+            device = _get_device_from_hardware_id(client_hardware_id)
+            if not device:
+                return
+
+            # --- Phần 2: Xử lý ảnh và nhận diện ---
             image_data = base64.b64decode(image_b64.split(',', 1)[1])
             image = Image.open(io.BytesIO(image_data)).convert('RGB')
-            
+
             results = current_model(image, conf=0.25, iou=0.45, verbose=False)
             detections = []
             fire_detections = []
@@ -313,47 +315,104 @@ def register_socketio(socketio):
                             label = current_model.names.get(int(cls), 'unknown')
                             detection_data = {'bbox': [x1, y1, x2, y2], 'confidence': score, 'label': label}
                             detections.append(detection_data)
-                            
+
                             if label.lower() == 'fire':
                                 fire_detections.append(detection_data)
 
-            # --- Phần 3: Logic lưu trữ - ĐÂY LÀ NƠI THAY ĐỔI ---
+            # --- Phần 3: Logic lưu trữ (KHÔNG lưu ảnh có bbox) ---
             if fire_detections:
-                
-                # === PHẦN MỚI: VẼ BOUNDING BOX LÊN ẢNH TRƯỚC KHI LƯU ===
-                # Tạo một đối tượng có thể vẽ lên ảnh
-                draw = ImageDraw.Draw(image)
-                try:
-                    # Thử tải một font chữ cụ thể, nếu không có thì dùng font mặc định
-                    font = ImageFont.truetype("arial.ttf", 15)
-                except IOError:
-                    font = ImageFont.load_default()
-
-                # Lặp qua các phát hiện lửa và vẽ chúng lên ảnh
-                for det in fire_detections:
-                    bbox = det['bbox']
-                    confidence = det['confidence']
-                    
-                    # Vẽ hình chữ nhật
-                    draw.rectangle(bbox, outline="red", width=3)
-                    
-                    # Chuẩn bị và vẽ chữ (confidence score)
-                    text = f"Fire: {(confidence * 100):.1f}%"
-                    text_position = (bbox[0], bbox[1] - 15) # Vị trí ngay trên bounding box
-                    draw.text(text_position, text, fill="red", font=font)
-                # ==========================================================
-
-                # Bây giờ, đối tượng 'image' đã có các bounding box được vẽ lên
-                # Ta truyền tấm ảnh đã được chỉnh sửa này vào hàm lưu file
+                # 1. Lưu ảnh gốc (không bbox)
                 log_img_path = _save_image_and_get_path(image, device.dev_id)
-                
-                # Hàm lưu log vào CSDL không thay đổi
+
+                # 2. Lưu log vào DB (dùng ảnh gốc)
                 _save_detection_log(device.dev_id, int(model_id), log_img_path, fire_detections)
 
-            # --- Phần 4: Gửi kết quả và cập nhật hiệu năng (giữ nguyên) ---
+            # --- Phần 4: Gửi kết quả và cập nhật hiệu năng ---
             perf_monitor.update(len(detections))
             emit('detections', {'detections': detections})
-            
+
         except Exception as e:
             logger.error(f"Error in handle_frame: {e}")
             emit('error', {'message': 'An error occurred on the server.'})
+
+    # @socketio.on('frame')
+    # def handle_frame(data):
+    #     try:
+    #         # --- Phần 1: Lấy dữ liệu và khởi tạo ---
+    #         parsed_data = json.loads(data) if isinstance(data, str) else data
+    #         image_b64 = parsed_data.get('image')
+    #         if not image_b64:
+    #             return
+    #         client_hardware_id = parsed_data.get('dev_id')
+    #         model_id = parsed_data.get('model_id')
+
+    #         current_model = model_manager.get_model(model_id)
+    #         if not current_model:
+    #             emit('error', {'message': f'Server could not load model ID {model_id}.'})
+    #             return
+
+    #         device = _get_device_from_hardware_id(client_hardware_id)
+    #         if not device:
+    #             return
+
+    #         # --- Phần 2: Xử lý ảnh và nhận diện ---
+    #         image_data = base64.b64decode(image_b64.split(',', 1)[1])
+    #         image = Image.open(io.BytesIO(image_data)).convert('RGB')
+
+    #         results = current_model(image, conf=0.25, iou=0.45, verbose=False)
+    #         detections = []
+    #         fire_detections = []
+
+    #         for result in results:
+    #             if result.boxes:
+    #                 for box in result.boxes.data.tolist():
+    #                     if len(box) >= 6:
+    #                         x1, y1, x2, y2, score, cls = box
+    #                         label = current_model.names.get(int(cls), 'unknown')
+    #                         detection_data = {'bbox': [x1, y1, x2, y2], 'confidence': score, 'label': label}
+    #                         detections.append(detection_data)
+
+    #                         if label.lower() == 'fire':
+    #                             fire_detections.append(detection_data)
+
+    #         # --- Phần 3: Logic lưu trữ & vẽ bbox ---
+    #         if fire_detections:
+    #             # 1. Lưu ảnh gốc (KHÔNG có bbox) để lưu vào DB
+    #             log_img_path = _save_image_and_get_path(image, device.dev_id)
+
+    #             # 2. Vẽ bbox trên bản copy (không ảnh hưởng tới ảnh gốc)
+    #             image_bbox = image.copy()
+    #             draw = ImageDraw.Draw(image_bbox)
+    #             try:
+    #                 font = ImageFont.truetype("arial.ttf", 15)
+    #             except IOError:
+    #                 font = ImageFont.load_default()
+
+    #             for det in fire_detections:
+    #                 bbox = det['bbox']
+    #                 confidence = det['confidence']
+    #                 draw.rectangle(bbox, outline="red", width=3)
+    #                 text = f"Fire: {(confidence * 100):.1f}%"
+    #                 text_position = (bbox[0], bbox[1] - 15)
+    #                 draw.text(text_position, text, fill="red", font=font)
+
+    #             # (Tùy chọn) Lưu ảnh có bbox ra folder 'detected'
+    #             _save_image_and_get_path(image_bbox, device.dev_id)  # Nếu muốn tách folder thì sửa hàm nhận thêm 'detected'
+
+    #             # 3. Lưu log vào DB (với đường dẫn ảnh gốc)
+    #             _save_detection_log(device.dev_id, int(model_id), log_img_path, fire_detections)
+
+    #             # 4. Trả về ảnh có bbox cho client
+    #             buffered = io.BytesIO()
+    #             image_bbox.save(buffered, format="JPEG")
+    #             img_str = base64.b64encode(buffered.getvalue()).decode()
+    #             emit('detection_image', {'image': f"data:image/jpeg;base64,{img_str}"})
+
+    #         # --- Phần 4: Gửi kết quả và cập nhật hiệu năng ---
+    #         perf_monitor.update(len(detections))
+    #         emit('detections', {'detections': detections})
+
+    #     except Exception as e:
+    #         logger.error(f"Error in handle_frame: {e}")
+    #         emit('error', {'message': 'An error occurred on the server.'})
+    
