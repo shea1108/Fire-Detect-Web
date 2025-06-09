@@ -1,0 +1,303 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="zxx">
+    <head>
+        {% include ('partials/head.html')%}
+        <style>
+            .edit-profile-container {
+                background: #f9f9f9;
+                padding: 2rem;
+                border-radius: 1rem;
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+            }
+            .avatar {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+            .bg-light-purple {
+                background-color: #f2ebfb;
+            }
+            .btn-recover {
+                background-color: transparent;
+                color: #ff4e6a;
+                border: 2px solid #ff4e6a;
+                border-radius: 8px;
+                padding: 6px 16px;
+                font-weight: 600;
+                transition: all 0.3s ease-in-out;
+            }
+
+            .btn-recover:hover {
+                background-color: #ff4e6a;
+                color: white;
+            }
+
+            /* Register Button */
+            .btn-edit {
+                background-color: #ff4e6a;
+                color: white;
+                border: 2px solid #ff4e6a;
+                border-radius: 8px;
+                padding: 6px 16px;
+                font-weight: 600;
+                transition: all 0.3s ease-in-out;
+            }
+
+            .btn-edit:hover {
+                background-color: #e83e58;
+                border-color: #e83e58;
+                color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Start Navbar Sidebar Area -->
+        {% include ('partials/narvar_sidebar.html') %}
+        <!-- End Navbar Sidebar Modal -->
+
+        <div class="section-title text-center mb-5">
+            <h2>Thông tin tài khoản</h2>
+        </div>
+
+        <div class="container py-5">
+            <div
+                class="row gy-4 gx-5 edit-profile-container flex-column flex-md-row"
+            >
+                <!-- LEFT: Avatar -->
+                <div
+                    class="col-12 col-md-3 text-center border-end order-1 order-md-1"
+                >
+                    <img
+                        src="/static/assets/img/favicon.png"
+                        alt="Avatar"
+                        class="avatar mb-3"
+                    />
+                    <h5 class="fw-bold">{{ user.user_name }}</h5>
+                    <p class="text-muted small mb-1">{{ user.user_email }}</p>
+                    <p class="text-muted small">Việt Nam</p>
+                </div>
+
+                <!-- CENTER: Edit Form -->
+                <div class="col-12 col-md-6 order-2 order-md-2">
+                    <h5 class="mb-4">Chỉnh sửa thông tin</h5>
+                    <form id="edit-profile-form">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Họ và tên</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    name="user_name"
+                                    value="{{ user.user_name }}"
+                                />
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Số điện thoại</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    name="user_phone_num"
+                                    value="{{ user.user_phone_num or '' }}"
+                                />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input
+                                type="email"
+                                class="form-control"
+                                value="{{ user.user_email }}"
+                            />
+                        </div>
+
+                        <div class="mt-3 d-flex justify-content-center gap-3">
+                            <button type="submit" class="btn-edit">
+                                💾 Lưu tài khoản
+                            </button>
+                            <a
+                                href="/recover-password.html"
+                                class="btn-recover"
+                            >
+                                🔐 Quên mật khẩu
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- RIGHT: Linked Platforms -->
+                <div class="col-12 col-md-3 border-start order-3 order-md-3">
+                    <div
+                        class="d-flex justify-content-between align-items-center mb-3"
+                    >
+                        <h6 class="mb-0">Liên kết nền tảng</h6>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-4 d-flex align-items-start">
+                        <img
+                            src="/static/assets/img/gmail-icon.png"
+                            width="32"
+                            class="me-3 mt-1"
+                            alt="Gmail"
+                        />
+                        <div>
+                            <strong>Email</strong><br />
+                            <small class="text-muted"
+                                >{{ user.user_email }}</small
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Zalo -->
+                    <div
+                        class="mb-4 d-flex align-items-start justify-content-between"
+                    >
+                        <div class="d-flex align-items-start">
+                            <img
+                                src="/static/assets/img/zalo-icon.png"
+                                width="32"
+                                class="me-3 mt-1"
+                                alt="Zalo"
+                            />
+                            <div>
+                                <strong>Zalo</strong><br />
+                                <small class="text-muted">
+                                    {% if user.zalo_linked %} Đã liên kết {%
+                                    else %} Chưa liên kết {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                        {% if not user.zalo_linked %}
+                        <a
+                            href="/link/zalo"
+                            class="btn btn-outline-primary btn-sm mt-1"
+                            >Liên kết</a
+                        >
+                        {% endif %}
+                    </div>
+
+                    <!-- Telegram -->
+                    <div
+                        class="mb-4 d-flex align-items-start justify-content-between"
+                    >
+                        <div class="d-flex align-items-start">
+                            <img
+                                src="/static/assets/img/telegram-icon.png"
+                                width="32"
+                                class="me-3 mt-1"
+                                alt="Telegram"
+                            />
+                            <div>
+                                <strong>Telegram</strong><br />
+                                <small class="text-muted">
+                                    {% if user.telegram_linked %} Đã liên kết {%
+                                    else %} Chưa liên kết {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                        {% if not user.telegram_linked %}
+                        <a
+                            href="/link/telegram"
+                            class="btn btn-outline-primary btn-sm mt-1"
+                            >Liên kết</a
+                        >
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document
+                .getElementById('edit-profile-form')
+                .addEventListener('submit', async function (e) {
+                    e.preventDefault();
+
+                    const user_name =
+                        document.querySelector('[name="user_name"]').value;
+                    const user_phone_num = document.querySelector(
+                        '[name="user_phone_num"]'
+                    ).value;
+
+                    try {
+                        const response = await fetch('/api/user/edit', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ user_name, user_phone_num }),
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Đã cập nhật thành công!',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: true,
+                            });
+                        } else {
+                            let message = data.error || 'Có lỗi xảy ra!';
+                            if (message === 'Email already registered')
+                                message = 'Email đã được đăng ký!';
+                            if (message === 'Phone number already registered')
+                                message = 'Số điện thoại đã được đăng ký!';
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: message,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 2500,
+                                timerProgressBar: true,
+                            });
+                        }
+                    } catch (err) {
+                        console.error('Lỗi:', err);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi hệ thống. Vui lòng thử lại.',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2500,
+                            timerProgressBar: true,
+                        });
+                    }
+                });
+        </script>
+
+        <!-- Footer Area -->
+        {% include ('partials/footer.html') %}
+        <!-- Footer Area End -->
+
+        <!-- Jquery Min JS -->
+        <script src="/static/assets/js/jquery.min.js"></script>
+        <!-- Bootstrap Bundle Min JS -->
+        <script src="/static/assets/js/bootstrap.bundle.min.js"></script>
+        <!-- Meanmenu JS -->
+        <script src="/static/assets/js/meanmenu.min.js"></script>
+        <!-- Owl Carousel JS -->
+        <script src="/static/assets/js/owl.carousel.min.js"></script>
+        <!-- Magnific Popup JS -->
+        <script src="/static/assets/js/jquery.magnific-popup.min.js"></script>
+        <!-- Wow JS -->
+        <script src="/static/assets/js/wow.min.js"></script>
+        <!-- Ajaxchimp Min JS -->
+        <script src="/static/assets/js/jquery.ajaxchimp.min.js"></script>
+        <!-- Form Validator Min JS -->
+        <script src="/static/assets/js/form-validator.min.js"></script>
+        <!-- Contact Form JS -->
+        <script src="/static/assets/js/contact-form-script.js"></script>
+        <!-- Custom JS -->
+        <script src="/static/assets/js/custom.js"></script>
+    </body>
+</html>

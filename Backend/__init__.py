@@ -57,6 +57,8 @@ def create_app():
     from backend.Routes.admin import routes as admin_routes
     from backend.Routes.models import bp as models_bp
     from backend.Routes.notification import bp as notification_bp
+    from backend.Routes.user import user_bp
+
 
     app.register_blueprint(models_bp)
     app.register_blueprint(auth.bp)
@@ -64,6 +66,7 @@ def create_app():
     app.register_blueprint(predict.bp)
     app.register_blueprint(admin_routes.bp)
     app.register_blueprint(notification_bp)
+    app.register_blueprint(user_bp)
     
     socket.register_socketio(socketio)
 
