@@ -20,8 +20,19 @@ def create_app():
     app.permanent_session_lifetime = timedelta(days=7)
 
     # Cấu hình MAIL
+    # Cấu hình MAIL
+    # Load cấu hình mail từ biến môi trường
     MAIL_ENABLED = os.getenv("MAIL_ENABLED", "True") == "True"
     app.config["MAIL_ENABLED"] = MAIL_ENABLED
+    app.config['MAIL_SERVER'] = os.getenv("MAIL_SERVER")
+    app.config['MAIL_PORT'] = int(os.getenv("MAIL_PORT") or 587)
+    app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
+    app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
+    app.config['MAIL_USE_TLS'] = os.getenv("MAIL_USE_TLS", "True") == 'True'
+    app.config['MAIL_USE_SSL'] = os.getenv("MAIL_USE_SSL", "False") == 'True'
+    app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_DEFAULT_SENDER")
+
+    # Kiểm tra và log
     if MAIL_ENABLED:
         if app.config['MAIL_SERVER'] and app.config['MAIL_USERNAME'] and app.config['MAIL_PASSWORD']:
             print("✅ [MAIL] Gửi email đã được BẬT.")
@@ -30,13 +41,6 @@ def create_app():
             print("⚠️ [MAIL] Gửi email BẬT nhưng thiếu thông tin cấu hình. Kiểm tra biến môi trường.")
     else:
         print("🚫 [MAIL] Gửi email đã bị TẮT (MAIL_ENABLED=False).")
-        app.config['MAIL_SERVER'] = os.getenv("MAIL_SERVER")
-        app.config['MAIL_PORT'] = int(os.getenv("MAIL_PORT") or 587)
-        app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
-        app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
-        app.config['MAIL_USE_TLS'] = os.getenv("MAIL_USE_TLS") == 'True'
-        app.config['MAIL_USE_SSL'] = os.getenv("MAIL_USE_SSL") == 'True'
-        app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_DEFAULT_SENDER")
 
 
     db.init_app(app)
