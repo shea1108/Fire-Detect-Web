@@ -42,6 +42,7 @@ def login_user(data):
         # Lưu vào session
         session['user_id'] = user.user_id
         session['user_name'] = user.user_name
+        session['user_phone_num'] = user.user_phone_num  
         session['user_email'] = user.user_email
         session['user_role'] = user.user_role
         session.permanent = True

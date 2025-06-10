@@ -2,6 +2,7 @@ Folder PATH listing for volume IT
 Volume serial number is 20C3-4E62
 D:.
 |   .env
+|   .env.example
 |   .gitignore
 |   app.py
 |   bonsa-seo-marketing-company-html-template-2024-05-18-10-14-09-utc.zip
@@ -13,6 +14,7 @@ D:.
 |   socketio_good.py
 |   tapeli-responsive-bootstrap-5-admin-ui-kit-2024-10-11-11-18-38-utc.zip
 |   tree.txt
+|   yolo_infer.py
 |   
 +---backend
 |   |   config.py
@@ -25,20 +27,18 @@ D:.
 |   |   |   device_controller.py
 |   |   |   log_controller.py
 |   |   |   model_controller.py
+|   |   |   notification_controller.py
+|   |   |   user_controller.py
 |   |   |   
 |   |   \---__pycache__
-|   |           auth_controller.cpython-39.pyc
-|   |           model_controller.cpython-39.pyc
-|   |           
 |   +---decorators
 |   |   |   auth_decorators.py
 |   |   |   
 |   |   \---__pycache__
-|   |           auth_decorators.cpython-39.pyc
-|   |           
 |   +---Models
 |   |   |   devices_model.py
 |   |   |   flatforms_model.py
+|   |   |   logbboxs_model.py
 |   |   |   logs_model.py
 |   |   |   models_model.py
 |   |   |   notifications_model.py
@@ -48,48 +48,26 @@ D:.
 |   |   |   __init__.py
 |   |   |   
 |   |   \---__pycache__
-|   |           devices_model.cpython-39.pyc
-|   |           flatforms_model.cpython-39.pyc
-|   |           logs_model.cpython-39.pyc
-|   |           models_model.cpython-39.pyc
-|   |           notifications_model.cpython-39.pyc
-|   |           notification_models_model.cpython-39.pyc
-|   |           UserModel.cpython-39.pyc
-|   |           users.cpython-39.pyc
-|   |           users_model.cpython-39.pyc
-|   |           user_flatform_model.cpython-39.pyc
-|   |           __init__.cpython-39.pyc
-|   |           
 |   +---Routes
 |   |   |   auth.py
 |   |   |   device.py
 |   |   |   models.py
+|   |   |   notification.py
 |   |   |   predict.py
 |   |   |   routes.py
 |   |   |   socketio.py
+|   |   |   user.py
 |   |   |   
 |   |   +---admin
 |   |   |   |   routes.py
 |   |   |   |   
 |   |   |   \---__pycache__
-|   |   |           routes.cpython-39.pyc
-|   |   |           
 |   |   \---__pycache__
-|   |           auth.cpython-39.pyc
-|   |           models.cpython-39.pyc
-|   |           predict.cpython-39.pyc
-|   |           routes.cpython-312.pyc
-|   |           routes.cpython-39.pyc
-|   |           socketio.cpython-39.pyc
-|   |           web.cpython-39.pyc
-|   |           
+|   +---utils
+|   |   |   auth_utils.py
+|   |   |   
+|   |   \---__pycache__
 |   \---__pycache__
-|           extensions.cpython-312.pyc
-|           extensions.cpython-39.pyc
-|           manager.cpython-39.pyc
-|           __init__.cpython-312.pyc
-|           __init__.cpython-39.pyc
-|           
 +---certs
 |       cert.pem
 |       key.pem
@@ -1594,12 +1572,15 @@ D:.
 |   |   |   |   |   favicon.png
 |   |   |   |   |   footer-logo-2.png
 |   |   |   |   |   footer-logo.png
+|   |   |   |   |   gmail-icon.png
 |   |   |   |   |   home1.png
 |   |   |   |   |   home3.jpg
 |   |   |   |   |   logo.png
 |   |   |   |   |   night.png
 |   |   |   |   |   sticky-logo.png
 |   |   |   |   |   sunny.png
+|   |   |   |   |   telegram-icon.png
+|   |   |   |   |   zalo-icon.png
 |   |   |   |   |   
 |   |   |   |   +---about
 |   |   |   |   |       1.png
@@ -1753,8 +1734,8 @@ D:.
 |   |   |   portfolio.html
 |   |   |   pricing.html
 |   |   |   privacy-policy.html
+|   |   |   profile.html
 |   |   |   recover-password.html
-|   |   |   service-details.html
 |   |   |   services.html
 |   |   |   sign-in.html
 |   |   |   sign-up.html
@@ -1871,8 +1852,6 @@ D:.
 |   |           narvar_sidebar.html
 |   |           
 |   \---__pycache__
-|           app.cpython-39.pyc
-|           
 \---Yolo
         23.5_yolov8m_caithien_v2.pt
         best.pt

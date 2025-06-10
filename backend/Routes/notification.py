@@ -1,8 +1,5 @@
 from flask import Blueprint, request, jsonify
 from backend.Controllers.notification_controller import send_email_notification
-from flask import current_app
-
-
 
 bp = Blueprint('notification', __name__, url_prefix='/api/notifications')
 
