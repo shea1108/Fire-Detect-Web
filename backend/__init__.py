@@ -5,7 +5,23 @@ from dotenv import load_dotenv
 from datetime import timedelta
 
 from backend.extensions import db, bcrypt, socketio, oauth, mail
-from backend.Models.users_model import User
+
+
+from backend.Routes import routes
+from backend.Routes import auth
+from backend.Routes import predict
+from backend.Routes import socketio as socket
+from backend.Routes.admin import routes as admin_routes
+from backend.Routes.models import bp as models_bp
+from backend.Routes.notification import bp as notification_bp
+from backend.Routes.user import user_bp
+
+
+#MODELS
+from backend.Models import *  # Chỉ cần 1 dòng
+
+
+
 
 
 def create_app():
@@ -53,15 +69,6 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-
-    from backend.Routes import routes
-    from backend.Routes import auth
-    from backend.Routes import predict
-    from backend.Routes import socketio as socket
-    from backend.Routes.admin import routes as admin_routes
-    from backend.Routes.models import bp as models_bp
-    from backend.Routes.notification import bp as notification_bp
-    from backend.Routes.user import user_bp
 
 
     app.register_blueprint(models_bp)

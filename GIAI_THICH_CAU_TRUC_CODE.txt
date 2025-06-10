@@ -1,10 +1,28 @@
 <!-- @format -->
-chạy fire_detect_db.sql --- đã sửa 
 
+# chạy trong powershell
+
+# Xóa tất cả thư mục __pycache__
+Get-ChildItem -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force
 Get-ChildItem -Recurse -Filter *.pyc | Remove-Item -Force
+
+
+gid add . 
 
 git rm --cached .env
 git rm --cached certs/cert.pem certs/key.pem
+
+#kiểm tra
+git status
+
+
+
+
+
+
+
+
+
 
 
 
