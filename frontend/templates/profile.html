@@ -1,7 +1,7 @@
 <!-- @format -->
 
 <!DOCTYPE html>
-<html lang="zxx">
+<html lang="vn">
     <head>
         {% include ('partials/head.html')%}
         <style>
@@ -100,6 +100,8 @@
                                     type="text"
                                     class="form-control"
                                     name="user_phone_num"
+                                    pattern="^\d{10}$"
+                                    maxlength="10"
                                     value="{{ user.user_phone_num or '' }}"
                                 />
                             </div>
@@ -109,6 +111,7 @@
                             <input
                                 type="email"
                                 class="form-control"
+                                name="user_email"
                                 value="{{ user.user_email }}"
                             />
                         </div>
@@ -221,6 +224,9 @@
                     const user_phone_num = document.querySelector(
                         '[name="user_phone_num"]'
                     ).value;
+                    const user_email = document.querySelector(
+                        '[name="user_email"]'
+                    ).value;
 
                     try {
                         const response = await fetch('/api/user/edit', {
@@ -228,7 +234,7 @@
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify({ user_name, user_phone_num }),
+                            body: JSON.stringify({ user_name, user_phone_num, user_email }),
                         });
 
                         const data = await response.json();

@@ -19,9 +19,11 @@ def edit_user_profile():
 
     user_name = data.get('user_name')
     user_phone_num = data.get('user_phone_num')
+    user_email = data.get('user_email')
 
-    # Kiểm tra trùng số điện thoại
     if user_phone_num:
+        if not user_phone_num.isdigit() or len(user_phone_num) != 10:
+            return jsonify({'error': 'Số điện thoại phải gồm 10 chữ số'}), 400
         existing_phone = User.query.filter(
             User.user_phone_num == user_phone_num,
             User.user_id != user_id
@@ -29,17 +31,14 @@ def edit_user_profile():
         if existing_phone:
             return jsonify({'error': 'Số điện thoại đã được đăng ký'}), 400
 
-    # Kiểm tra trùng email (nếu cho phép chỉnh sửa email sau này)
-    if 'user_email' in data:
-        new_email = data.get('user_email')
-        if new_email != user.user_email:
-            existing_email = User.query.filter(
-                User.user_email == new_email,
-                User.user_id != user_id
-            ).first()
-            if existing_email:
-                return jsonify({'error': 'Email đã được đăng ký'}), 400
-            user.user_email = new_email
+    if user_email and user_email != user.user_email:
+        existing_email = User.query.filter(
+            User.user_email == user_email,
+            User.user_id != user_id
+        ).first()
+        if existing_email:
+            return jsonify({'error': 'Email đã được đăng ký'}), 400
+        user.user_email = user_email
 
     if user_name:
         user.user_name = user_name
@@ -48,12 +47,18 @@ def edit_user_profile():
 
     db.session.commit()
 
+    # Cập nhật session
+    session['user_name'] = user.user_name
+    session['user_phone_num'] = user.user_phone_num
+    session['user_email'] = user.user_email
+    session.modified = True
+
     return jsonify({
-        'message': 'Cập nhật thành công',
-        'user': {
-            'user_id': user.user_id,
-            'user_name': user.user_name,
-            'user_email': user.user_email,
-            'user_phone_num': user.user_phone_num
-        }
-    })
+        'message': 'Đăng nhập thành công',
+        'user_id': user.user_id,
+        'user_name': user.user_name,
+        'user_email': user.user_email,
+        'user_phone_num': user.user_phone_num,
+        'role': user.user_role
+    }), 200
+
