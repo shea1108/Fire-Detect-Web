@@ -11,16 +11,17 @@ DROP TABLE IF EXISTS log_bboxes;
 
 -- TABLE: users  
 CREATE TABLE users (
-    user_id         SERIAL PRIMARY KEY,
-    user_name       VARCHAR(100) NOT NULL,
-    user_password   VARCHAR(255) NOT NULL,
-    user_role       VARCHAR(20)  NOT NULL,
-    user_email      VARCHAR(100) UNIQUE NOT NULL,
-    user_phone_num  VARCHAR(10) UNIQUE,
-    user_status     BOOLEAN      NOT NULL,
-    user_create_at  TIMESTAMP    NOT NULL DEFAULT NOW()
+    user_id SERIAL PRIMARY KEY,
+    user_name VARCHAR(100) NOT NULL,
+    user_password VARCHAR(255) not null, 
+    user_role VARCHAR(20) NOT NULL,
+    user_email VARCHAR(100) UNIQUE NOT NULL,
+    user_phone_num VARCHAR(10),
+    user_status BOOLEAN NOT NULL DEFAULT TRUE,
+    user_create_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    reset_token VARCHAR(100) UNIQUE,
+    reset_token_expiry TIMESTAMP
 );
-
 -- TABLE: devices
 CREATE TABLE devices (
     dev_id         SERIAL PRIMARY KEY,
@@ -119,6 +120,7 @@ CREATE TABLE user_platforms (
     FOREIGN KEY (plat_id) REFERENCES platforms(plat_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
+
 
 INSERT INTO models (model_name, model_path, model_config, model_status) VALUES
 ('Fire_Detect 1.3', 'Yolo/best.pt', '{}', TRUE),

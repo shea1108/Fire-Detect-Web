@@ -12,3 +12,6 @@ class User(db.Model):
     user_phone_num = db.Column(db.String(10))
     user_status = db.Column(db.Boolean, nullable=False, default=True)
     user_create_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    reset_token = db.Column(db.String(100), unique=True, nullable=True)
+    reset_token_expiry = db.Column(db.DateTime, nullable=True)
