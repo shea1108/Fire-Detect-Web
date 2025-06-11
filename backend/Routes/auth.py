@@ -1,11 +1,14 @@
-from flask import Blueprint, request, jsonify, session, redirect, url_for
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_mail import Message
-from authlib.integrations.base_client.errors import OAuthError
 import os
 import random
 import string
 from datetime import datetime, timedelta
+import secrets
+
+
+from flask import Blueprint, request, jsonify, session, redirect, url_for
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_mail import Message
+from authlib.integrations.base_client.errors import OAuthError
 
 
 from backend.Models.users_model import User, db
@@ -204,3 +207,76 @@ def google_callback():
     session.permanent = True
 
     return redirect('/')
+
+
+@bp.route('/forgot-password', methods=['POST'])
+def forgot_password():
+
+    data = request.get_json()
+    email = data.get('email')
+
+    user = User.query.filter_by(user_email=email, user_status=True).first()
+
+    if not user:
+
+        return jsonify({'message': 'Nếu email của bạn tồn tại trong hệ thống, bạn sẽ nhận được một liên kết để đặt lại mật khẩu.'}), 200
+
+    token = secrets.token_urlsafe(32)
+    user.reset_token = token
+    user.reset_token_expiry = datetime.utcnow() + timedelta(hours=1)
+
+    try:
+        db.session.commit()
+        reset_url = url_for('web.render_new_frontend_page', page=f'reset-password/{token}', _external=True)
+        
+        # Gửi email
+        msg = Message("Yêu Cầu Đặt Lại Mật Khẩu",
+                      recipients=[user.user_email],
+                      body=f"Xin chào {user.user_name},\n\n"
+                           f"Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.\n"
+                           f"Vui lòng nhấp vào liên kết sau để đặt lại mật khẩu của bạn:\n"
+                           f"{reset_url}\n\n"
+                           f"Nếu bạn không yêu cầu điều này, vui lòng bỏ qua email này.\n"
+                           f"Liên kết sẽ hết hạn sau 5 phút.\n\n"
+                           f"Trân trọng,\nĐội ngũ Fire Detection")
+        mail.send(msg)
+
+        return jsonify({'message': 'Nếu email của bạn tồn tại trong hệ thống, bạn sẽ nhận được một liên kết để đặt lại mật khẩu.'}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"[ERROR] Lỗi khi gửi email đặt lại mật khẩu: {e}")
+        return jsonify({'error': 'Lỗi hệ thống, không thể gửi yêu cầu.'}), 500
+    
+
+@bp.route('/recover-password', methods=['POST'])
+def recover_password():
+    ddata = request.get_json()
+    token = data.get('token')
+    new_password = data.get('password')
+
+    if not token or not new_password:
+        return jsonify({'error': 'Thiếu token hoặc mật khẩu mới.'}), 400
+
+    # Tìm user với token hợp lệ và chưa hết hạn
+    user = User.query.filter(
+        User.reset_token == token,
+        User.reset_token_expiry > datetime.utcnow()
+    ).first()
+
+    if not user:
+        return jsonify({'error': 'Token không hợp lệ hoặc đã hết hạn.'}), 400
+
+    # Cập nhật mật khẩu mới
+    user.user_password = generate_password_hash(new_password)
+    # Vô hiệu hóa token sau khi sử dụng
+    user.reset_token = None
+    user.reset_token_expiry = None
+
+    try:
+        db.session.commit()
+        return jsonify({'message': 'Mật khẩu đã được cập nhật thành công!'}), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"[ERROR] Lỗi khi cập nhật mật khẩu mới: {e}")
+        return jsonify({'error': 'Lỗi hệ thống khi cập nhật mật khẩu.'}), 500

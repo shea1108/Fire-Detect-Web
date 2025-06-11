@@ -15,7 +15,7 @@ from backend.Routes import socketio as socket
 from backend.Routes.admin import routes as admin_routes
 from backend.Routes.models import bp as models_bp
 from backend.Routes.notification import bp as notification_bp
-from backend.Routes.user import user_bp
+from backend.Routes import user
 
 # Import Models để db.create_all() có thể thấy chúng
 # Giả sử bạn có file __init__.py trong thư mục Models để import như thế này
@@ -72,7 +72,7 @@ def create_app():
     app.register_blueprint(predict.bp)
     app.register_blueprint(admin_routes.bp)
     app.register_blueprint(notification_bp)
-    app.register_blueprint(user_bp)
+    app.register_blueprint(user.user_bp)
     
     # Đăng ký SocketIO events
     socket.register_socketio(socketio)
