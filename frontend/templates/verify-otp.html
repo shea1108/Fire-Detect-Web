@@ -1,0 +1,139 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="zxx">
+    <head>
+        {% include ('partials/head.html') %}
+        <!-- Thêm SweetAlert2 CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body>
+        <!-- Start Navbar Sidebar Area -->
+        {% include ('partials/narvar_sidebar.html') %}
+        <!-- End Navbar Sidebar Modal -->
+
+        <!-- Start Verify OTP Area -->
+        <section class="sign-up-area ptb-100">
+            <div class="container">
+                <div class="section-title text-center">
+                    <h2>Xác thực tài khoản của bạn</h2>
+                    <p id="info-text">
+                        Một mã xác thực gồm 6 chữ số đã được gửi đến email của bạn. Vui lòng kiểm tra và nhập vào bên dưới.
+                    </p>
+                </div>
+                <div class="contact-wrap-form log-in-width">
+                    <form id="verify-otp-form" method="post">
+                        <div class="row justify-content-center">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <input
+                                        class="form-control"
+                                        type="text"
+                                        name="otp"
+                                        placeholder="Nhập mã OTP"
+                                        required
+                                        maxlength="6"
+                                        pattern="\d{6}"
+                                        title="Mã OTP phải là 6 chữ số"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="col-12 text-center">
+                                <button class="default-btn btn-two" type="submit">
+                                    Xác nhận
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+        <!-- End Verify OTP Area -->
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const form = document.getElementById('verify-otp-form');
+                const infoText = document.getElementById('info-text');
+
+                // Lấy email từ URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const email = urlParams.get('email');
+
+                if (!email) {
+                    infoText.innerText = 'Không tìm thấy email để xác thực. Vui lòng thử đăng ký lại.';
+                    form.style.display = 'none'; // Ẩn form nếu không có email
+                    return;
+                }
+                
+                infoText.innerText = `Một mã xác thực gồm 6 chữ số đã được gửi đến ${email}. Vui lòng kiểm tra và nhập vào bên dưới.`;
+
+
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const otp = e.target.otp.value;
+
+                    if (!otp || otp.length !== 6) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: 'Vui lòng nhập mã OTP gồm 6 chữ số.',
+                        });
+                        return;
+                    }
+
+                    try {
+                        const res = await fetch('/api/auth/register/verify-otp', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email: email, otp: otp }),
+                        });
+
+                        const data = await res.json();
+
+                        if (res.ok) {
+                            await Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công!',
+                                text: 'Tài khoản của bạn đã được xác thực và tạo thành công.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            // Chuyển hướng đến trang đăng nhập sau khi thành công
+                            window.location.href = '/sign-in'; 
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Xác thực thất bại',
+                                text: data.error || 'Đã có lỗi xảy ra. Vui lòng thử lại.',
+                            });
+                        }
+                    } catch (err) {
+                        console.error('Lỗi khi xác thực OTP:', err);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi kết nối',
+                            text: 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.',
+                        });
+                    }
+                });
+            });
+        </script>
+
+        <!-- Footer Area -->
+        {% include ('partials/footer.html') %}
+        <!-- Footer Area End -->
+        
+        <!-- Các script khác của bạn -->
+        <script src="/static/assets/js/jquery.min.js"></script>
+        <script src="/static/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="/static/assets/js/meanmenu.min.js"></script>
+        <script src="/static/assets/js/owl.carousel.min.js"></script>
+        <script src="/static/assets/js/jquery.magnific-popup.min.js"></script>
+        <script src="/static/assets/js/wow.min.js"></script>
+        <script src="/static/assets/js/jquery.ajaxchimp.min.js"></script>
+        <script src="/static/assets/js/form-validator.min.js"></script>
+        <script src="/static/assets/js/contact-form-script.js"></script>
+        <script src="/static/assets/js/custom.js"></script>
+    </body>
+</html>
