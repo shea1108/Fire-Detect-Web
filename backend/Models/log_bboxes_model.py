@@ -1,6 +1,6 @@
 from backend.extensions import db
 
-class LogBbox(db.Model):
+class LogBBox(db.Model):
     __tablename__ = 'log_bboxes'
     bbox_id = db.Column(db.Integer, primary_key=True)
     log_id = db.Column(db.Integer, db.ForeignKey('logs.log_id', ondelete='CASCADE'), nullable=False)

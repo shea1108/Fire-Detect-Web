@@ -4,7 +4,7 @@ from PIL import Image
 from backend.Models import db, Log
 from backend.extensions import socketio
 from backend.Models.devices_model import Device
-
+from backend.utils.detection_utils import detect_fire
 # Biến lưu thời điểm log cuối cùng theo device
 last_log_times = {}
 
