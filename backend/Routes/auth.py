@@ -214,11 +214,9 @@ def forgot_password():
 
     data = request.get_json()
     email = data.get('email')
-
     user = User.query.filter_by(user_email=email, user_status=True).first()
 
     if not user:
-
         return jsonify({'message': 'Nếu email của bạn tồn tại trong hệ thống, bạn sẽ nhận được một liên kết để đặt lại mật khẩu.'}), 200
 
     token = secrets.token_urlsafe(32)
@@ -227,31 +225,26 @@ def forgot_password():
 
     try:
         db.session.commit()
-        reset_url = url_for('web.render_new_frontend_page', page=f'reset-password/{token}', _external=True)
+
+        reset_url = url_for('web.render_new_frontend_page', 
+                            page='reset-password.html', 
+                            token=token, 
+                            _external=True)
         
-        # Gửi email
         msg = Message("Yêu Cầu Đặt Lại Mật Khẩu",
                       recipients=[user.user_email],
-                      body=f"Xin chào {user.user_name},\n\n"
-                           f"Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.\n"
-                           f"Vui lòng nhấp vào liên kết sau để đặt lại mật khẩu của bạn:\n"
-                           f"{reset_url}\n\n"
-                           f"Nếu bạn không yêu cầu điều này, vui lòng bỏ qua email này.\n"
-                           f"Liên kết sẽ hết hạn sau 5 phút.\n\n"
-                           f"Trân trọng,\nĐội ngũ Fire Detection")
+                      body=f"Xin chào {user.user_name},\n\nVui lòng nhấp vào liên kết sau để đặt lại mật khẩu của bạn:\n{reset_url}\n\nLiên kết này sẽ hết hạn sau 1 giờ.\n\nTrân trọng,\nĐội ngũ Fire Detection")
         mail.send(msg)
-
         return jsonify({'message': 'Nếu email của bạn tồn tại trong hệ thống, bạn sẽ nhận được một liên kết để đặt lại mật khẩu.'}), 200
-
     except Exception as e:
         db.session.rollback()
         print(f"[ERROR] Lỗi khi gửi email đặt lại mật khẩu: {e}")
         return jsonify({'error': 'Lỗi hệ thống, không thể gửi yêu cầu.'}), 500
     
 
-@bp.route('/recover-password', methods=['POST'])
+@bp.route('/reset-password', methods=['POST'])
 def recover_password():
-    ddata = request.get_json()
+    data = request.get_json()
     token = data.get('token')
     new_password = data.get('password')
 
