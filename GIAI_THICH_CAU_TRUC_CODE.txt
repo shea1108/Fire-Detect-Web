@@ -1,9 +1,9 @@
 <!-- @format -->
 
-# chạy trong powershell
 
 # Xóa tất cả thư mục __pycache__
 Get-ChildItem -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force
+
 Get-ChildItem -Recurse -Filter *.pyc | Remove-Item -Force
 
 
@@ -14,8 +14,6 @@ git rm --cached certs/cert.pem certs/key.pem
 
 #kiểm tra
 git status
-
-
 
 
 

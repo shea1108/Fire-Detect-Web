@@ -23,6 +23,11 @@ def home():
 def about():
     return render_template('about.html')   
 
+
+@bp.route('/register/verify-otp')
+def show_verify_otp_page():
+    return render_template('verify-otp.html')
+
 #
 @bp.route('/sign-in')
 @bp.route('/sign-in.html')
