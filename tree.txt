@@ -11,10 +11,8 @@ D:.
 |   README.md
 |   requirements.txt
 |   run.bat
-|   socketio_good.py
 |   tapeli-responsive-bootstrap-5-admin-ui-kit-2024-10-11-11-18-38-utc.zip
 |   tree.txt
-|   yolo_infer.py
 |   
 +---backend
 |   |   config.py
@@ -26,28 +24,47 @@ D:.
 |   |   |   auth_controller.py
 |   |   |   device_controller.py
 |   |   |   log_controller.py
+|   |   |   mail_controller.py
 |   |   |   model_controller.py
 |   |   |   notification_controller.py
 |   |   |   user_controller.py
 |   |   |   
 |   |   \---__pycache__
+|   |           auth_controller.cpython-39.pyc
+|   |           mail_controller.cpython-39.pyc
+|   |           model_controller.cpython-39.pyc
+|   |           notification_controller.cpython-39.pyc
+|   |           
 |   +---decorators
 |   |   |   auth_decorators.py
 |   |   |   
 |   |   \---__pycache__
+|   |           auth_decorators.cpython-39.pyc
+|   |           
 |   +---Models
 |   |   |   devices_model.py
-|   |   |   flatforms_model.py
-|   |   |   logbboxs_model.py
 |   |   |   logs_model.py
+|   |   |   log_bboxes_model.py
 |   |   |   models_model.py
 |   |   |   notifications_model.py
 |   |   |   notification_models_model.py
+|   |   |   platforms_model.py
 |   |   |   users_model.py
-|   |   |   user_flatform_model.py
+|   |   |   user_platforms_model.py
 |   |   |   __init__.py
 |   |   |   
 |   |   \---__pycache__
+|   |           devices_model.cpython-39.pyc
+|   |           logs_model.cpython-39.pyc
+|   |           log_bboxes_model.cpython-39.pyc
+|   |           models_model.cpython-39.pyc
+|   |           notifications_model.cpython-39.pyc
+|   |           notification_models_model.cpython-39.pyc
+|   |           platforms_model.cpython-39.pyc
+|   |           users_model.cpython-39.pyc
+|   |           user_platforms_model.cpython-39.pyc
+|   |           __init__.cpython-39.pyc
+|   |           
 |   +---Routes
 |   |   |   auth.py
 |   |   |   device.py
@@ -62,12 +79,30 @@ D:.
 |   |   |   |   routes.py
 |   |   |   |   
 |   |   |   \---__pycache__
+|   |   |           routes.cpython-39.pyc
+|   |   |           
 |   |   \---__pycache__
+|   |           auth.cpython-39.pyc
+|   |           models.cpython-39.pyc
+|   |           notification.cpython-39.pyc
+|   |           predict.cpython-39.pyc
+|   |           routes.cpython-39.pyc
+|   |           socketio.cpython-39.pyc
+|   |           user.cpython-39.pyc
+|   |           
 |   +---utils
 |   |   |   auth_utils.py
+|   |   |   detection_utils.py
+|   |   |   token_utils.py
 |   |   |   
 |   |   \---__pycache__
+|   |           auth_utils.cpython-39.pyc
+|   |           
 |   \---__pycache__
+|           extensions.cpython-39.pyc
+|           manager.cpython-39.pyc
+|           __init__.cpython-39.pyc
+|           
 +---certs
 |       cert.pem
 |       key.pem
@@ -1714,144 +1749,560 @@ D:.
 |   |           predict_image.js
 |   |           predict_video.js
 |   |           
-|   +---templates
-|   |   |   401.html
-|   |   |   403.html
-|   |   |   404.html
-|   |   |   about.html
-|   |   |   blog-details.html
-|   |   |   blog.html
-|   |   |   contact.html
-|   |   |   detect-camera.html
-|   |   |   detect-image.html
-|   |   |   detect-video.html
-|   |   |   faq.html
-|   |   |   fix_fe_assets.py
-|   |   |   index-three.html
-|   |   |   index-two.html
-|   |   |   index.html
-|   |   |   members.html
-|   |   |   portfolio.html
-|   |   |   pricing.html
-|   |   |   privacy-policy.html
-|   |   |   profile.html
-|   |   |   recover-password.html
-|   |   |   services.html
-|   |   |   sign-in.html
-|   |   |   sign-up.html
-|   |   |   terms-condition.html
-|   |   |   
-|   |   +---admin
-|   |   |   |   auth-confirm-mail.html
-|   |   |   |   auth-lock-screen.html
-|   |   |   |   auth-login.html
-|   |   |   |   auth-logout.html
-|   |   |   |   auth-recoverpw.html
-|   |   |   |   auth-register.html
-|   |   |   |   calendar.html
-|   |   |   |   charts-area.html
-|   |   |   |   charts-bar.html
-|   |   |   |   charts-boxplot.html
-|   |   |   |   charts-bubble.html
-|   |   |   |   charts-candlestick.html
-|   |   |   |   charts-chartist.html
-|   |   |   |   charts-chartjs.html
-|   |   |   |   charts-column.html
-|   |   |   |   charts-flot.html
-|   |   |   |   charts-funnel.html
-|   |   |   |   charts-heatmap.html
-|   |   |   |   charts-line.html
-|   |   |   |   charts-mixed.html
-|   |   |   |   charts-morris.html
-|   |   |   |   charts-pie.html
-|   |   |   |   charts-polararea.html
-|   |   |   |   charts-radar.html
-|   |   |   |   charts-radialbar.html
-|   |   |   |   charts-rangearea.html
-|   |   |   |   charts-scatter.html
-|   |   |   |   charts-sparklines.html
-|   |   |   |   charts-timeline.html
-|   |   |   |   charts-treemap.html
-|   |   |   |   contacts-profile.html
-|   |   |   |   ecommerce-sidebar-dark-rtl.html
-|   |   |   |   ecommerce-sidebar-dark.html
-|   |   |   |   ecommerce-sidebar-rtl.html
-|   |   |   |   ecommerce.html
-|   |   |   |   email-verification.html
-|   |   |   |   error-404.html
-|   |   |   |   error-429.html
-|   |   |   |   error-500.html
-|   |   |   |   error-503.html
-|   |   |   |   extended-carousel.html
-|   |   |   |   extended-notifications.html
-|   |   |   |   extended-offcanvas.html
-|   |   |   |   extended-range-slider.html
-|   |   |   |   extended-scrollbar.html
-|   |   |   |   extended-scrollspy.html
-|   |   |   |   fix_admin_assets.py
-|   |   |   |   forms-advanced.html
-|   |   |   |   forms-elements.html
-|   |   |   |   forms-pickers.html
-|   |   |   |   forms-quilljs.html
-|   |   |   |   forms-validation.html
-|   |   |   |   icons-feather.html
-|   |   |   |   icons-mdi.html
-|   |   |   |   index-sidebar-dark-rtl.html
-|   |   |   |   index-sidebar-dark.html
-|   |   |   |   index-sidebar-rtl.html
-|   |   |   |   index.html
-|   |   |   |   maps-google.html
-|   |   |   |   maps-vector.html
-|   |   |   |   offline-page.html
-|   |   |   |   pages-coming-soon.html
-|   |   |   |   pages-faqs.html
-|   |   |   |   pages-gallery.html
-|   |   |   |   pages-invoice.html
-|   |   |   |   pages-maintenance.html
-|   |   |   |   pages-pricing.html
-|   |   |   |   pages-profile.html
-|   |   |   |   pages-starter.html
-|   |   |   |   pages-timeline.html
-|   |   |   |   preview.html
-|   |   |   |   tables-basic.html
-|   |   |   |   tables-datatables.html
-|   |   |   |   ui-accordions.html
-|   |   |   |   ui-alerts.html
-|   |   |   |   ui-badges.html
-|   |   |   |   ui-breadcrumb.html
-|   |   |   |   ui-buttons.html
-|   |   |   |   ui-cards.html
-|   |   |   |   ui-carousel.html
-|   |   |   |   ui-collapse.html
-|   |   |   |   ui-dropdowns.html
-|   |   |   |   ui-general.html
-|   |   |   |   ui-grid.html
-|   |   |   |   ui-images.html
-|   |   |   |   ui-list.html
-|   |   |   |   ui-modals.html
-|   |   |   |   ui-offcanvas.html
-|   |   |   |   ui-pagination.html
-|   |   |   |   ui-placeholders.html
-|   |   |   |   ui-popovers.html
-|   |   |   |   ui-progress.html
-|   |   |   |   ui-scrollspy.html
-|   |   |   |   ui-spinners.html
-|   |   |   |   ui-tabs.html
-|   |   |   |   ui-tooltips.html
-|   |   |   |   ui-typography.html
-|   |   |   |   ui-video.html
-|   |   |   |   widgets.html
-|   |   |   |   
-|   |   |   \---partials
-|   |   |           sidebar.html
-|   |   |           topbar.html
-|   |   |           
-|   |   \---partials
-|   |           footer.html
-|   |           head.html
-|   |           narvar_sidebar.html
-|   |           
-|   \---__pycache__
+|   \---templates
+|       |   401.html
+|       |   403.html
+|       |   404.html
+|       |   about.html
+|       |   blog-details.html
+|       |   blog.html
+|       |   contact.html
+|       |   detect-camera.html
+|       |   detect-image.html
+|       |   detect-video.html
+|       |   faq.html
+|       |   fix_fe_assets.py
+|       |   index-three.html
+|       |   index-two.html
+|       |   index.html
+|       |   members.html
+|       |   portfolio.html
+|       |   pricing.html
+|       |   privacy-policy.html
+|       |   profile.html
+|       |   recover-password.html
+|       |   services.html
+|       |   sign-in.html
+|       |   sign-up.html
+|       |   terms-condition.html
+|       |   
+|       +---admin
+|       |   |   auth-confirm-mail.html
+|       |   |   auth-lock-screen.html
+|       |   |   auth-login.html
+|       |   |   auth-logout.html
+|       |   |   auth-recoverpw.html
+|       |   |   auth-register.html
+|       |   |   calendar.html
+|       |   |   charts-area.html
+|       |   |   charts-bar.html
+|       |   |   charts-boxplot.html
+|       |   |   charts-bubble.html
+|       |   |   charts-candlestick.html
+|       |   |   charts-chartist.html
+|       |   |   charts-chartjs.html
+|       |   |   charts-column.html
+|       |   |   charts-flot.html
+|       |   |   charts-funnel.html
+|       |   |   charts-heatmap.html
+|       |   |   charts-line.html
+|       |   |   charts-mixed.html
+|       |   |   charts-morris.html
+|       |   |   charts-pie.html
+|       |   |   charts-polararea.html
+|       |   |   charts-radar.html
+|       |   |   charts-radialbar.html
+|       |   |   charts-rangearea.html
+|       |   |   charts-scatter.html
+|       |   |   charts-sparklines.html
+|       |   |   charts-timeline.html
+|       |   |   charts-treemap.html
+|       |   |   contacts-profile.html
+|       |   |   ecommerce-sidebar-dark-rtl.html
+|       |   |   ecommerce-sidebar-dark.html
+|       |   |   ecommerce-sidebar-rtl.html
+|       |   |   ecommerce.html
+|       |   |   email-verification.html
+|       |   |   error-404.html
+|       |   |   error-429.html
+|       |   |   error-500.html
+|       |   |   error-503.html
+|       |   |   extended-carousel.html
+|       |   |   extended-notifications.html
+|       |   |   extended-offcanvas.html
+|       |   |   extended-range-slider.html
+|       |   |   extended-scrollbar.html
+|       |   |   extended-scrollspy.html
+|       |   |   fix_admin_assets.py
+|       |   |   forms-advanced.html
+|       |   |   forms-elements.html
+|       |   |   forms-pickers.html
+|       |   |   forms-quilljs.html
+|       |   |   forms-validation.html
+|       |   |   icons-feather.html
+|       |   |   icons-mdi.html
+|       |   |   index-sidebar-dark-rtl.html
+|       |   |   index-sidebar-dark.html
+|       |   |   index-sidebar-rtl.html
+|       |   |   index.html
+|       |   |   maps-google.html
+|       |   |   maps-vector.html
+|       |   |   offline-page.html
+|       |   |   pages-coming-soon.html
+|       |   |   pages-faqs.html
+|       |   |   pages-gallery.html
+|       |   |   pages-invoice.html
+|       |   |   pages-maintenance.html
+|       |   |   pages-pricing.html
+|       |   |   pages-profile.html
+|       |   |   pages-starter.html
+|       |   |   pages-timeline.html
+|       |   |   preview.html
+|       |   |   tables-basic.html
+|       |   |   tables-datatables.html
+|       |   |   ui-accordions.html
+|       |   |   ui-alerts.html
+|       |   |   ui-badges.html
+|       |   |   ui-breadcrumb.html
+|       |   |   ui-buttons.html
+|       |   |   ui-cards.html
+|       |   |   ui-carousel.html
+|       |   |   ui-collapse.html
+|       |   |   ui-dropdowns.html
+|       |   |   ui-general.html
+|       |   |   ui-grid.html
+|       |   |   ui-images.html
+|       |   |   ui-list.html
+|       |   |   ui-modals.html
+|       |   |   ui-offcanvas.html
+|       |   |   ui-pagination.html
+|       |   |   ui-placeholders.html
+|       |   |   ui-popovers.html
+|       |   |   ui-progress.html
+|       |   |   ui-scrollspy.html
+|       |   |   ui-spinners.html
+|       |   |   ui-tabs.html
+|       |   |   ui-tooltips.html
+|       |   |   ui-typography.html
+|       |   |   ui-video.html
+|       |   |   widgets.html
+|       |   |   
+|       |   \---partials
+|       |           sidebar.html
+|       |           topbar.html
+|       |           
+|       \---partials
+|               footer.html
+|               head.html
+|               narvar_sidebar.html
+|               
++---track
+|   |   23.5_yolov8m_caithien_v2.pt
+|   |   ocsort.py
+|   |   temp.py
+|   |   tree.txt
+|   |   
+|   \---OC_SORT
+|       |   .gitignore
+|       |   Dockerfile
+|       |   LICENSE
+|       |   README.md
+|       |   requirements.txt
+|       |   setup.cfg
+|       |   setup.py
+|       |   
+|       +---assets
+|       |       dancetrack0088_slow.gif
+|       |       dance_demo.gif
+|       |       ocr.png
+|       |       teaser.png
+|       |       
+|       +---build
+|       |   +---lib.win-amd64-cpython-39
+|       |   |   \---yolox
+|       |   |           _C.cp39-win_amd64.pyd
+|       |   |           
+|       |   \---temp.win-amd64-cpython-39
+|       |       \---Release
+|       |           |   .ninja_deps
+|       |           |   .ninja_log
+|       |           |   build.ninja
+|       |           |   
+|       |           \---CT472_TTTT
+|       |               \---Fire-Detect-Web
+|       |                   \---track
+|       |                       \---OC_SORT
+|       |                           \---yolox
+|       |                               \---layers
+|       |                                   \---csrc
+|       |                                       |   vision.obj
+|       |                                       |   
+|       |                                       \---cocoeval
+|       |                                               cocoeval.obj
+|       |                                               _C.cp39-win_amd64.exp
+|       |                                               _C.cp39-win_amd64.lib
+|       |                                               
+|       +---deploy
+|       |   +---ncnn
+|       |   |   \---cpp
+|       |   |       |   CMakeLists.txt
+|       |   |       |   README.md
+|       |   |       |   
+|       |   |       +---include
+|       |   |       |       BYTETracker.h
+|       |   |       |       dataType.h
+|       |   |       |       kalmanFilter.h
+|       |   |       |       lapjv.h
+|       |   |       |       STrack.h
+|       |   |       |       
+|       |   |       \---src
+|       |   |               bytetrack.cpp
+|       |   |               BYTETracker.cpp
+|       |   |               kalmanFilter.cpp
+|       |   |               lapjv.cpp
+|       |   |               STrack.cpp
+|       |   |               utils.cpp
+|       |   |               
+|       |   +---OCSort
+|       |   |   \---cpp
+|       |   |       |   CMakeLists.txt
+|       |   |       |   mutilthread.cpp
+|       |   |       |   ocsort-inference.png
+|       |   |       |   Readme.md
+|       |   |       |   
+|       |   |       +---detector
+|       |   |       |       inference.cpp
+|       |   |       |       inference.h
+|       |   |       |       
+|       |   |       +---include
+|       |   |       |       Association.hpp
+|       |   |       |       KalmanBoxTracker.hpp
+|       |   |       |       KalmanFilter.hpp
+|       |   |       |       lapjv.hpp
+|       |   |       |       OCSort.hpp
+|       |   |       |       Utilities.hpp
+|       |   |       |       
+|       |   |       \---src
+|       |   |               Association.cpp
+|       |   |               KalmanBoxTracker.cpp
+|       |   |               KalmanFilter.cpp
+|       |   |               lapjv.cpp
+|       |   |               OCSort.cpp
+|       |   |               Utilities.cpp
+|       |   |               
+|       |   +---ONNXRuntime
+|       |   |       onnx_inference.py
+|       |   |       README.md
+|       |   |       
+|       |   +---scripts
+|       |   |       export_onnx.py
+|       |   |       trt.py
+|       |   |       
+|       |   \---TensorRT
+|       |       +---cpp
+|       |       |   |   CMakeLists.txt
+|       |       |   |   README.md
+|       |       |   |   
+|       |       |   +---include
+|       |       |   |       BYTETracker.h
+|       |       |   |       dataType.h
+|       |       |   |       kalmanFilter.h
+|       |       |   |       lapjv.h
+|       |       |   |       logging.h
+|       |       |   |       STrack.h
+|       |       |   |       
+|       |       |   \---src
+|       |       |           bytetrack.cpp
+|       |       |           BYTETracker.cpp
+|       |       |           kalmanFilter.cpp
+|       |       |           lapjv.cpp
+|       |       |           STrack.cpp
+|       |       |           utils.cpp
+|       |       |           
+|       |       \---python
+|       |               README.md
+|       |               
+|       +---docs
+|       |       DEPLOY.md
+|       |       GET_STARTED.md
+|       |       INSTALL.md
+|       |       MODEL_ZOO.md
+|       |       
+|       +---exps
+|       |   +---default
+|       |   |       nano.py
+|       |   |       yolov3.py
+|       |   |       yolox_l.py
+|       |   |       yolox_m.py
+|       |   |       yolox_s.py
+|       |   |       yolox_tiny.py
+|       |   |       yolox_x.py
+|       |   |       
+|       |   +---example
+|       |   |   \---mot
+|       |   |           yolox_dancetrack_test.py
+|       |   |           yolox_dancetrack_val.py
+|       |   |           yolox_l_mix_det.py
+|       |   |           yolox_m_mix_det.py
+|       |   |           yolox_nano_mix_det.py
+|       |   |           yolox_s_mix_det.py
+|       |   |           yolox_tiny_mix_det.py
+|       |   |           yolox_x_ablation.py
+|       |   |           yolox_x_ch.py
+|       |   |           yolox_x_mix_det.py
+|       |   |           yolox_x_mix_mot20_ch.py
+|       |   |           yolox_x_mot17_ablation_half_train.py
+|       |   |           yolox_x_mot17_half.py
+|       |   |           yolox_x_mot17_train.py
+|       |   |           
+|       |   \---permatrack_kitti_test
+|       |           0000.txt
+|       |           0001.txt
+|       |           0002.txt
+|       |           0003.txt
+|       |           0004.txt
+|       |           0005.txt
+|       |           0006.txt
+|       |           0007.txt
+|       |           0008.txt
+|       |           0009.txt
+|       |           0010.txt
+|       |           0011.txt
+|       |           0012.txt
+|       |           0013.txt
+|       |           0014.txt
+|       |           0015.txt
+|       |           0016.txt
+|       |           0017.txt
+|       |           0018.txt
+|       |           0019.txt
+|       |           0020.txt
+|       |           0021.txt
+|       |           0022.txt
+|       |           0023.txt
+|       |           0024.txt
+|       |           0025.txt
+|       |           0026.txt
+|       |           0027.txt
+|       |           0028.txt
+|       |           
+|       +---motmetrics
+|       |   |   distances.py
+|       |   |   io.py
+|       |   |   lap.py
+|       |   |   math_util.py
+|       |   |   metrics.py
+|       |   |   mot.py
+|       |   |   preprocess.py
+|       |   |   utils.py
+|       |   |   __init__.py
+|       |   |   
+|       |   +---apps
+|       |   |       evaluateTracking.py
+|       |   |       eval_detrac.py
+|       |   |       eval_motchallenge.py
+|       |   |       example.py
+|       |   |       list_metrics.py
+|       |   |       __init__.py
+|       |   |       
+|       |   +---data
+|       |   |   +---iotest
+|       |   |   |       detrac.mat
+|       |   |   |       detrac.xml
+|       |   |   |       motchallenge.txt
+|       |   |   |       vatic.txt
+|       |   |   |       
+|       |   |   +---TUD-Campus
+|       |   |   |       gt.txt
+|       |   |   |       test.txt
+|       |   |   |       
+|       |   |   \---TUD-Stadtmitte
+|       |   |           gt.txt
+|       |   |           test.txt
+|       |   |           
+|       |   +---etc
+|       |   |       mot.png
+|       |   |       
+|       |   \---tests
+|       |           test_distances.py
+|       |           test_io.py
+|       |           test_issue19.py
+|       |           test_lap.py
+|       |           test_metrics.py
+|       |           test_mot.py
+|       |           test_utils.py
+|       |           __init__.py
+|       |           
+|       +---tools
+|       |       convert_bdd_to_kitti.py
+|       |       convert_cityperson_to_coco.py
+|       |       convert_crowdhuman_to_coco.py
+|       |       convert_dance_to_coco.py
+|       |       convert_ethz_to_coco.py
+|       |       convert_kitti_to_bdd.py
+|       |       convert_mot17_to_coco.py
+|       |       convert_mot20_to_coco.py
+|       |       convert_video.py
+|       |       demo_track.py
+|       |       gp_interpolation.py
+|       |       interpolation.py
+|       |       mix_data_ablation.py
+|       |       mix_data_test_mot17.py
+|       |       mix_data_test_mot20.py
+|       |       mota.py
+|       |       plot_trajectory.py
+|       |       run_ocsort.py
+|       |       run_ocsort_dance.py
+|       |       run_ocsort_public.py
+|       |       train.py
+|       |       txt2video.py
+|       |       visualize_results.py
+|       |       
+|       +---trackers
+|       |   +---byte_tracker
+|       |   |       basetrack.py
+|       |   |       byte_tracker.py
+|       |   |       byte_tracker_public.py
+|       |   |       kalman_filter.py
+|       |   |       matching.py
+|       |   |       
+|       |   +---deepsort_tracker
+|       |   |       deepsort.py
+|       |   |       detection.py
+|       |   |       iou_matching.py
+|       |   |       kalman_filter.py
+|       |   |       linear_assignment.py
+|       |   |       reid_model.py
+|       |   |       track.py
+|       |   |       
+|       |   +---motdt_tracker
+|       |   |       basetrack.py
+|       |   |       kalman_filter.py
+|       |   |       matching.py
+|       |   |       motdt_tracker.py
+|       |   |       reid_model.py
+|       |   |       
+|       |   +---ocsort_tracker
+|       |   |   |   association.py
+|       |   |   |   kalmanfilter.py
+|       |   |   |   ocsort.py
+|       |   |   |   
+|       |   |   \---__pycache__
+|       |   |           association.cpython-39.pyc
+|       |   |           kalmanfilter.cpython-39.pyc
+|       |   |           ocsort.cpython-39.pyc
+|       |   |           
+|       |   \---tracking_utils
+|       |           evaluation.py
+|       |           io.py
+|       |           timer.py
+|       |           
+|       +---trackeval
+|       |   |   eval.py
+|       |   |   plotting.py
+|       |   |   utils.py
+|       |   |   _timing.py
+|       |   |   __init__.py
+|       |   |   
+|       |   +---baselines
+|       |   |       baseline_utils.py
+|       |   |       non_overlap.py
+|       |   |       pascal_colormap.py
+|       |   |       stp.py
+|       |   |       thresholder.py
+|       |   |       vizualize.py
+|       |   |       __init__.py
+|       |   |       
+|       |   \---metrics
+|       |           clear.py
+|       |           count.py
+|       |           hota.py
+|       |           identity.py
+|       |           ideucl.py
+|       |           j_and_f.py
+|       |           track_map.py
+|       |           vace.py
+|       |           _base_metric.py
+|       |           __init__.py
+|       |           
+|       +---utils
+|       |       args.py
+|       |       misc.py
+|       |       triplet.py
+|       |       utils.py
+|       |       visualize.py
+|       |       
+|       +---videos
+|       |       dance_demo.mp4
+|       |       
+|       +---yolox
+|       |   |   _C.cp39-win_amd64.pyd
+|       |   |   __init__.py
+|       |   |   
+|       |   +---core
+|       |   |       launch.py
+|       |   |       trainer.py
+|       |   |       __init__.py
+|       |   |       
+|       |   +---data
+|       |   |   |   dataloading.py
+|       |   |   |   data_augment.py
+|       |   |   |   data_prefetcher.py
+|       |   |   |   samplers.py
+|       |   |   |   __init__.py
+|       |   |   |   
+|       |   |   \---datasets
+|       |   |           datasets_wrapper.py
+|       |   |           mosaicdetection.py
+|       |   |           mot.py
+|       |   |           __init__.py
+|       |   |           
+|       |   +---evaluators
+|       |   |       coco_evaluator.py
+|       |   |       evaluation.py
+|       |   |       mot_evaluator.py
+|       |   |       mot_evaluator_dance.py
+|       |   |       mot_evaluator_public.py
+|       |   |       __init__.py
+|       |   |       
+|       |   +---exp
+|       |   |       base_exp.py
+|       |   |       build.py
+|       |   |       yolox_base.py
+|       |   |       __init__.py
+|       |   |       
+|       |   +---layers
+|       |   |   |   fast_coco_eval_api.py
+|       |   |   |   __init__.py
+|       |   |   |   
+|       |   |   \---csrc
+|       |   |       |   vision.cpp
+|       |   |       |   
+|       |   |       \---cocoeval
+|       |   |               cocoeval.cpp
+|       |   |               cocoeval.h
+|       |   |               
+|       |   +---models
+|       |   |       darknet.py
+|       |   |       losses.py
+|       |   |       network_blocks.py
+|       |   |       yolox.py
+|       |   |       yolo_fpn.py
+|       |   |       yolo_head.py
+|       |   |       yolo_pafpn.py
+|       |   |       __init__.py
+|       |   |       
+|       |   \---utils
+|       |           allreduce_norm.py
+|       |           boxes.py
+|       |           checkpoint.py
+|       |           demo_utils.py
+|       |           dist.py
+|       |           ema.py
+|       |           logger.py
+|       |           lr_scheduler.py
+|       |           metric.py
+|       |           model_utils.py
+|       |           setup_env.py
+|       |           visualize.py
+|       |           __init__.py
+|       |           
+|       \---yolox.egg-info
+|               dependency_links.txt
+|               PKG-INFO
+|               SOURCES.txt
+|               top_level.txt
+|               
 \---Yolo
         23.5_yolov8m_caithien_v2.pt
         best.pt

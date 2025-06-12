@@ -9,6 +9,16 @@ DROP TABLE IF EXISTS DEVICEs;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS log_bboxes;
 
+
+
+-- ALTER TABLE users
+-- ADD COLUMN user_reset_token VARCHAR(128);
+
+-- ALTER TABLE users
+-- ADD COLUMN user_reset_expire_at TIMESTAMP;
+
+
+
 -- TABLE: users  
 CREATE TABLE users (
     user_id         SERIAL PRIMARY KEY,
@@ -17,6 +27,8 @@ CREATE TABLE users (
     user_role       VARCHAR(20)  NOT NULL,
     user_email      VARCHAR(100) UNIQUE NOT NULL,
     user_phone_num  VARCHAR(10) UNIQUE,
+    user_reset_token VARCHAR(128),
+    user_reset_expire_at TIMESTAMP,
     user_status     BOOLEAN      NOT NULL,
     user_create_at  TIMESTAMP    NOT NULL DEFAULT NOW()
 );

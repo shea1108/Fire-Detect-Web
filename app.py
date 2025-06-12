@@ -10,10 +10,7 @@ import ssl
 app = create_app()
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, use_reloader=False, host='127.0.0.1', port=5000)
-    # socketio.run(app, debug=True, use_reloader=False, host='192.168.10.6', port=5000, ssl_context=context)
+    socketio.run(app, debug=True, use_reloader=True, host='127.0.0.1', port=5000)
+    # socketio.run(app, debug=True, use_reloader=True, host='192.168.10.4', port=5000, ssl_context=context)
 
-    # host = os.getenv("HOST", "127.0.0.1")      # Mặc định là 0.0.0.0 nếu không có
-    # port = int(os.getenv("PORT", "5000"))      # Mặc định là 5000 nếu không có
-    # socketio.run(app, debug=True, host=host, port=port, use_reloader=False)
 

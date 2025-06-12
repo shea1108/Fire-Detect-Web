@@ -45,6 +45,7 @@ def login_user(data):
         session['user_phone_num'] = user.user_phone_num  
         session['user_email'] = user.user_email
         session['user_role'] = user.user_role
+        session['user_avatar'] = user.user_avatar 
         session.permanent = True
         return jsonify({
             'message': 'Đăng nhập thành công',
