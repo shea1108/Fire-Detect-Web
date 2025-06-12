@@ -18,7 +18,8 @@
                 <div class="section-title text-center">
                     <h2>Xác thực tài khoản của bạn</h2>
                     <p id="info-text">
-                        Một mã xác thực gồm 6 chữ số đã được gửi đến email của bạn. Vui lòng kiểm tra và nhập vào bên dưới.
+                        Một mã xác thực gồm 6 chữ số đã được gửi đến email của
+                        bạn. Vui lòng kiểm tra và nhập vào bên dưới.
                     </p>
                 </div>
                 <div class="contact-wrap-form log-in-width">
@@ -40,7 +41,10 @@
                             </div>
 
                             <div class="col-12 text-center">
-                                <button class="default-btn btn-two" type="submit">
+                                <button
+                                    class="default-btn btn-two"
+                                    type="submit"
+                                >
                                     Xác nhận
                                 </button>
                             </div>
@@ -61,13 +65,13 @@
                 const email = urlParams.get('email');
 
                 if (!email) {
-                    infoText.innerText = 'Không tìm thấy email để xác thực. Vui lòng thử đăng ký lại.';
+                    infoText.innerText =
+                        'Không tìm thấy email để xác thực. Vui lòng thử đăng ký lại.';
                     form.style.display = 'none'; // Ẩn form nếu không có email
                     return;
                 }
-                
-                infoText.innerText = `Một mã xác thực gồm 6 chữ số đã được gửi đến ${email}. Vui lòng kiểm tra và nhập vào bên dưới.`;
 
+                infoText.innerText = `Một mã xác thực gồm 6 chữ số đã được gửi đến ${email}. Vui lòng kiểm tra và nhập vào bên dưới.`;
 
                 form.addEventListener('submit', async (e) => {
                     e.preventDefault();
@@ -83,11 +87,17 @@
                     }
 
                     try {
-                        const res = await fetch('/api/auth/register/verify-otp', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ email: email, otp: otp }),
-                        });
+                        const res = await fetch(
+                            '/api/auth/register/verify-otp',
+                            {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    email: email,
+                                    otp: otp,
+                                }),
+                            }
+                        );
 
                         const data = await res.json();
 
@@ -97,15 +107,17 @@
                                 title: 'Thành công!',
                                 text: 'Tài khoản của bạn đã được xác thực và tạo thành công.',
                                 timer: 2000,
-                                showConfirmButton: false
+                                showConfirmButton: false,
                             });
                             // Chuyển hướng đến trang đăng nhập sau khi thành công
-                            window.location.href = '/sign-in'; 
+                            window.location.href = '/sign-in';
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Xác thực thất bại',
-                                text: data.error || 'Đã có lỗi xảy ra. Vui lòng thử lại.',
+                                text:
+                                    data.error ||
+                                    'Đã có lỗi xảy ra. Vui lòng thử lại.',
                             });
                         }
                     } catch (err) {
@@ -123,7 +135,7 @@
         <!-- Footer Area -->
         {% include ('partials/footer.html') %}
         <!-- Footer Area End -->
-        
+
         <!-- Các script khác của bạn -->
         <script src="/static/assets/js/jquery.min.js"></script>
         <script src="/static/assets/js/bootstrap.bundle.min.js"></script>

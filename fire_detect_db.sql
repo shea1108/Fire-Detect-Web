@@ -16,7 +16,15 @@ DROP TABLE IF EXISTS log_bboxes;
 
 -- ALTER TABLE users
 -- ADD COLUMN user_reset_expire_at TIMESTAMP;
+-- Bảng users không cần user_role nữa
+DROP TABLE IF EXISTS user_roles;
+DROP TABLE IF EXISTS role_permissions;
+DROP TABLE IF EXISTS permissions;
+DROP TABLE IF EXISTS roles;
 
+-- USERS (cập nhật: bỏ user_role)
+-- ALTER TABLE users
+-- DROP COLUMN user_role;
 
 
 -- TABLE: users  
@@ -24,7 +32,6 @@ CREATE TABLE users (
     user_id         SERIAL PRIMARY KEY,
     user_name       VARCHAR(100) NOT NULL,
     user_password   VARCHAR(255) NOT NULL,
-    user_role       VARCHAR(20)  NOT NULL,
     user_email      VARCHAR(100) UNIQUE NOT NULL,
     user_phone_num  VARCHAR(10) UNIQUE,
     user_reset_token VARCHAR(128),
@@ -32,6 +39,41 @@ CREATE TABLE users (
     user_status     BOOLEAN      NOT NULL,
     user_create_at  TIMESTAMP    NOT NULL DEFAULT NOW()
 );
+
+-- Bảng roles (vai trò)
+CREATE TABLE roles (
+    role_id SERIAL PRIMARY KEY,
+    role_name VARCHAR(50) UNIQUE NOT NULL -- ví dụ: admin, guest, police
+);
+
+-- Bảng permissions (quyền cụ thể)
+CREATE TABLE permissions (
+    perm_id SERIAL PRIMARY KEY,
+    perm_name VARCHAR(100) UNIQUE NOT NULL,         -- ví dụ: use_v8n, use_v8m
+    perm_description TEXT
+);
+
+-- Nhiều user có nhiều role
+CREATE TABLE user_roles (
+    user_id INT NOT NULL,
+    role_id INT NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE CASCADE
+);
+
+-- Nhiều role có nhiều quyền
+CREATE TABLE role_permissions (
+    role_id INT NOT NULL,
+    perm_id INT NOT NULL,
+    PRIMARY KEY (role_id, perm_id),
+    FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE CASCADE,
+    FOREIGN KEY (perm_id) REFERENCES permissions(perm_id) ON DELETE CASCADE
+);
+
+
+
+
 
 -- TABLE: devices
 CREATE TABLE devices (
@@ -147,3 +189,36 @@ VALUES (3, 'Cảnh báo khẩn cấp', 'Phát hiện lửa tại thiết bị 1.
 INSERT INTO platforms (plat_id, plat_name, plat_endpoint)
 VALUES (1, 'Email', NULL);
 
+
+
+
+
+-- Thêm roles
+INSERT INTO roles (role_name) VALUES ('admin'), ('guest'), ('user'), ('police');
+
+-- Thêm quyền
+INSERT INTO permissions (perm_name, perm_description) VALUES
+('use_v8n', 'Sử dụng mô hình YOLOv8n'),
+('use_v8m', 'Sử dụng mô hình YOLOv8m'),
+('use_v8l', 'Sử dụng mô hình YOLOv8l'),
+('view_logs', 'Xem nhật ký log'),
+('upload_model', 'Tải mô hình AI');
+
+-- Gán quyền cho guest
+INSERT INTO role_permissions (role_id, perm_id)
+SELECT r.role_id, p.perm_id FROM roles r, permissions p
+WHERE r.role_name = 'guest' AND p.perm_name = 'use_v8n';
+
+-- Gán quyền cho user
+INSERT INTO role_permissions (role_id, perm_id)
+SELECT r.role_id, p.perm_id FROM roles r, permissions p
+WHERE r.role_name = 'user' AND p.perm_name IN ('use_v8n', 'use_v8m', 'use_v8l');
+
+-- Gán quyền cho admin
+INSERT INTO role_permissions (role_id, perm_id)
+SELECT r.role_id, p.perm_id FROM roles r, permissions p;
+
+-- Gán user có vai trò "guest"
+INSERT INTO user_roles (user_id, role_id)
+SELECT u.user_id, r.role_id FROM users u, roles r
+WHERE u.user_email = 'guest@example.com' AND r.role_name = 'guest';

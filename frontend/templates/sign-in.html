@@ -22,7 +22,11 @@
                         <p>With your social network</p>
                         <div class="row justify-content-center">
                             <div class="col-lg-4 col-md-4 col-sm-4">
-                                <button class="login-social-btn" type="button" onclick="window.location.href='/api/auth/google/login'">
+                                <button
+                                    class="login-social-btn"
+                                    type="button"
+                                    onclick="window.location.href='/api/auth/google/login'"
+                                >
                                     <i class="bx bxl-google-plus"></i>
                                 </button>
                             </div>
@@ -62,7 +66,7 @@
                                     />
                                 </div>
                             </div>
-                            
+
                             <div class="col-lg-6 col-sm-6 form-condition">
                                 <div class="agree-label">
                                     <input type="checkbox" id="chb1" />
@@ -158,12 +162,12 @@
                             await Swal.fire({
                                 icon: 'success',
                                 title: 'Đăng nhập thành công!',
-
                                 timer: 2000,
                                 showConfirmButton: false,
                             });
-                            window.location.href =
-                                data.role === 'admin' ? '/admin' : '/';
+
+                            const isAdmin = data.user_role?.includes('admin'); // ✅ check đúng kiểu array
+                            window.location.href = isAdmin ? '/admin/' : '/';
                         } else {
                             await Swal.fire({
                                 icon: 'error',

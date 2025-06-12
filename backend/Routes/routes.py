@@ -1,3 +1,4 @@
+# backend/Routes/routes.py
 from flask import Blueprint, render_template
 import os
 from flask import Blueprint, render_template, session, redirect, url_for
@@ -34,7 +35,11 @@ def sign_in():
     user = None
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
-        return redirect(url_for('web.home'))
+        if 'admin' in session.get('user_role', []):
+            return redirect('/admin/')
+        else:
+            return redirect('/')
+
     return render_template('sign-in.html', user=user)
 
 
