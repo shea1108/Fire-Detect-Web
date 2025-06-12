@@ -36,9 +36,9 @@ def get_current_user():
             'user_email': session['user_email'],
             'user_phone_num': session.get('user_phone_num', ''),
             'user_avatar': session.get('user_avatar', ''),
-            'role': session['user_role']
+            'user_role': session['user_role']
         }), 200
-    return jsonify({'error': 'Chưa đăng nhập'}), 401
+    return jsonify({'error': 'Chưa đăng nhập', 'user_role': 'guest'}), 401
 
 
 
@@ -73,37 +73,45 @@ def google_login():
 def google_callback():
     try:
         token = google.authorize_access_token()
-        
         user_info = token.get('userinfo')
         if not user_info:
             user_info = google.parse_id_token(token)
-
     except OAuthError as e:
         print(f"Người dùng đã hủy đăng nhập hoặc có lỗi OAuth: {e}")
         return redirect('/login') 
 
     email = user_info['email']
     name = user_info.get('name', email)
-
-    user = User.query.filter_by(user_email=email).first()
     avatar = user_info.get('picture', '')
+
+    # Tìm user
+    user = User.query.filter_by(user_email=email).first()
+
     if not user:
+        # Nếu chưa có thì tạo user mới
         user = User(
             user_email=email,
-            user_password='',
+            user_password='',  # Vì đăng nhập Google, không cần mật khẩu
             user_name=name,
-            user_role='user',
             user_avatar=avatar,
             user_status=True
         )
+        # Gán role mặc định
+        from backend.Models.rbac_model import Role
+        default_role = Role.query.filter_by(role_name='user').first()
+        if default_role:
+            user.roles.append(default_role)
+
         db.session.add(user)
         db.session.commit()
 
+    # Cập nhật session
     session['user_id'] = user.user_id
     session['user_name'] = user.user_name
     session['user_email'] = user.user_email
-    session['user_role'] = user.user_role
-    session['user_avatar'] = user.user_avatar 
+    session['user_avatar'] = user.user_avatar
+    session['user_role'] = [role.role_name for role in user.roles]
+    session['permissions'] = list(user.permissions)
     session.permanent = True
 
     return redirect('/')

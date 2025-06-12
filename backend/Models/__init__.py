@@ -8,3 +8,4 @@ from .logs_model import Log
 from .devices_model import Device
 from .log_bboxes_model import LogBBox 
 from .user_platforms_model import UserPlatform
+from .rbac_model import Role, Permission, user_roles, role_permissions

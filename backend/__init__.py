@@ -64,7 +64,7 @@ def create_app():
     socketio.init_app(app)
     oauth.init_app(app)
     mail.init_app(app)
-    CORS(app)
+    CORS(app,supports_credentials=True)
 
     with app.app_context():
         db.create_all()
