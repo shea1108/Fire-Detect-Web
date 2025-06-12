@@ -18,8 +18,7 @@ from backend.Models.models_model import Model as ModelDB
 from backend.Models.log_bboxes_model import  db, LogBBox
 from collections import deque
 
-
-from flask import request
+from flask import request, session
 from flask_socketio import emit
 from PIL import Image, ImageDraw, ImageFont
 from ultralytics import YOLO
@@ -238,31 +237,53 @@ def register_socketio(socketio):
 
     @socketio.on('get_models')
     def handle_get_models():
-        logger.info(f"Client [{request.sid}] requested models list.")
+        user_id = session.get('user_id')
+        models = []
+        
         try:
-            all_models = ModelDB.query.all()
-            models_list = [{'model_id': m.model_id, 'model_name': m.model_name} for m in all_models]
-            emit('models_list', {'status': 'success', 'models': models_list}, room=request.sid)
+            if user_id:
+                logger.info(f"User '{session.get('user_name')}' requested models. Getting all active models.")
+                models = ModelDB.query.filter_by(model_status=True).order_by(ModelDB.model_name).all()
+            else:
+                logger.info("Guest user requested models. Getting the default model.")
+                first_model = ModelDB.query.filter_by(model_status=True).first()
+                if first_model:
+                    models = [first_model] # Trả về một danh sách chỉ chứa một model
+
+            if not models:
+                emit('models_list', {'status': 'error', 'message': 'Không tìm thấy model nào hoạt động.'})
+                return
+
+            models_list = [{"model_id": m.model_id, "model_name": m.model_name} for m in models]
+            emit('models_list', {'status': 'success', 'models': models_list})
+            logger.info(f"Sent {len(models_list)} model(s) to the client.")
+
         except Exception as e:
-            logger.error(f"❌ Failed to get models from database: {e}")
-            emit('models_list', {'status': 'error', 'message': str(e)}, room=request.sid)
+            logger.error(f"Error in handle_get_models: {e}")
+            emit('models_list', {'status': 'error', 'message': 'Lỗi server khi tải model.'})
 
     @socketio.on('save_device')
     def handle_save_device(data):
+
+        user_id = session.get('user_id') 
+        
         dev_name = data.get('dev_name')
-        user_id = data.get('user_id')
         client_hardware_id = data.get('dev_hardware_id') 
 
-        if not all([dev_name, user_id, client_hardware_id]):
-            logger.error(f"Error: Missing device info in payload: {data}")
-            emit('save_device_response', {'status': 'error', 'message': 'Missing device info'}, room=request.sid)
+        if user_id is None:
+            logger.warning(f"Guest user is saving device: HW ID '{client_hardware_id}'")
+
+        if not all([dev_name, client_hardware_id]):
+            emit('save_device_response', {'status': 'error', 'message': 'Missing device info'})
             return
             
         try:
-            # SỬ DỤNG HÀM TIỆN ÍCH
             device = _get_device_from_hardware_id(client_hardware_id)
             if device:
                 device.dev_name = dev_name
+
+                if user_id:
+                    device.user_id = user_id
                 db.session.add(device)
                 dev_id_to_return = device.dev_id
                 logger.info(f"Device updated: HW ID '{client_hardware_id}' -> DB ID {dev_id_to_return}")
@@ -274,11 +295,13 @@ def register_socketio(socketio):
                 logger.info(f"New device created: HW ID '{client_hardware_id}' -> DB ID {dev_id_to_return}")
 
             db.session.commit()
-            emit('save_device_response', {'status': 'success', 'message': 'Device saved successfully', 'dev_id': dev_id_to_return}, room=request.sid)
+            emit('save_device_response', {'status': 'success', 'message': 'Device saved successfully', 'dev_id': dev_id_to_return})
         except Exception as e:
             db.session.rollback()
             logger.error(f"Database error on save_device: {e}")
-            emit('save_device_response', {'status': 'error', 'message': f'Database error: {e}'}, room=request.sid)
+            emit('save_device_response', {'status': 'error', 'message': f'Database error: {e}'})
+
+
     @socketio.on('get_stats')
     def handle_get_stats():
         stats = perf_monitor.get_stats()
