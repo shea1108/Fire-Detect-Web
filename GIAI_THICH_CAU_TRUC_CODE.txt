@@ -7,7 +7,7 @@ Get-ChildItem -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Fo
 Get-ChildItem -Recurse -Filter *.pyc | Remove-Item -Force
 
 
-gid add . 
+git add . 
 
 git rm --cached .env
 git rm --cached certs/cert.pem certs/key.pem

@@ -3,6 +3,9 @@ from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
 from datetime import timedelta
+from backend.config import Config 
+
+
 
 from backend.extensions import db, bcrypt, socketio, oauth, mail
 
@@ -14,12 +17,11 @@ from backend.Routes import socketio as socket
 from backend.Routes.admin import routes as admin_routes
 from backend.Routes.models import bp as models_bp
 from backend.Routes.notification import bp as notification_bp
-from backend.Routes.user import user_bp
+from backend.Routes.users import bp as user_bp
 
 
 #MODELS
 from backend.Models import *  # Chỉ cần 1 dòng
-
 
 
 
@@ -29,10 +31,8 @@ def create_app():
     load_dotenv()
 
     app = Flask(__name__, template_folder='../frontend/templates', static_folder='../frontend/static')
-    
+    app.config.from_object(Config)
     # 2. Cấu hình app từ các biến môi trường
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
-    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
     app.permanent_session_lifetime = timedelta(days=7)
 
     # Cấu hình MAIL
@@ -78,6 +78,7 @@ def create_app():
     app.register_blueprint(admin_routes.bp)
     app.register_blueprint(notification_bp)
     app.register_blueprint(user_bp)
+
     
     socket.register_socketio(socketio)
 

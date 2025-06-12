@@ -4,13 +4,49 @@ from flask import Blueprint, render_template, session, redirect, url_for
 from backend.utils.auth_utils import login_required_redirect
 from backend.Models.users_model import User
 
-bp = Blueprint('web', __name__)
+TEMPLATE_DIR= os.path.join(os.path.dirname(__file__), '../../frontend/templates')
+bp = Blueprint('web', __name__, template_folder=TEMPLATE_DIR)
 
 @bp.route('/')
+@bp.route('/index.html')
+@bp.route('/index')
 def home():
-    return render_template('index.html')
+    user = None
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])
+    return render_template('index.html', user=user)
+
+
+@bp.route('/about')
+@bp.route('/about.html')     
+def about():
+    return render_template('about.html')   
+
+#
+@bp.route('/sign-in')
+@bp.route('/sign-in.html')
+def sign_in():
+    user = None
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])
+        return redirect(url_for('web.home'))
+    return render_template('sign-in.html', user=user)
+
+
+@bp.route('/sign-up')
+@bp.route('/sign-up.html')
+def sign_up():
+    user = None
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])
+        return redirect(url_for('web.home'))
+    return render_template('sign-up.html', user=user)
+
+
+
 
 @bp.route('/profile')
+@bp.route('/profile.html')
 @login_required_redirect
 def profile():
     user_id = session.get('user_id')
@@ -21,15 +57,38 @@ def profile():
 
     return render_template('profile.html', user=user)
 
+######################
+@bp.route('/detect-image')
+@bp.route('/detect-image.html')
+def detect_image():
+    return render_template('detect-image.html')
 
-TEMPLATE_FOLDER_FE_NEW = os.path.join(os.path.dirname(__file__), '../../frontend/templates')
-@bp.route('/<path:page>')
-def render_new_frontend_page(page):
+@bp.route('/detect-video')
+@bp.route('/detect-video.html')
+def detect_video():
+    return render_template('detect-video.html')
 
-    if not page.endswith('.html'):
-        page += '.html'
+@bp.route('/detect-camera')
+@bp.route('/detect-camera.html')
+def detect_camera():
+    return render_template('detect-camera.html')
 
-    full_path = os.path.join(TEMPLATE_FOLDER_FE_NEW, page)
-    if os.path.exists(full_path):
-        return render_template(page)
-    return render_template('404.html'), 404
+##########
+@bp.route('/recover-password', methods=['GET'])
+@bp.route('/recover-password.html', methods=['GET'])
+def show_recover_form():
+    return render_template('recover-password.html')
+
+@bp.route('/reset-password/<token>', methods=['GET'])
+def show_reset_form(token):
+    from backend.utils.token_utils import verify_reset_token
+    email = verify_reset_token(token)
+    if not email:
+        return "Link không hợp lệ hoặc đã hết hạn", 400
+    return render_template('reset-password.html', token=token)
+
+
+
+
+
+
