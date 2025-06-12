@@ -23,7 +23,7 @@ def register_send_otp(data):
         return jsonify({"error": "Email này đã được sử dụng."}), 409
 
     otp = generate_otp()
-    hashed_password = bcrypt.hashpw(data['user_password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    hashed_password = bcrypt.generate_password_hash(data['user_password']).decode('utf-8')
 
     subject = "🔐 Mã Xác Thực Đăng Ký Tài Khoản"
     OTP_expiry_seconds = current_app.config['REGISTER_OTP_EXPIRY_SECONDS']
