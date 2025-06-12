@@ -78,6 +78,12 @@
                                     />
                                 </div>
                             </div>
+                            <!-- Ẩn input role, luôn gửi 'user' -->
+                            <input
+                                type="hidden"
+                                name="user_role"
+                                value="user"
+                            />
 
                             <div class="col-12">
                                 <div class="form-group">
@@ -88,20 +94,6 @@
                                         placeholder="Mật khẩu"
                                         required
                                     />
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <select
-                                        class="form-control"
-                                        name="user_role"
-                                        required
-                                    >
-                                        <option value="">Chọn vai trò</option>
-                                        <option value="admin">Admin</option>
-                                        <option value="user">User</option>
-                                    </select>
                                 </div>
                             </div>
 
@@ -117,7 +109,9 @@
                             <div class="col-12">
                                 <p class="account-desc">
                                     Đã có tài khoản?
-                                    <a href="/sign-in.html">Đăng nhập tại đây</a>
+                                    <a href="/sign-in.html"
+                                        >Đăng nhập tại đây</a
+                                    >
                                 </p>
                             </div>
                         </div>
@@ -167,12 +161,16 @@
                                 showConfirmButton: false,
                             });
                             // Chuyển hướng đến trang xác thực OTP, đính kèm email vào URL
-                            window.location.href = `/register/verify-otp?email=${encodeURIComponent(data.email)}`;
+                            window.location.href = `/register/verify-otp?email=${encodeURIComponent(
+                                data.email
+                            )}`;
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Đăng ký thất bại',
-                                text: data.error || 'Đã có lỗi xảy ra. Vui lòng kiểm tra lại thông tin.',
+                                text:
+                                    data.error ||
+                                    'Đã có lỗi xảy ra. Vui lòng kiểm tra lại thông tin.',
                             });
                         }
                     } catch (err) {

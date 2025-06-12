@@ -9,3 +9,4 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     RESET_TOKEN_EXPIRY_SECONDS = int(os.getenv('RESET_TOKEN_EXPIRY_SECONDS', 300))  # mặc định 5 phút
+    REGISTER_OTP_EXPIRY_SECONDS = int(os.getenv('REGISTER_OTP_EXPIRY_SECONDS', 300))  # mặc định 5 phút
