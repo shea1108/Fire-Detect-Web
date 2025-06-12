@@ -1,5 +1,6 @@
 from backend.extensions import db
 from datetime import datetime
+from zoneinfo import ZoneInfo 
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -11,7 +12,9 @@ class User(db.Model):
     user_email = db.Column(db.String(100), unique=True, nullable=False)
     user_phone_num = db.Column(db.String(10))
     user_status = db.Column(db.Boolean, nullable=False, default=True)
-    user_create_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
-    reset_token = db.Column(db.String(100), unique=True, nullable=True)
-    reset_token_expiry = db.Column(db.DateTime, nullable=True)
+    user_avatar = db.Column(db.String(255), nullable=True)
+    user_reset_token = db.Column(db.String(128), nullable=True)
+    user_reset_expire_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    user_create_at = db.Column(db.DateTime(timezone=True),
+                           nullable=False,
+                           default=lambda: datetime.now(ZoneInfo('Asia/Ho_Chi_Minh')))

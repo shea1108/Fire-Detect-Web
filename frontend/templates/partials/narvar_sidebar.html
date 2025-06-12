@@ -209,7 +209,7 @@
                                         aria-expanded="false"
                                     >
                                         <img
-                                            src="https://placehold.co/32x32"
+                                            src="/static/assets/img/favicon.png"
                                             class="user-avatar me-2"
                                             alt="Avatar"
                                         />
@@ -219,10 +219,7 @@
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li class="nav-item">
-                                            <a
-                                                href="profile"
-                                                class="nav-link"
-                                            >
+                                            <a href="profile" class="nav-link">
                                                 <i class="bx bx-user me-2"></i>
                                                 Thông tin cá nhân
                                             </a>
@@ -255,8 +252,10 @@
     document.addEventListener('DOMContentLoaded', async function () {
         const authButtons = document.getElementById('auth-buttons');
         const userInfo = document.getElementById('user-info');
+        const userNameEl = document.getElementById('user-name');
+        const avatarEl = document.querySelector('.user-avatar');
 
-        if (!authButtons || !userInfo) return;
+        if (!authButtons || !userInfo || !userNameEl || !avatarEl) return;
 
         try {
             const res = await fetch('/api/auth/me', {
@@ -272,11 +271,14 @@
             } else {
                 authButtons.classList.add('d-none');
                 userInfo.classList.remove('d-none');
-                document.getElementById('user-name').innerText = data.user_name;
+                userNameEl.innerText = data.user_name;
+
+                // Gán avatar nếu có, không thì fallback
+                avatarEl.src =
+                    data.user_avatar || '/static/assets/img/favicon.png';
             }
         } catch (err) {
             console.error('Lỗi kiểm tra đăng nhập:', err);
-            // Trong trường hợp lỗi, fallback:
             authButtons.classList.remove('d-none');
             userInfo.classList.add('d-none');
         }

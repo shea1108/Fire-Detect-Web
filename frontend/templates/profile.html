@@ -63,27 +63,53 @@
         </div>
 
         <div class="container py-5">
-            <div
-                class="row gy-4 gx-5 edit-profile-container flex-column flex-md-row"
-            >
-                <!-- LEFT: Avatar -->
+            <form id="edit-profile-form" enctype="multipart/form-data">
                 <div
-                    class="col-12 col-md-3 text-center border-end order-1 order-md-1"
+                    class="row gy-4 gx-5 edit-profile-container flex-column flex-md-row"
                 >
-                    <img
-                        src="/static/assets/img/favicon.png"
-                        alt="Avatar"
-                        class="avatar mb-3"
-                    />
-                    <h5 class="fw-bold">{{ user.user_name }}</h5>
-                    <p class="text-muted small mb-1">{{ user.user_email }}</p>
-                    <p class="text-muted small">Việt Nam</p>
-                </div>
+                    <!-- LEFT: Avatar -->
+                    <div
+                        class="col-12 col-md-3 text-center border-end order-1 order-md-1"
+                    >
+                        <img
+                            src="{{ user.user_avatar or '/static/assets/img/favicon.png' }}"
+                            alt="Avatar"
+                            class="avatar mb-3"
+                            id="avatar-preview"
+                        />
+                        <h5 class="fw-bold">{{ user.user_name }}</h5>
+                        <p class="text-muted small mb-1">
+                            {{ user.user_email }}
+                        </p>
 
-                <!-- CENTER: Edit Form -->
-                <div class="col-12 col-md-6 order-2 order-md-2">
-                    <h5 class="mb-4">Chỉnh sửa thông tin</h5>
-                    <form id="edit-profile-form">
+                        <!-- Avatar input -->
+                        <div class="flex-grow-1">
+                            <button
+                                type="button"
+                                class="btn btn-outline-primary"
+                                onclick="document.getElementById('avatarInput').click()"
+                            >
+                                Đổi ảnh đại diện
+                            </button>
+                            <input
+                                type="file"
+                                name="avatar"
+                                id="avatarInput"
+                                class="d-none"
+                                accept="image/*"
+                                onchange="previewAvatar(event)"
+                            />
+                            <br>
+                            <small class="form-text text-muted"
+                                >Chọn ảnh JPG, PNG dưới 2MB</small
+                            >
+                        </div>
+                    </div>
+
+                    <!-- CENTER: Form Fields -->
+                    <div class="col-12 col-md-6 order-2 order-md-2">
+                        <h5 class="mb-4">Chỉnh sửa thông tin</h5>
+
                         <div class="row mb-3">
                             <div class="col">
                                 <label class="form-label">Họ và tên</label>
@@ -91,6 +117,7 @@
                                     type="text"
                                     class="form-control"
                                     name="user_name"
+                                    autocomplete="off"
                                     value="{{ user.user_name }}"
                                 />
                             </div>
@@ -106,6 +133,7 @@
                                 />
                             </div>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Email</label>
                             <input
@@ -127,94 +155,95 @@
                                 🔐 Quên mật khẩu
                             </a>
                         </div>
-                    </form>
-                </div>
-
-                <!-- RIGHT: Linked Platforms -->
-                <div class="col-12 col-md-3 border-start order-3 order-md-3">
-                    <div
-                        class="d-flex justify-content-between align-items-center mb-3"
-                    >
-                        <h6 class="mb-0">Liên kết nền tảng</h6>
                     </div>
 
-                    <!-- Email -->
-                    <div class="mb-4 d-flex align-items-start">
-                        <img
-                            src="/static/assets/img/gmail-icon.png"
-                            width="32"
-                            class="me-3 mt-1"
-                            alt="Gmail"
-                        />
-                        <div>
-                            <strong>Email</strong><br />
-                            <small class="text-muted"
-                                >{{ user.user_email }}</small
+                    <!-- RIGHT: Linked Platforms -->
+                    <div
+                        class="col-12 col-md-3 border-start order-3 order-md-3"
+                    >
+                        <div
+                            class="d-flex justify-content-between align-items-center mb-3"
+                        >
+                            <h6 class="mb-0">Liên kết nền tảng</h6>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-4 d-flex align-items-start">
+                            <img
+                                src="/static/assets/img/gmail-icon.png"
+                                width="32"
+                                class="me-3 mt-1"
+                                alt="Gmail"
+                            />
+                            <div>
+                                <strong>Email</strong><br />
+                                <small class="text-muted"
+                                    >{{ user.user_email }}</small
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Zalo -->
+                        <div
+                            class="mb-4 d-flex align-items-start justify-content-between"
+                        >
+                            <div class="d-flex align-items-start">
+                                <img
+                                    src="/static/assets/img/zalo-icon.png"
+                                    width="32"
+                                    class="me-3 mt-1"
+                                    alt="Zalo"
+                                />
+                                <div>
+                                    <strong>Zalo</strong><br />
+                                    <small class="text-muted">
+                                        {% if user.zalo_linked %} Đã liên kết {%
+                                        else %} Chưa liên kết {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                            {% if not user.zalo_linked %}
+                            <a
+                                href="/link/zalo"
+                                class="btn btn-outline-primary btn-sm mt-1"
+                                >Liên kết</a
                             >
+                            {% endif %}
                         </div>
-                    </div>
 
-                    <!-- Zalo -->
-                    <div
-                        class="mb-4 d-flex align-items-start justify-content-between"
-                    >
-                        <div class="d-flex align-items-start">
-                            <img
-                                src="/static/assets/img/zalo-icon.png"
-                                width="32"
-                                class="me-3 mt-1"
-                                alt="Zalo"
-                            />
-                            <div>
-                                <strong>Zalo</strong><br />
-                                <small class="text-muted">
-                                    {% if user.zalo_linked %} Đã liên kết {%
-                                    else %} Chưa liên kết {% endif %}
-                                </small>
-                            </div>
-                        </div>
-                        {% if not user.zalo_linked %}
-                        <a
-                            href="/link/zalo"
-                            class="btn btn-outline-primary btn-sm mt-1"
-                            >Liên kết</a
+                        <!-- Telegram -->
+                        <div
+                            class="mb-4 d-flex align-items-start justify-content-between"
                         >
-                        {% endif %}
-                    </div>
-
-                    <!-- Telegram -->
-                    <div
-                        class="mb-4 d-flex align-items-start justify-content-between"
-                    >
-                        <div class="d-flex align-items-start">
-                            <img
-                                src="/static/assets/img/telegram-icon.png"
-                                width="32"
-                                class="me-3 mt-1"
-                                alt="Telegram"
-                            />
-                            <div>
-                                <strong>Telegram</strong><br />
-                                <small class="text-muted">
-                                    {% if user.telegram_linked %} Đã liên kết {%
-                                    else %} Chưa liên kết {% endif %}
-                                </small>
+                            <div class="d-flex align-items-start">
+                                <img
+                                    src="/static/assets/img/telegram-icon.png"
+                                    width="32"
+                                    class="me-3 mt-1"
+                                    alt="Telegram"
+                                />
+                                <div>
+                                    <strong>Telegram</strong><br />
+                                    <small class="text-muted">
+                                        {% if user.telegram_linked %} Đã liên
+                                        kết {% else %} Chưa liên kết {% endif %}
+                                    </small>
+                                </div>
                             </div>
+                            {% if not user.telegram_linked %}
+                            <a
+                                href="/link/telegram"
+                                class="btn btn-outline-primary btn-sm mt-1"
+                                >Liên kết</a
+                            >
+                            {% endif %}
                         </div>
-                        {% if not user.telegram_linked %}
-                        <a
-                            href="/link/telegram"
-                            class="btn btn-outline-primary btn-sm mt-1"
-                            >Liên kết</a
-                        >
-                        {% endif %}
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
 
         <script>
-            // Sau khi hiển thị thông báo thành công:
             const profileUpdateUI = async () => {
                 try {
                     const meRes = await fetch('/api/auth/me');
@@ -230,7 +259,14 @@
                         document.querySelector('[name="user_email"]').value =
                             meData.user_email;
 
-                        // Gán lại hiển thị ở bên trái (avatar section)
+                        // Cập nhật lại avatar nếu có
+                        const avatar =
+                            document.getElementById('avatar-preview');
+                        if (meData.user_avatar) {
+                            avatar.src = meData.user_avatar;
+                        }
+
+                        // Gán lại hiển thị bên trái
                         document.querySelector('.fw-bold').innerText =
                             meData.user_name;
                         document.querySelectorAll(
@@ -242,35 +278,38 @@
                 }
             };
 
+            // Xem trước ảnh đại diện khi người dùng chọn file
+            function previewAvatar(event) {
+                const reader = new FileReader();
+                reader.onload = function () {
+                    const img = document.getElementById('avatar-preview');
+                    img.src = reader.result;
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            }
+
             document
                 .getElementById('edit-profile-form')
                 .addEventListener('submit', async function (e) {
                     e.preventDefault();
 
-                    const user_name =
-                        document.querySelector('[name="user_name"]').value;
-                    const user_phone_num = document.querySelector(
-                        '[name="user_phone_num"]'
-                    ).value;
-                    const user_email = document.querySelector(
-                        '[name="user_email"]'
-                    ).value;
+                    const form = e.target;
+                    const formData = new FormData(form);
 
                     try {
                         const response = await fetch('/api/user/edit', {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                user_name,
-                                user_phone_num,
-                                user_email,
-                            }),
+                            body: formData,
                         });
 
-                        const data = await response.json();
-                        
+                        const contentType =
+                            response.headers.get('content-type');
+                        const data =
+                            contentType &&
+                            contentType.includes('application/json')
+                                ? await response.json()
+                                : await response.text();
+
                         if (response.ok) {
                             Swal.fire({
                                 icon: 'success',
