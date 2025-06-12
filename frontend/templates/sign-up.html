@@ -167,7 +167,7 @@
                                 showConfirmButton: false,
                             });
                             // Chuyển hướng đến trang xác thực OTP, đính kèm email vào URL
-                            window.location.href = `/verify-otp?email=${encodeURIComponent(data.email)}`;
+                            window.location.href = `/register/verify-otp?email=${encodeURIComponent(data.email)}`;
                         } else {
                             Swal.fire({
                                 icon: 'error',
