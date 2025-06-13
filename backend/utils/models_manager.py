@@ -1,11 +1,12 @@
+# backend/manager.py
 import os
 import torch
 from ultralytics import YOLO
 import logging
-from .Models.models_model import Model as ModelDB
+from ..Models.models_model import Model as ModelDB
 
 
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
 logger = logging.getLogger(__name__)
 
 class ModelManager:

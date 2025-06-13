@@ -13,7 +13,7 @@ from backend.extensions import db, bcrypt, socketio, oauth, mail
 from backend.Routes import routes
 from backend.Routes import auth
 from backend.Routes import predict
-from backend.Routes import socketio as socket
+#from backend.Routes import socketio as socket
 from backend.Routes.admin import routes as admin_routes
 from backend.Routes.models import bp as models_bp
 from backend.Routes.notification import bp as notification_bp
@@ -22,6 +22,22 @@ from backend.Routes.users import bp as user_bp
 
 #MODELS
 from backend.Models import *  # Chỉ cần 1 dòng
+
+#SOCKETIO
+from backend.socket import register_socketio
+
+
+
+
+
+
+################ ADMIN ROUTES ################
+from backend.Routes.admin import admin_routes, admin_models, admin_users
+
+
+
+
+
 
 
 
@@ -75,11 +91,24 @@ def create_app():
     app.register_blueprint(auth.bp)
     app.register_blueprint(routes.bp)
     app.register_blueprint(predict.bp)
-    app.register_blueprint(admin_routes.bp)
+    
     app.register_blueprint(notification_bp)
     app.register_blueprint(user_bp)
 
+
+
     
-    socket.register_socketio(socketio)
+    #socket.register_socketio(socketio)
+    register_socketio(socketio)
+
+
+
+
+
+    ######################### Admin routes
+    app.register_blueprint(admin_routes)
+    app.register_blueprint(admin_models)
+    app.register_blueprint(admin_users)
+
 
     return app

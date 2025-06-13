@@ -87,7 +87,6 @@ def edit_user_profile():
             'user_email': user.user_email,
             'user_phone_num': user.user_phone_num,
             'user_avatar': user.user_avatar,
-            'role': user.user_role
         }), 200
 
     except Exception as e:

@@ -1,3 +1,5 @@
+#backend/Routes/socketio.py
+
 # ==============================================================================
 # PHẦN 1: IMPORTS VÀ CẤU HÌNH BAN ĐẦU
 # ==============================================================================
@@ -23,7 +25,7 @@ from flask_socketio import emit
 from PIL import Image, ImageDraw, ImageFont
 from ultralytics import YOLO
 
-from backend.manager import model_manager # Giả sử bạn import từ đây
+from backend.utils.models_manager import model_manager # Giả sử bạn import từ đây
 
 
 # Cấu hình logging để theo dõi hoạt động
@@ -145,19 +147,7 @@ def _get_device_from_hardware_id(hw_id):
         return None
     return Device.query.filter_by(dev_hardware_id=hw_id).first()
 
-def _save_image_and_get_path(image_data_or_pil, dev_id):
-    """Lưu ảnh (bytes hoặc PIL Image) và trả về đường dẫn tệp."""
-    save_dir = os.path.join('static', 'log_images', str(dev_id))
-    os.makedirs(save_dir, exist_ok=True)
-    filename = f"capture_{uuid.uuid4().hex}.jpg"
-    filepath = os.path.join(save_dir, filename)
 
-    if isinstance(image_data_or_pil, Image.Image):
-        image_data_or_pil.save(filepath)
-    else: # Giả sử là bytes
-        with open(filepath, 'wb') as f:
-            f.write(image_data_or_pil)
-    return filepath
 
 def _save_detection_log(dev_id, model_id, orig_image, bbox_image, detections, cooldown_seconds=3):
     if not detections:

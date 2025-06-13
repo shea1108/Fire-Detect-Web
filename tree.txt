@@ -17,7 +17,6 @@ D:.
 +---backend
 |   |   config.py
 |   |   extensions.py
-|   |   manager.py
 |   |   __init__.py
 |   |   
 |   +---Controllers
@@ -40,6 +39,7 @@ D:.
 |   |       notifications_model.py
 |   |       notification_models_model.py
 |   |       platforms_model.py
+|   |       rbac_model.py
 |   |       users_model.py
 |   |       user_platforms_model.py
 |   |       __init__.py
@@ -47,19 +47,33 @@ D:.
 |   +---Routes
 |   |   |   auth.py
 |   |   |   device.py
+|   |   |   log.py
 |   |   |   models.py
 |   |   |   notification.py
 |   |   |   predict.py
 |   |   |   routes.py
-|   |   |   socketio.py
+|   |   |   socketio_old.py
 |   |   |   users.py
 |   |   |   
 |   |   \---admin
 |   |           routes.py
 |   |           
+|   +---services
+|   |       log_noti_send_email.py
+|   |       
+|   +---socket
+|   |       common.py
+|   |       events_connection.py
+|   |       events_device.py
+|   |       events_frame.py
+|   |       events_model.py
+|   |       events_stats.py
+|   |       __init__.py
+|   |       
 |   \---utils
 |           auth_utils.py
-|           detection_utils.py
+|           models_manager.py
+|           rbac_utils.py
 |           token_utils.py
 |           
 +---certs
@@ -1720,6 +1734,7 @@ D:.
 |       |   blog-details.html
 |       |   blog.html
 |       |   contact.html
+|       |   create-newpass.html
 |       |   detect-camera.html
 |       |   detect-image.html
 |       |   detect-video.html
@@ -1735,10 +1750,12 @@ D:.
 |       |   profile.html
 |       |   recover-password.html
 |       |   reset-password.html
+|       |   service-details.html
 |       |   services.html
 |       |   sign-in.html
 |       |   sign-up.html
 |       |   terms-condition.html
+|       |   verify-otp.html
 |       |   
 |       +---admin
 |       |   |   auth-confirm-mail.html

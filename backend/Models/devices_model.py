@@ -1,5 +1,7 @@
 from backend.extensions import db
 from datetime import datetime
+from zoneinfo import ZoneInfo 
+
 
 class Device(db.Model):
     __tablename__ = 'devices'
@@ -11,7 +13,7 @@ class Device(db.Model):
     dev_ip_address = db.Column(db.String(50))
     dev_status = db.Column(db.Boolean, nullable=False)
     dev_hardware_id = db.Column(db.String(255), unique=True, nullable=True) 
-    dev_create_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    dev_create_at =  db.Column(db.DateTime, default=lambda: datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
 
     def __repr__(self):
         return f"<Device {self.dev_id} - {self.dev_name}>"
