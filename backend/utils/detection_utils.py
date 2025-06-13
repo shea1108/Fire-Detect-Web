@@ -1,6 +1,7 @@
+# backend/utils/detection_utils.py
 import os
 from PIL import Image
-from backend.manager import model_manager
+from backend.utils.models_manager import model_manager
 
 def detect_fire(image_path, model_id=1):
     """

@@ -20,6 +20,15 @@ def check_email_exists():
     return jsonify({'exists': user is not None})
 
 
+@bp.route('/check-phone-exists', methods=['POST'])
+def check_phone_exists():
+    data = request.get_json()
+    phone = data.get('phone')
+    if not phone:
+        return jsonify({'exists': False, 'error': 'Thiếu số điện thoại'}), 400
+
+    user = User.query.filter_by(user_phone_num=phone).first()
+    return jsonify({'exists': user is not None})
 
 # Route cập nhật hồ sơ người dùng (POST /api/user/edit)
 @bp.route('/edit', methods=['POST'])

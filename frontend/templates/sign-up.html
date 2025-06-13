@@ -4,6 +4,20 @@
 <html lang="zxx">
     <head>
         {% include ('partials/head.html')%}
+        <style>
+            .is-valid {
+                border-color: #28a745;
+            }
+
+            .is-invalid {
+                border-color: #dc3545;
+            }
+
+            .btn-disabled {
+                opacity: 0.6;
+                pointer-events: none;
+            }
+        </style>
     </head>
     <body>
         <!-- Start Navbar Sidebar Area -->
@@ -122,15 +136,126 @@
         <!-- End Sign Up Area -->
         <!-- Thêm đoạn script JS -->
         <script>
-            document
-                .getElementById('register-form')
-                .addEventListener('submit', async (e) => {
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.getElementById('register-form');
+                const emailInput = form.querySelector(
+                    'input[name="user_email"]'
+                );
+                const phoneInput = form.querySelector(
+                    'input[name="user_phone_num"]'
+                );
+                const submitBtn = form.querySelector('button[type="submit"]');
+
+                let debounceEmail, debouncePhone;
+                let emailOk = false,
+                    phoneOk = true;
+
+                // Email check
+                emailInput.addEventListener('input', function () {
+                    clearTimeout(debounceEmail);
+                    emailOk = false;
+                    updateInputFeedback(emailInput, null);
+                    disableSubmit();
+
+                    debounceEmail = setTimeout(async () => {
+                        const email = emailInput.value.trim();
+                        if (!email) return;
+
+                        try {
+                            const res = await fetch(
+                                '/api/user/check-email-exists',
+                                {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({ email }),
+                                }
+                            );
+                            const result = await res.json();
+                            emailOk = !result.exists;
+                            updateInputFeedback(emailInput, emailOk);
+                            toggleSubmit();
+                        } catch (err) {
+                            console.error('Lỗi kiểm tra email:', err);
+                        }
+                    }, 400);
+                });
+
+                // Phone check
+                phoneInput.addEventListener('input', function () {
+                    clearTimeout(debouncePhone);
+                    phoneOk = true;
+                    updateInputFeedback(phoneInput, null);
+                    disableSubmit();
+
+                    const phone = phoneInput.value.trim();
+                    if (!phone) return;
+
+                    debouncePhone = setTimeout(async () => {
+                        try {
+                            const res = await fetch(
+                                '/api/user/check-phone-exists',
+                                {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({ phone }),
+                                }
+                            );
+                            const result = await res.json();
+                            phoneOk = !result.exists;
+                            updateInputFeedback(phoneInput, phoneOk);
+                            toggleSubmit();
+                        } catch (err) {
+                            console.error('Lỗi kiểm tra số điện thoại:', err);
+                        }
+                    }, 400);
+                });
+
+                function updateInputFeedback(input, status) {
+                    input.classList.remove('is-valid', 'is-invalid');
+                    input.removeAttribute('title');
+
+                    if (status === true) {
+                        input.classList.add('is-valid');
+                    } else if (status === false) {
+                        input.classList.add('is-invalid');
+                        if (input.name === 'user_email') {
+                            input.setAttribute(
+                                'title',
+                                'Email này đã được sử dụng'
+                            );
+                        } else if (input.name === 'user_phone_num') {
+                            input.setAttribute(
+                                'title',
+                                'Số điện thoại này đã được sử dụng'
+                            );
+                        }
+                    }
+                }
+
+                function toggleSubmit() {
+                    if (emailOk && phoneOk) {
+                        submitBtn.classList.remove('btn-disabled');
+                    } else {
+                        submitBtn.classList.add('btn-disabled');
+                    }
+                }
+
+                function disableSubmit() {
+                    submitBtn.classList.add('btn-disabled');
+                }
+
+                // Gửi form đăng ký (giữ nguyên logic của bạn)
+                form.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    const formData = new FormData(e.target);
+
+                    const formData = new FormData(form);
                     const jsonData = {};
                     formData.forEach((val, key) => (jsonData[key] = val));
 
-                    // Hiển thị loading
                     Swal.fire({
                         title: 'Đang xử lý...',
                         text: 'Vui lòng chờ trong khi chúng tôi gửi mã xác thực.',
@@ -141,7 +266,6 @@
                     });
 
                     try {
-                        // Gọi đến endpoint mới để gửi OTP
                         const res = await fetch('/api/auth/register/send-otp', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -149,7 +273,7 @@
                         });
 
                         const data = await res.json();
-                        Swal.close(); // Tắt loading
+                        Swal.close();
 
                         if (res.ok) {
                             await Swal.fire({
@@ -160,7 +284,6 @@
                                 timerProgressBar: true,
                                 showConfirmButton: false,
                             });
-                            // Chuyển hướng đến trang xác thực OTP, đính kèm email vào URL
                             window.location.href = `/register/verify-otp?email=${encodeURIComponent(
                                 data.email
                             )}`;
@@ -175,7 +298,6 @@
                         }
                     } catch (err) {
                         Swal.close();
-                        console.error('Lỗi khi gửi OTP:', err);
                         Swal.fire({
                             icon: 'error',
                             title: 'Lỗi kết nối',
@@ -183,7 +305,9 @@
                         });
                     }
                 });
+            });
         </script>
+
         <!-- Footer Area -->
         {% include ('partials/footer.html') %}
         <!-- Footer Area End -->

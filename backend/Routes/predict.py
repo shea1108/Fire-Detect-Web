@@ -4,7 +4,7 @@ import io
 import base64
 
 
-from backend.manager import model_manager
+from backend.utils.models_manager import model_manager
 
 # Tạo blueprint với tiền tố URL để có tổ chức tốt hơn
 bp = Blueprint('predict', __name__, url_prefix='/api/predict')

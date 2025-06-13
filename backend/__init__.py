@@ -13,7 +13,7 @@ from backend.extensions import db, bcrypt, socketio, oauth, mail
 from backend.Routes import routes
 from backend.Routes import auth
 from backend.Routes import predict
-from backend.Routes import socketio as socket
+#from backend.Routes import socketio as socket
 from backend.Routes.admin import routes as admin_routes
 from backend.Routes.models import bp as models_bp
 from backend.Routes.notification import bp as notification_bp
@@ -23,7 +23,8 @@ from backend.Routes.users import bp as user_bp
 #MODELS
 from backend.Models import *  # Chỉ cần 1 dòng
 
-
+#SOCKETIO
+from backend.socket import register_socketio
 
 
 def create_app():
@@ -80,6 +81,6 @@ def create_app():
     app.register_blueprint(user_bp)
 
     
-    socket.register_socketio(socketio)
-
+    #socket.register_socketio(socketio)
+    register_socketio(socketio, app)
     return app

@@ -1,3 +1,4 @@
+# backend/Controllers/log_controller.py
 from flask_socketio import SocketIO, emit
 import base64, uuid, time
 from PIL import Image
