@@ -1,7 +1,7 @@
 # models.py
 from datetime import datetime
 from backend.extensions import db
-
+from zoneinfo import ZoneInfo 
 
 class Log(db.Model):
     __tablename__ = 'logs'
@@ -10,7 +10,7 @@ class Log(db.Model):
     model_id = db.Column(db.Integer, db.ForeignKey('models.model_id', ondelete="CASCADE", onupdate="CASCADE"))
     
     log_image_path = db.Column(db.String(255), nullable=True)
-    log_create_at = db.Column(db.DateTime, default=datetime.utcnow)
+    log_create_at = db.Column(db.DateTime, default=lambda: datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
     bboxes = db.relationship('LogBBox', backref='log', lazy=True, cascade="all, delete-orphan")
     def __repr__(self):
         return f'<Log {self.log_id}>'

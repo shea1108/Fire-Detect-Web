@@ -1,6 +1,7 @@
 
 from backend.extensions import db
-
+from datetime import datetime
+from zoneinfo import ZoneInfo 
 class Model(db.Model):
     __tablename__ = 'models'
 
@@ -9,6 +10,6 @@ class Model(db.Model):
     model_path = db.Column(db.Text, nullable=False)
     model_config = db.Column(db.Text)
     model_status = db.Column(db.Boolean, nullable=False)
-    model_create_at = db.Column(db.DateTime, nullable=False, default=db.func.now())
+    model_create_at =  db.Column(db.DateTime, default=lambda: datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
 
     logs = db.relationship("Log", backref="model", lazy=True)
