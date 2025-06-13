@@ -14,3 +14,5 @@ class Notification(db.Model):
     noti_create_at =  db.Column(db.DateTime, default=lambda: datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
 
     notification_platforms = db.relationship('NotificationPlatform', backref='notification', lazy=True, cascade="all, delete-orphan")
+    
+    log = db.relationship("Log", backref="notifications", lazy=True)

@@ -8,7 +8,7 @@ from .events_frame import register_frame_events
 from .events_device import register_device_events
 
 
-def register_socketio(socketio, app):
+def register_socketio(socketio):
     register_connection_events(socketio)
     register_model_events(socketio)
     register_stats_events(socketio)

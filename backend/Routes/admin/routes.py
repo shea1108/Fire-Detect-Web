@@ -1,14 +1,18 @@
-##### backend/Routes/admin/routes.py
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session
 import os
 from backend.decorators.auth_decorators import admin_required
 
-bp = Blueprint('admin', __name__, url_prefix='/admin')
+bp = Blueprint('admin_routes', __name__, url_prefix='/admin')
 
-# Tự động tạo route cho tất cả template trong admin/
 TEMPLATE_FOLDER = os.path.join(os.path.dirname(__file__), '../../../frontend/templates/admin')
 
-
+# Inject trực tiếp từ session
+@bp.context_processor
+def inject_user_from_session():
+    return dict(
+        user_name=session.get("user_name"),
+        user_avatar=session.get("user_avatar") or "/static/admin/assets/images/users/user.jpg"
+    )
 
 @bp.route('/')
 @admin_required
@@ -18,7 +22,6 @@ def dashboard():
 @bp.route('/<path:page>')
 @admin_required
 def render_admin_page(page):
-    # Nếu người dùng đã truyền đầy đủ .html thì giữ nguyên, nếu chưa thì thêm vào
     if not page.endswith('.html'):
         page += '.html'
 
@@ -27,4 +30,3 @@ def render_admin_page(page):
     if os.path.exists(full_path):
         return render_template(filename)
     return f"404 - {filename} not found", 404
-

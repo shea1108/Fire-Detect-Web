@@ -284,12 +284,12 @@
                         aria-expanded="false"
                     >
                         <img
-                            src="/static/admin/assets/images/users/user-11.jpg"
+                            src="{{ user_avatar or '/static/admin/assets/images/users/user.jpg' }}"
                             alt="user-image"
                             class="rounded-circle"
                         />
                         <span class="pro-user-name ms-1">
-                            Christian <i class="mdi mdi-chevron-down"></i>
+                            {{ user_name }} <i class="mdi mdi-chevron-down"></i>
                         </span>
                     </a>
                     <div
@@ -337,6 +337,7 @@
         </div>
     </div>
 </div>
+
 <script>
     document.getElementById('logout-btn').onclick = async () => {
         try {

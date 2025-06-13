@@ -27,6 +27,21 @@ from backend.Models import *  # Chỉ cần 1 dòng
 from backend.socket import register_socketio
 
 
+
+
+
+
+################ ADMIN ROUTES ################
+from backend.Routes.admin import admin_routes, admin_models, admin_users
+
+
+
+
+
+
+
+
+
 def create_app():
     # 1. Load biến môi trường ĐẦU TIÊN
     load_dotenv()
@@ -76,11 +91,24 @@ def create_app():
     app.register_blueprint(auth.bp)
     app.register_blueprint(routes.bp)
     app.register_blueprint(predict.bp)
-    app.register_blueprint(admin_routes.bp)
+    
     app.register_blueprint(notification_bp)
     app.register_blueprint(user_bp)
 
+
+
     
     #socket.register_socketio(socketio)
-    register_socketio(socketio, app)
+    register_socketio(socketio)
+
+
+
+
+
+    ######################### Admin routes
+    app.register_blueprint(admin_routes)
+    app.register_blueprint(admin_models)
+    app.register_blueprint(admin_users)
+
+
     return app

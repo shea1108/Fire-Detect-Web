@@ -9,6 +9,9 @@ from backend.Models import db, Log
 from backend.Models.log_bboxes_model import LogBBox
 from backend.Models.devices_model import Device
 from backend.utils.models_manager import model_manager
+from backend.services.log_noti_send_email import handle_post_log_events
+
+
 
 last_log_times = {}  # cooldown theo thiết bị
 
@@ -96,6 +99,15 @@ def handle_detect_from_api(data):
 
         db.session.commit()
         last_log_times[dev_id] = now
+        from flask import session  # cần nếu chưa import ở đầu file
+
+        # Gửi thông báo nếu có phiên đăng nhập (session)
+        if "user_id" in session:
+            ok, msg, noti_id = handle_post_log_events(log_id)
+            if not ok:
+                return False, f"Lỗi gửi thông báo: {msg}"
+        else:
+            print("⚠️ Bỏ qua gửi thông báo vì không có session user_id - Chưa đăng nhập")
 
         return True, {"detections": detections, "message": "Đã lưu log", "log_id": log_id}
 

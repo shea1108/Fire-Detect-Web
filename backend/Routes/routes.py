@@ -99,6 +99,3 @@ def show_reset_form(token):
 
 
 
-
-
-
