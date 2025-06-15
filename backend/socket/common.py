@@ -15,6 +15,7 @@ class PerformanceMonitor:
         self.total_data_received = 0
         self.total_recv_time = 0
         self.timestamps = deque(maxlen=30)
+        self.last_fps = 0
 
     def update(self, detections_count, data_size_kb=None, recv_time=None):
         self.timestamps.append(time.time())
@@ -48,6 +49,7 @@ class PerformanceMonitor:
             'frames_processed': self.frame_count,
             'total_detections': self.detection_count,
             'fps': round(fps, 2),
+            'fps_last_frame': round(self.last_fps, 2),
             'avg_network_speed_kbps': round(avg_speed, 2)
         }
 
