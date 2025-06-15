@@ -43,8 +43,30 @@ def edit_user_profile():
             session['new_email_pending'] = new_email
             session['otp_expiry'] = (datetime.now(ZoneInfo('Asia/Ho_Chi_Minh')) + timedelta(minutes=5)).isoformat()
 
-            subject = "Xác thực thay đổi Email cho tài khoản của bạn"
-            html_body = f"<p>Mã OTP để xác thực địa chỉ email mới của bạn là: <b>{otp}</b>. Mã này có hiệu lực trong 5 phút.</p>"
+            subject = "🔐 Xác thực thay đổi Email tài khoản FireDetect"
+            html_body = f"""
+            <table style="width:100%; max-width:600px; margin:0 auto; font-family:Arial,sans-serif; background:#f9f9f9; padding:20px; border-radius:8px;">
+                <tr><td style="text-align:center;"><h2 style="color:#e63946;">🔐 Xác thực thay đổi Email</h2></td></tr>
+                <tr><td>
+                    <p>Xin chào <strong>{user.user_name}</strong>,</p>
+                    <p>Bạn (hoặc ai đó) đã yêu cầu thay đổi địa chỉ email cho tài khoản của bạn.</p>
+                    <p>Vui lòng nhập mã OTP bên dưới để xác thực địa chỉ email mới:</p>
+
+                    <div style="text-align:center; margin:24px 0;">
+                        <div style="display:inline-block; background:#1d3557; color:#fff; font-size:24px; font-weight:bold; padding:12px 24px; border-radius:6px;">
+                            {otp}
+                        </div>
+                    </div>
+
+                    <p>Mã này có hiệu lực trong <strong>5 phút</strong>. Nếu bạn không yêu cầu thay đổi email, vui lòng bỏ qua email này.</p>
+
+                    <br /><p>Trân trọng,<br />Đội ngũ FireDetect</p>
+                </td></tr>
+                <tr><td style="text-align:center; font-size:12px; color:#888; padding-top:30px;">
+                    &copy; {datetime.utcnow().year} FireDetect. All rights reserved.
+                </td></tr>
+            </table>
+            """
             send_email(subject, html_body, new_email)
 
             # Trả về URL của trang xác thực để JavaScript chuyển hướng
