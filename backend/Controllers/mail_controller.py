@@ -22,7 +22,7 @@ def send_email(subject: str, html_body: str, recipient_email: str, noti_id: int 
             recipients=[recipient_email],
             html=html_body
         )
-        msg.date = format_datetime(datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
+        #msg.date = format_datetime(datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
 
         mail.send(msg)
         print(f"✅ Đã gửi email đến {recipient_email}")

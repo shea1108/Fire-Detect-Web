@@ -4,6 +4,7 @@ import os
 from flask import Blueprint, render_template, session, redirect, url_for
 from backend.utils.auth_utils import login_required_redirect
 from backend.Models.users_model import User
+from backend.Controllers.user_controller import render_verify_page
 
 TEMPLATE_DIR= os.path.join(os.path.dirname(__file__), '../../frontend/templates')
 bp = Blueprint('web', __name__, template_folder=TEMPLATE_DIR)
@@ -46,11 +47,10 @@ def sign_in():
 @bp.route('/sign-up')
 @bp.route('/sign-up.html')
 def sign_up():
-    user = None
     if 'user_id' in session:
-        user = User.query.get(session['user_id'])
-        return redirect(url_for('web.home'))
-    return render_template('sign-up.html', user=user)
+        return redirect(url_for('web.home')) 
+    recaptcha_site_key = os.getenv('RECAPTCHA_SITE_KEY')
+    return render_template('sign-up.html', recaptcha_site_key=recaptcha_site_key)
 
 
 
@@ -66,6 +66,12 @@ def profile():
         return render_template('sign-in.html')
 
     return render_template('profile.html', user=user)
+
+
+@bp.route('/profile/verify-email-change')
+@login_required_redirect
+def render_profile_verify_page():
+    return render_verify_page()
 
 ######################
 @bp.route('/detect-image')
