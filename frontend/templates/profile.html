@@ -288,32 +288,31 @@
                 reader.readAsDataURL(event.target.files[0]);
             }
 
-            document
-                .getElementById('edit-profile-form')
-                .addEventListener('submit', async function (e) {
-                    e.preventDefault();
+           document.getElementById('edit-profile-form').addEventListener('submit', async function (e) {
+                e.preventDefault();
 
-                    const form = e.target;
-                    const formData = new FormData(form);
+                const form = e.target;
+                const formData = new FormData(form);
 
-                    try {
-                        const response = await fetch('/api/user/edit', {
-                            method: 'POST',
-                            body: formData,
-                        });
+                try {
+                    const response = await fetch('/api/user/edit', {
+                        method: 'POST',
+                        body: formData,
+                    });
 
-                        const contentType =
-                            response.headers.get('content-type');
-                        const data =
-                            contentType &&
-                            contentType.includes('application/json')
-                                ? await response.json()
-                                : await response.text();
+                    // Luôn mong đợi phản hồi là JSON
+                    const data = await response.json();
 
-                        if (response.ok) {
+                    if (response.ok) {
+                        // <<< THAY ĐỔI QUAN TRỌNG
+                        // Nếu backend trả về URL redirect, chuyển hướng trang
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                        } else {
+                            // Nếu không, đó là cập nhật thành công bình thường (không đổi email)
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Đã cập nhật thành công!',
+                                title: data.message || 'Đã cập nhật thành công!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -321,28 +320,16 @@
                                 timerProgressBar: true,
                             });
                             profileUpdateUI();
-                        } else {
-                            let message = data.error || 'Có lỗi xảy ra!';
-                            if (message === 'Email already registered')
-                                message = 'Email đã được đăng ký!';
-                            if (message === 'Phone number already registered')
-                                message = 'Số điện thoại đã được đăng ký!';
-
-                            Swal.fire({
-                                icon: 'error',
-                                title: message,
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 2500,
-                                timerProgressBar: true,
-                            });
                         }
-                    } catch (err) {
-                        console.error('Lỗi:', err);
+                    } else {
+                        // Xử lý các lỗi khác do backend trả về
+                        let message = data.error || 'Có lỗi xảy ra!';
+                        if (message === 'Email already registered') message = 'Email đã được đăng ký!';
+                        if (message === 'Phone number already registered') message = 'Số điện thoại đã được đăng ký!';
+
                         Swal.fire({
                             icon: 'error',
-                            title: 'Lỗi hệ thống. Vui lòng thử lại.',
+                            title: message,
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,
@@ -350,7 +337,19 @@
                             timerProgressBar: true,
                         });
                     }
-                });
+                } catch (err) {
+                    console.error('Lỗi:', err);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi hệ thống. Vui lòng thử lại.',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2500,
+                        timerProgressBar: true,
+                    });
+                }
+            });
         </script>
 
         <!-- Footer Area -->

@@ -4,7 +4,8 @@ from flask import Blueprint,request, jsonify
 from backend.Controllers.user_controller import (
     edit_user_profile,
     recover_password,
-    submit_reset_password        # <— mới
+    submit_reset_password,
+    verify_email_change
 )
 
 bp = Blueprint('user_check', __name__, url_prefix='/api/user')
@@ -34,6 +35,10 @@ def check_phone_exists():
 @bp.route('/edit', methods=['POST'])
 def api_edit_user():
     return edit_user_profile()
+
+@bp.route('/verify-email-change', methods=['POST'])
+def handle_verify_email_change():
+    return verify_email_change()
 
 # Route khôi phục mật khẩu (POST /api/user/recover-password)
 @bp.route('/recover-password', methods=['POST'])
