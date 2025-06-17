@@ -1,271 +1,240 @@
 <!-- @format -->
 
 <!DOCTYPE html>
-<html lang="zxx">
+<html lang="vi">
     <head>
         {% include ('partials/head.html')%}
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+        
         <style>
             .is-valid {
-                border-color: #28a745;
+                border-color: #28a745 !important;
             }
-
             .is-invalid {
-                border-color: #dc3545;
+                border-color: #dc3545 !important;
             }
-
             .btn-disabled {
-                opacity: 0.6;
+                opacity: 0.5;
+                cursor: not-allowed;
                 pointer-events: none;
             }
         </style>
     </head>
     <body>
-        <!-- Start Navbar Sidebar Area -->
+        <!-- Navbar -->
         {% include ('partials/narvar_sidebar.html') %}
-        <!-- End Navbar Sidebar Modal -->
 
-        <!-- Start Sign Up Area -->
+        <!-- Sign Up Area -->
         <section class="sign-up-area ptb-100">
             <div class="container">
                 <div class="section-title text-center">
-                    <span>Sign Up</span>
-                    <h2>Create An Account!</h2>
-                    <p>
-                        It is a long established fact that a reader will be
-                        distracted by the readable content of a page when
-                        looking at its layout.
-                    </p>
+                    <span>Đăng Ký</span>
+                    <h2>Tạo Tài Khoản Mới!</h2>
                 </div>
                 <div class="contact-wrap-form log-in-width">
-                    <form id="register-form" method="post">
-                        <p>with your social network</p>
+                    <form id="register-form" method="post" novalidate>
                         <div class="row justify-content-center">
+                            <!-- Social Login Buttons -->
                             <div class="col-lg-4 col-md-4 col-sm-4">
                                 <button class="login-social-btn" type="button">
                                     <i class="bx bxl-google-plus"></i>
                                 </button>
                             </div>
-
                             <div class="col-lg-4 col-md-4 col-sm-4">
-                                <button class="login-social-btn" type="button">
-                                    <i class="bx bxl-facebook"></i>
-                                </button>
+                                <button class="login-social-btn" type="button"><i class="bx bxl-facebook"></i></button>
                             </div>
-
                             <div class="col-lg-4 col-md-4 col-sm-4">
-                                <button class="login-social-btn" type="button">
-                                    <i class="bx bxl-twitter"></i>
-                                </button>
+                                <button class="login-social-btn" type="button"><i class="bx bxl-twitter"></i></button>
                             </div>
 
+                            <!-- Form Inputs -->
+                            <div class="col-12"><div class="form-group"><input class="form-control" type="text" name="user_name" placeholder="Họ và tên" required /></div></div>
+                            <div class="col-12"><div class="form-group"><input class="form-control" type="email" name="user_email" placeholder="Email" required /></div></div>
+                            <div class="col-12"><div class="form-group"><input class="form-control" type="tel" name="user_phone_num" placeholder="Số điện thoại" pattern="^\d{10}$" maxlength="10" required /></div></div>
+                            <input type="hidden" name="user_role" value="user" />
+                            <div class="col-12"><div class="form-group"><input class="form-control" type="password" name="user_password" placeholder="Mật khẩu" required /></div></div>
+
+                            <!-- reCAPTCHA Widget -->
                             <div class="col-12">
-                                <div class="form-group">
-                                    <input
-                                        class="form-control"
-                                        type="text"
-                                        name="user_name"
-                                        placeholder="Họ và tên"
-                                        required
-                                    />
+                                <div class="form-group d-flex justify-content-center">
+                                    <div class="g-recaptcha" 
+                                        data-sitekey="{{ recaptcha_site_key }}"
+                                        data-callback="onCaptchaVerified"
+                                        data-expired-callback="onCaptchaExpired">
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <input
-                                        class="form-control"
-                                        type="email"
-                                        name="user_email"
-                                        placeholder="Email"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <input
-                                        class="form-control"
-                                        type="text"
-                                        name="user_phone_num"
-                                        placeholder="Số điện thoại"
-                                        pattern="^\d{10}$"
-                                        maxlength="10"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            <!-- Ẩn input role, luôn gửi 'user' -->
-                            <input
-                                type="hidden"
-                                name="user_role"
-                                value="user"
-                            />
-
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <input
-                                        class="form-control"
-                                        type="password"
-                                        name="user_password"
-                                        placeholder="Mật khẩu"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
+                            <!-- Submit Button -->
                             <div class="col-12 text-center">
-                                <button
-                                    class="default-btn btn-two"
-                                    type="submit"
-                                >
-                                    Đăng ký
-                                </button>
+                                <!-- Nút này không còn bị vô hiệu hóa bởi JavaScript -->
+                                <button class="default-btn btn-two" type="submit">Đăng ký</button>
                             </div>
-
                             <div class="col-12">
-                                <p class="account-desc">
-                                    Đã có tài khoản?
-                                    <a href="/sign-in.html"
-                                        >Đăng nhập tại đây</a
-                                    >
-                                </p>
+                                <p class="account-desc">Đã có tài khoản? <a href="{{ url_for('web.sign_in') }}">Đăng nhập tại đây</a></p>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
         </section>
-        <!-- End Sign Up Area -->
-        <!-- Thêm đoạn script JS -->
+
+        <!-- SCRIPT SECTION -->
         <script>
+          
+            function onCaptchaVerified() {
+                document.dispatchEvent(new CustomEvent('captchaStateChange', { detail: { verified: true } }));
+            }
+            function onCaptchaExpired() {
+                document.dispatchEvent(new CustomEvent('captchaStateChange', { detail: { verified: false } }));
+            }
+
+            // === LOGIC CHÍNH CỦA FORM ===
             document.addEventListener('DOMContentLoaded', function () {
+                // --- Lấy các phần tử DOM ---
                 const form = document.getElementById('register-form');
-                const emailInput = form.querySelector(
-                    'input[name="user_email"]'
-                );
-                const phoneInput = form.querySelector(
-                    'input[name="user_phone_num"]'
-                );
+                const emailInput = form.querySelector('input[name="user_email"]');
+                const phoneInput = form.querySelector('input[name="user_phone_num"]');
                 const submitBtn = form.querySelector('button[type="submit"]');
 
-                let debounceEmail, debouncePhone;
-                let emailOk = false,
-                    phoneOk = true;
+                // --- Biến trạng thái ---
+                let state = {
+                    isEmailOk: false,
+                    isPhoneOk: false,
+                    isCaptchaOk: false,
+                    emailDebounce: null,
+                    phoneDebounce: null
+                };
 
-                // Email check
-                emailInput.addEventListener('input', function () {
-                    clearTimeout(debounceEmail);
-                    emailOk = false;
-                    updateInputFeedback(emailInput, null);
-                    disableSubmit();
-
-                    debounceEmail = setTimeout(async () => {
-                        const email = emailInput.value.trim();
-                        if (!email) return;
-
-                        try {
-                            const res = await fetch(
-                                '/api/user/check-email-exists',
-                                {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                    },
-                                    body: JSON.stringify({ email }),
-                                }
-                            );
-                            const result = await res.json();
-                            emailOk = !result.exists;
-                            updateInputFeedback(emailInput, emailOk);
-                            toggleSubmit();
-                        } catch (err) {
-                            console.error('Lỗi kiểm tra email:', err);
-                        }
-                    }, 400);
+                // --- Lắng nghe sự kiện từ reCAPTCHA ---
+                document.addEventListener('captchaStateChange', e => {
+                    state.isCaptchaOk = e.detail.verified;
+                    // Không cần gọi toggleSubmitButton ở đây nữa
                 });
-
-                // Phone check
-                phoneInput.addEventListener('input', function () {
-                    clearTimeout(debouncePhone);
-                    phoneOk = true;
-                    updateInputFeedback(phoneInput, null);
-                    disableSubmit();
-
-                    const phone = phoneInput.value.trim();
-                    if (!phone) return;
-
-                    debouncePhone = setTimeout(async () => {
-                        try {
-                            const res = await fetch(
-                                '/api/user/check-phone-exists',
-                                {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                    },
-                                    body: JSON.stringify({ phone }),
-                                }
-                            );
-                            const result = await res.json();
-                            phoneOk = !result.exists;
-                            updateInputFeedback(phoneInput, phoneOk);
-                            toggleSubmit();
-                        } catch (err) {
-                            console.error('Lỗi kiểm tra số điện thoại:', err);
-                        }
-                    }, 400);
-                });
-
-                function updateInputFeedback(input, status) {
+                
+                // --- Hàm cập nhật giao diện cho input (viền xanh/đỏ) ---
+                const updateInputFeedback = (input, isValid, message = '') => {
                     input.classList.remove('is-valid', 'is-invalid');
-                    input.removeAttribute('title');
-
-                    if (status === true) {
-                        input.classList.add('is-valid');
-                    } else if (status === false) {
+                    input.title = '';
+                    if (isValid === true) input.classList.add('is-valid');
+                    else if (isValid === false) {
                         input.classList.add('is-invalid');
-                        if (input.name === 'user_email') {
-                            input.setAttribute(
-                                'title',
-                                'Email này đã được sử dụng'
-                            );
-                        } else if (input.name === 'user_phone_num') {
-                            input.setAttribute(
-                                'title',
-                                'Số điện thoại này đã được sử dụng'
-                            );
-                        }
+                        input.title = message;
                     }
-                }
+                };
+                
+                // === CÁC HÀM VALIDATION ===
 
-                function toggleSubmit() {
-                    if (emailOk && phoneOk) {
-                        submitBtn.classList.remove('btn-disabled');
-                    } else {
-                        submitBtn.classList.add('btn-disabled');
+                const validateEmail = async () => {
+                    const email = emailInput.value.trim();
+                    if (!email) {
+                        state.isEmailOk = false;
+                        updateInputFeedback(emailInput, null);
+                        return;
                     }
-                }
+                    
+                    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailPattern.test(email)) {
+                        state.isEmailOk = false;
+                        updateInputFeedback(emailInput, false, 'Email không hợp lệ.');
+                        return;
+                    }
 
-                function disableSubmit() {
-                    submitBtn.classList.add('btn-disabled');
-                }
+                    try {
+                        const res = await fetch('/api/user/check-email-exists', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email }),
+                        });
+                        const result = await res.json();
+                        state.isEmailOk = !result.exists;
+                        updateInputFeedback(emailInput, state.isEmailOk, 'Email này đã được sử dụng');
+                    } catch (err) {
+                        console.error('Lỗi kiểm tra email:', err);
+                        state.isEmailOk = false;
+                    }
+                };
 
-                // Gửi form đăng ký (giữ nguyên logic của bạn)
+                const validatePhone = async () => {
+                    const phone = phoneInput.value.trim();
+                     if (!phone) {
+                        state.isPhoneOk = false;
+                        updateInputFeedback(phoneInput, null);
+                        return;
+                    }
+
+                    if (!/^\d{10}$/.test(phone)) {
+                        state.isPhoneOk = false;
+                        updateInputFeedback(phoneInput, false, 'Số điện thoại phải có 10 chữ số.');
+                        return;
+                    }
+                    
+                    try {
+                        const res = await fetch('/api/user/check-phone-exists', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ phone }),
+                        });
+                        const result = await res.json();
+                        state.isPhoneOk = !result.exists;
+                        updateInputFeedback(phoneInput, state.isPhoneOk, 'Số điện thoại này đã được sử dụng');
+                    } catch (err) {
+                        console.error('Lỗi kiểm tra số điện thoại:', err);
+                        state.isPhoneOk = false;
+                    }
+                };
+                
+                // === GẮN EVENT LISTENERS ===
+                
+                emailInput.addEventListener('input', () => {
+                    clearTimeout(state.emailDebounce);
+                    updateInputFeedback(emailInput, null);
+                    state.emailDebounce = setTimeout(validateEmail, 500);
+                });
+                emailInput.addEventListener('change', validateEmail);
+
+                phoneInput.addEventListener('input', () => {
+                    clearTimeout(state.phoneDebounce);
+                    updateInputFeedback(phoneInput, null);
+                    state.phoneDebounce = setTimeout(validatePhone, 500);
+                });
+                phoneInput.addEventListener('change', validatePhone);
+
+                // === CHẠY KIỂM TRA MỘT LẦN KHI TẢI TRANG ĐỂ BẮT AUTOFILL ===
+                setTimeout(() => {
+                    validateEmail();
+                    validatePhone();
+                }, 100);
+
+                // --- Xử lý khi GỬI FORM ---
                 form.addEventListener('submit', async (e) => {
                     e.preventDefault();
 
+                    // === THAY ĐỔI CHÍNH: KIỂM TRA VALIDATION KHI SUBMIT ===
+                    const { isEmailOk, isPhoneOk, isCaptchaOk } = state;
+                    if (!isEmailOk || !isPhoneOk || !isCaptchaOk) {
+                        let errorMessages = [];
+                        if (!isEmailOk) errorMessages.push('Email không hợp lệ hoặc đã được sử dụng.');
+                        if (!isPhoneOk) errorMessages.push('Số điện thoại không hợp lệ hoặc đã được sử dụng.');
+                        if (!isCaptchaOk) errorMessages.push('Vui lòng xác thực bạn không phải là robot.');
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Thông tin chưa hợp lệ',
+                            html: errorMessages.join('<br>'), // Hiển thị lỗi rõ ràng hơn
+                        });
+                        return; // Dừng lại, không gửi form
+                    }
+
+                    // Nếu tất cả đều hợp lệ, tiếp tục logic gửi form
                     const formData = new FormData(form);
-                    const jsonData = {};
-                    formData.forEach((val, key) => (jsonData[key] = val));
+                    const jsonData = Object.fromEntries(formData.entries());
 
                     Swal.fire({
                         title: 'Đang xử lý...',
-                        text: 'Vui lòng chờ trong khi chúng tôi gửi mã xác thực.',
+                        text: 'Vui lòng chờ...',
                         allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        },
+                        didOpen: () => Swal.showLoading(),
                     });
 
                     try {
@@ -274,66 +243,48 @@
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(jsonData),
                         });
-
                         const data = await res.json();
                         Swal.close();
-
                         if (res.ok) {
                             await Swal.fire({
                                 icon: 'success',
                                 title: 'Gửi mã thành công!',
                                 text: 'Mã OTP đã được gửi. Chúng tôi sẽ chuyển bạn đến trang xác thực.',
-                                timer: 2000,
+                                timer: 2500,
                                 timerProgressBar: true,
                                 showConfirmButton: false,
                             });
-                            window.location.href = `/register/verify-otp?email=${encodeURIComponent(
-                                data.email
-                            )}`;
+                            window.location.href = `/register/verify-otp?email=${encodeURIComponent(data.email)}`;
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Đăng ký thất bại',
-                                text:
-                                    data.error ||
-                                    'Đã có lỗi xảy ra. Vui lòng kiểm tra lại thông tin.',
+                                text: data.error || 'Có lỗi xảy ra, vui lòng thử lại.',
                             });
+                            if (typeof grecaptcha !== 'undefined') {
+                                grecaptcha.reset();
+                                state.isCaptchaOk = false;
+                            }
                         }
                     } catch (err) {
                         Swal.close();
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi kết nối',
-                            text: 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.',
-                        });
+                        Swal.fire({ icon: 'error', title: 'Lỗi kết nối', text: 'Không thể kết nối đến máy chủ.' });
                     }
                 });
             });
         </script>
 
-        <!-- Footer Area -->
+        <!-- Footer và các script khác của template -->
         {% include ('partials/footer.html') %}
-        <!-- Footer Area End -->
-
-        <!-- Jquery Min JS -->
         <script src="/static/assets/js/jquery.min.js"></script>
-        <!-- Bootstrap Bundle Min JS -->
         <script src="/static/assets/js/bootstrap.bundle.min.js"></script>
-        <!-- Meanmenu JS -->
         <script src="/static/assets/js/meanmenu.min.js"></script>
-        <!-- Owl Carousel JS -->
         <script src="/static/assets/js/owl.carousel.min.js"></script>
-        <!-- Magnific Popup JS -->
         <script src="/static/assets/js/jquery.magnific-popup.min.js"></script>
-        <!-- Wow JS -->
         <script src="/static/assets/js/wow.min.js"></script>
-        <!-- Ajaxchimp Min JS -->
         <script src="/static/assets/js/jquery.ajaxchimp.min.js"></script>
-        <!-- Form Validator Min JS -->
         <script src="/static/assets/js/form-validator.min.js"></script>
-        <!-- Contact Form JS -->
         <script src="/static/assets/js/contact-form-script.js"></script>
-        <!-- Custom JS -->
         <script src="/static/assets/js/custom.js"></script>
     </body>
 </html>

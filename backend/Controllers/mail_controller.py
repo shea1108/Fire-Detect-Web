@@ -21,7 +21,6 @@ def send_email(subject: str, html_body: str, recipient_email: str, noti_id: int 
             recipients=[recipient_email],
             html=html_body
         )
-        
 
         
         mail.send(msg)

@@ -1,6 +1,8 @@
 # backend/Controllers/auth_controller.py
 import random
+import os
 import string
+import requests
 import bcrypt
 from datetime import datetime, timedelta
 from flask import jsonify, session, current_app, redirect, url_for
@@ -15,6 +17,29 @@ def generate_otp():
     return ''.join(random.choices(string.digits, k=6))
 
 def register_send_otp(data):
+    # <<< BẮT ĐẦU KHỐI CODE THÊM MỚI: Xác thực reCAPTCHA >>>
+    recaptcha_token = data.get('g-recaptcha-response')
+    if not recaptcha_token:
+        return jsonify({"error": "Vui lòng xác thực CAPTCHA."}), 400
+
+    secret_key = os.getenv('RECAPTCHA_SECRET_KEY')
+    verification_url = 'https://www.google.com/recaptcha/api/siteverify'
+    payload = {
+        'secret': secret_key,
+        'response': recaptcha_token
+    }
+
+    try:
+        response = requests.post(verification_url, data=payload, timeout=5)
+        response_data = response.json()
+        if not response_data.get('success'):
+            return jsonify({"error": "Xác thực CAPTCHA thất bại. Vui lòng thử lại."}), 400
+    except requests.exceptions.RequestException as e:
+        print(f"Lỗi khi gọi reCAPTCHA API: {e}")
+        return jsonify({"error": "Không thể xác thực CAPTCHA vào lúc này."}), 500
+    # <<< KẾT THÚC KHỐI CODE THÊM MỚI >>>
+
+
     required_fields = ['user_name', 'user_email', 'user_password', 'user_role']
     if not all(data.get(f) for f in required_fields):
         return jsonify({"error": "Vui lòng điền đầy đủ các trường bắt buộc."}), 400
@@ -83,6 +108,7 @@ def register_send_otp(data):
         "message": "Mã OTP đã được gửi đến email của bạn.",
         "email": data['user_email']
     }), 200
+
 
 
 def register_verify_otp(data):
