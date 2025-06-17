@@ -6,7 +6,6 @@ from backend.Models.notification_models_model import NotificationPlatform
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from email.utils import format_datetime
 
 
 
@@ -22,10 +21,15 @@ def send_email(subject: str, html_body: str, recipient_email: str, noti_id: int 
             recipients=[recipient_email],
             html=html_body
         )
-        msg.date = format_datetime(datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
+        
 
+        
         mail.send(msg)
         print(f"✅ Đã gửi email đến {recipient_email}")
+        print("📧 Email đang gửi với thông tin:")
+        print(f"Subject: {msg.subject}")
+        print(f"To: {msg.recipients}")
+        print(f"Date: {msg.date} ({type(msg.date)})")
 
         if noti_id:
             existing_log = NotificationPlatform.query.filter_by(noti_id=noti_id, plat_id=1).first()

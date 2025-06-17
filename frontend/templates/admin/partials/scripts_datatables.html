@@ -1,0 +1,51 @@
+<!-- @format -->
+
+<!-- admin/partials/scripts/datatables.html -->
+<!-- DataTables JS -->
+<script src="/static/admin/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="/static/admin/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+<script src="/static/admin/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/static/admin/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+<script src="/static/admin/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+<script src="/static/admin/assets/libs/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+<script src="/static/admin/assets/libs/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+<script src="/static/admin/assets/libs/datatables.net-keytable-bs5/js/keyTable.bootstrap5.min.js"></script>
+<script src="/static/admin/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/static/admin/assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+<script src="/static/admin/assets/libs/datatables.net-select/js/dataTables.select.min.js"></script>
+<script src="/static/admin/assets/libs/datatables.net-select-bs5/js/select.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/fixedColumns.bootstrap5.min.js"></script>
+<script src="/static/admin/assets/js/pages/datatable.init.js"></script>
+
+<script>
+    'use strict';
+
+    // ✅ Khởi tạo DataTable có STT, hỗ trợ config tùy chọn
+    window.initDatatable = function (selector, options = {}) {
+        const $table = $(selector);
+        if (!$table.length || $.fn.dataTable.isDataTable($table)) return null;
+
+        // Ngôn ngữ tiếng Việt
+        $.extend(true, $.fn.dataTable.defaults, {
+            language: {
+                lengthMenu: 'Hiển thị _MENU_ mục',
+                zeroRecords: 'Không tìm thấy kết quả',
+                info: 'Hiển thị _START_ đến _END_ trong tổng _TOTAL_ mục',
+                infoEmpty: 'Không có dữ liệu',
+                infoFiltered: '(lọc từ _MAX_ mục)',
+                search: 'Tìm kiếm:',
+                paginate: {
+                    first: 'Đầu',
+                    last: 'Cuối',
+                    next: 'Sau',
+                    previous: 'Trước',
+                },
+            },
+        });
+
+        const table = $table.DataTable(options);
+
+        return table;
+    };
+</script>

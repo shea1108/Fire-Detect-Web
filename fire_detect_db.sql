@@ -8,23 +8,20 @@ DROP TABLE IF EXISTS PLATFORMs;
 DROP TABLE IF EXISTS DEVICEs;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS log_bboxes;
-
-
-
--- ALTER TABLE users
--- ADD COLUMN user_reset_token VARCHAR(128);
-
--- ALTER TABLE users
--- ADD COLUMN user_reset_expire_at TIMESTAMP;
--- Bảng users không cần user_role nữa
 DROP TABLE IF EXISTS user_roles;
 DROP TABLE IF EXISTS role_permissions;
 DROP TABLE IF EXISTS permissions;
 DROP TABLE IF EXISTS roles;
 
--- USERS (cập nhật: bỏ user_role)
--- ALTER TABLE users
--- DROP COLUMN user_role;
+
+
+-- ALTER TABLE models DROP COLUMN IF EXISTS model_config;
+
+
+-- ALTER TABLE models
+-- ADD COLUMN model_short_title VARCHAR(100),
+-- ADD COLUMN model_tooltip TEXT;
+
 
 
 -- TABLE: users  
@@ -37,43 +34,9 @@ CREATE TABLE users (
     user_reset_token VARCHAR(128),
     user_reset_expire_at TIMESTAMP,
     user_status     BOOLEAN      NOT NULL,
+    user_avatar TEXT,
     user_create_at  TIMESTAMP    NOT NULL DEFAULT NOW()
 );
-
--- Bảng roles (vai trò)
-CREATE TABLE roles (
-    role_id SERIAL PRIMARY KEY,
-    role_name VARCHAR(50) UNIQUE NOT NULL -- ví dụ: admin, guest, police
-);
-
--- Bảng permissions (quyền cụ thể)
-CREATE TABLE permissions (
-    perm_id SERIAL PRIMARY KEY,
-    perm_name VARCHAR(100) UNIQUE NOT NULL,         -- ví dụ: use_v8n, use_v8m
-    perm_description TEXT
-);
-
--- Nhiều user có nhiều role
-CREATE TABLE user_roles (
-    user_id INT NOT NULL,
-    role_id INT NOT NULL,
-    PRIMARY KEY (user_id, role_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE CASCADE
-);
-
--- Nhiều role có nhiều quyền
-CREATE TABLE role_permissions (
-    role_id INT NOT NULL,
-    perm_id INT NOT NULL,
-    PRIMARY KEY (role_id, perm_id),
-    FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE CASCADE,
-    FOREIGN KEY (perm_id) REFERENCES permissions(perm_id) ON DELETE CASCADE
-);
-
-
-
-
 
 -- TABLE: devices
 CREATE TABLE devices (
@@ -94,7 +57,8 @@ CREATE TABLE models (
     model_id        SERIAL PRIMARY KEY,
     model_name      VARCHAR(100) NOT NULL,
     model_path      TEXT         NOT NULL,
-    model_config    TEXT,
+    model_short_title VARCHAR(100),
+    model_tooltip TEXT,
     model_status    BOOLEAN      NOT NULL,
     model_create_at TIMESTAMP    NOT NULL DEFAULT NOW()
 );
@@ -115,14 +79,14 @@ CREATE TABLE logs (
 -- TABLE: log_bboxes
 CREATE TABLE log_bboxes (
     bbox_id SERIAL PRIMARY KEY,
-    log_id INTEGER REFERENCES logs(log_id),
+    log_id INT, 
 	confidence FLOAT CHECK (confidence BETWEEN 0 AND 1),
     x_center FLOAT,
     y_center FLOAT,
     width FLOAT,
     height FLOAT,
 	FOREIGN KEY (log_id) REFERENCES logs(log_id)
-    	ON DELETE CASCADE ON UPDATE CASCADE
+		ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- TABLE: platforms
@@ -173,52 +137,50 @@ CREATE TABLE user_platforms (
     FOREIGN KEY (plat_id) REFERENCES platforms(plat_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
+-- Bảng roles (vai trò)
+CREATE TABLE roles (
+    role_id SERIAL PRIMARY KEY,
+    role_name VARCHAR(50) UNIQUE NOT NULL -- ví dụ: admin, guest, police
+);
+
+-- Bảng permissions (quyền cụ thể)
+CREATE TABLE permissions (
+    perm_id SERIAL PRIMARY KEY,
+    perm_name VARCHAR(100) UNIQUE NOT NULL,         -- ví dụ: use_v8n, use_v8m
+    perm_description TEXT
+);
+
+-- Nhiều user có nhiều role
+CREATE TABLE user_roles (
+    user_id INT NOT NULL,
+    role_id INT NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE CASCADE
+);
+
+-- Nhiều role có nhiều quyền
+CREATE TABLE role_permissions (
+    role_id INT NOT NULL,
+    perm_id INT NOT NULL,
+    PRIMARY KEY (role_id, perm_id),
+    FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE CASCADE,
+    FOREIGN KEY (perm_id) REFERENCES permissions(perm_id) ON DELETE CASCADE
+);
+-- Thêm roles
+INSERT INTO roles (role_name) VALUES ('admin'), ('guest'), ('user'), ('police');
+
 
 INSERT INTO models (model_name, model_path, model_config, model_status) VALUES
 ('Fire_Detect 1.3', 'Yolo/best.pt', '{}', TRUE),
 ('Fire_Detect 1.2', 'Yolo/best1.pt', '{}', TRUE),
 ('Fire_Detect 1.1', 'Yolo/best2.pt', '{}', TRUE);
 
-
-INSERT INTO logs (model_id, log_image_path)
-VALUES (1, 'logs/test_image.jpg');
-
-INSERT INTO notifications (log_id, noti_title, noti_message, noti_is_receive)
-VALUES (3, 'Cảnh báo khẩn cấp', 'Phát hiện lửa tại thiết bị 1.', FALSE);
-
-INSERT INTO platforms (plat_id, plat_name, plat_endpoint)
-VALUES (1, 'Email', NULL);
+--admin
+INSERT INTO user_roles(user_id, role_id)
+VALUES (1, 1)
 
 
-
-
-
--- Thêm roles
-INSERT INTO roles (role_name) VALUES ('admin'), ('guest'), ('user'), ('police');
-
--- Thêm quyền
-INSERT INTO permissions (perm_name, perm_description) VALUES
-('use_v8n', 'Sử dụng mô hình YOLOv8n'),
-('use_v8m', 'Sử dụng mô hình YOLOv8m'),
-('use_v8l', 'Sử dụng mô hình YOLOv8l'),
-('view_logs', 'Xem nhật ký log'),
-('upload_model', 'Tải mô hình AI');
-
--- Gán quyền cho guest
-INSERT INTO role_permissions (role_id, perm_id)
-SELECT r.role_id, p.perm_id FROM roles r, permissions p
-WHERE r.role_name = 'guest' AND p.perm_name = 'use_v8n';
-
--- Gán quyền cho user
-INSERT INTO role_permissions (role_id, perm_id)
-SELECT r.role_id, p.perm_id FROM roles r, permissions p
-WHERE r.role_name = 'user' AND p.perm_name IN ('use_v8n', 'use_v8m', 'use_v8l');
-
--- Gán quyền cho admin
-INSERT INTO role_permissions (role_id, perm_id)
-SELECT r.role_id, p.perm_id FROM roles r, permissions p;
-
--- Gán user có vai trò "guest"
-INSERT INTO user_roles (user_id, role_id)
-SELECT u.user_id, r.role_id FROM users u, roles r
-WHERE u.user_email = 'guest@example.com' AND r.role_name = 'guest';
+--USER
+INSERT INTO user_roles(user_id, role_id)
+VALUES (2, 3)

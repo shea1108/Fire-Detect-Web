@@ -1,0 +1,236 @@
+<!-- @format -->
+{% extends "admin/layout.html" %} {% block title %}Chỉnh sửa mô hình{% endblock
+%} {% block content %}
+<div class="container-xxl">
+    <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
+        <div class="flex-grow-1">
+            <h4 class="fs-18 fw-semibold m-0">Chỉnh sửa mô hình</h4>
+        </div>
+        <div class="text-end">
+            <ol class="breadcrumb m-0 py-0">
+                <li class="breadcrumb-item">
+                    <a href="/admin/models">Danh sách mô hình</a>
+                </li>
+                <li class="breadcrumb-item active">Chỉnh sửa</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="form-edit-model" enctype="multipart/form-data">
+                <!-- ID sẽ được lưu ẩn, không hiển thị -->
+                <input type="hidden" name="id" />
+
+                <div class="mb-3">
+                    <label class="form-label">Tên mô hình</label>
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        required
+                    />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"
+                        >Chọn lại file .pt (nếu muốn thay thế)</label
+                    >
+                    <input
+                        type="file"
+                        name="model_file"
+                        class="form-control"
+                        accept=".pt"
+                    />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"
+                        >Tên tập tin khi lưu. Vị trí lưu: /Yolo/*.pt</label
+                    >
+                    <input
+                        type="text"
+                        name="path"
+                        class="form-control"
+                        required
+                        pattern="^[a-zA-Z0-9_\-.]+\.pt$"
+                        title="Chỉ nhập tên file định dạng .pt, không dấu / và khoảng trắng"
+                        placeholder="Ví dụ: Yolo_v8n.pt (Không chứa khoảng trắng và đuôi .pt)"
+                    />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Tiêu đề ngắn</label>
+                    <input
+                        type="text"
+                        name="short_title"
+                        class="form-control"
+                    />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Giải thích</label>
+                    <textarea
+                        name="tooltip"
+                        class="form-control"
+                        rows="2"
+                    ></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Trạng thái</label>
+                    <select name="status" class="form-select">
+                        <option value="true">Hoạt động</option>
+                        <option value="false">Tạm ngưng</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Lưu thay đổi
+                </button>
+                <a href="/admin/models" class="btn btn-secondary">Huỷ</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block extra_js %}
+
+<!-- SweetAlert2 -->
+
+<script>
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+    });
+
+    const modelId = window.location.pathname.split('/').pop();
+    if (!/^\d+$/.test(modelId)) {
+        window.location.href = '/admin/models';
+    }
+
+    const fileInput = document.querySelector('input[name="model_file"]');
+    const pathInput = document.querySelector('input[name="path"]');
+    const nameInput = document.querySelector('input[name="name"]');
+
+    fileInput?.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            if (!file.name.endsWith('.pt')) {
+                Toast.fire({ icon: 'error', title: 'Chỉ được chọn file .pt' });
+
+                fileInput.value = '';
+                return;
+            }
+            if (file.size > 200 * 1024 * 1024) {
+                alert('Dung lượng file vượt quá 200MB');
+                fileInput.value = '';
+                return;
+            }
+
+            const filename = file.name.replace('.pt', '');
+
+            pathInput.value = `${filename}.pt`;
+
+            if (!pathInput.dataset.edited) {
+                pathInput.value = `${filename}.pt`;
+            }
+        }
+    });
+
+    nameInput?.addEventListener('input', () => {
+        nameInput.dataset.edited = 'true';
+    });
+    pathInput?.addEventListener('input', () => {
+        pathInput.dataset.edited = 'true';
+    });
+
+    // Load dữ liệu cũ
+    fetch(`/api/admin/models/get-one/${modelId}`)
+        .then((res) => res.json())
+        .then(({ success, data }) => {
+            if (!success) throw new Error('Không tìm thấy mô hình');
+            for (const key in data) {
+                const input = document.querySelector(`[name="${key}"]`);
+                if (input) {
+                    let value = data[key];
+
+                    // ✅ Bỏ "Yolo/" nếu key là path
+                    if (key === 'path' && typeof value === 'string') {
+                        value = value.replace(/^Yolo\//, '');
+                        input.value = value;
+                    } else {
+                        input.value = key === 'status' ? String(value) : value;
+                    }
+                }
+            }
+        })
+        .catch((err) => {
+            alert('Lỗi khi tải dữ liệu: ' + err.message);
+            window.location.href = '/admin/models';
+        });
+
+    document
+        .getElementById('form-edit-model')
+        ?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            formData.append('status', form.status.value === 'true');
+
+            const hasNewFile = fileInput.files.length > 0;
+
+            const submitForm = () => {
+                fetch(`/api/admin/models/update/${modelId}`, {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then((res) => res.json())
+                    .then(({ success, message }) => {
+                        if (success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Cập nhật thành công',
+                                confirmButtonText: 'OK',
+                            }).then(() => {
+                                window.location.href = '/admin/models';
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Thất bại!',
+                                text: message || 'Không thể cập nhật mô hình',
+                            });
+                        }
+                    })
+                    .catch((err) => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi hệ thống',
+                            text: err.message || 'Không thể gửi dữ liệu',
+                        });
+                    });
+            };
+
+            if (hasNewFile) {
+                Swal.fire({
+                    title: 'Xác nhận thay thế file?',
+                    text: 'Bạn đã chọn file .pt mới, thay thế file cũ?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Đồng ý',
+                    cancelButtonText: 'Hủy',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        submitForm();
+                    }
+                });
+            } else {
+                submitForm();
+            }
+        });
+</script>
+
+{% endblock %}

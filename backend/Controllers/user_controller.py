@@ -118,6 +118,8 @@ def recover_password():
     expiry_seconds = current_app.config['RESET_TOKEN_EXPIRY_SECONDS']
 
     vn_now = datetime.now(ZoneInfo('Asia/Ho_Chi_Minh'))
+    expire_at = vn_now + timedelta(seconds=expiry_seconds)
+    expire_str = expire_at.strftime('%H:%M:%S %d/%m/%Y')  # ví dụ: 12:05:30 17/06/2025
     user.user_reset_token      = token
     user.user_reset_expire_at  = vn_now + timedelta(seconds=expiry_seconds)
     db.session.commit()  
@@ -125,36 +127,38 @@ def recover_password():
     from backend.Controllers.mail_controller import send_email
     subject = "🔐 Đặt lại mật khẩu tài khoản FireDetect"
     html_body = f"""
-    <table style="width:100%; max-width:600px; margin:0 auto; font-family:Arial,sans-serif; background:#f9f9f9; padding:20px; border-radius:8px;">
-        <tr>
-            <td style="text-align:center;">
-                <h2 style="color:#e63946;">🔐 Yêu cầu đặt lại mật khẩu</h2>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p>Xin chào <strong>{user.user_name}</strong>,</p>
-                <p>Bạn (hoặc ai đó) đã yêu cầu đặt lại mật khẩu cho tài khoản<strong></strong>.</p>
-                <p>Vui lòng nhấn vào nút bên dưới để tiếp tục. Liên kết sẽ hết hạn sau <strong>{int(expiry_seconds/60)} phút.</strong></p>
-                <br />
-                <div style="text-align:center; margin:20px 0;">
-                    <a href="{reset_link}" style="background:#1d3557; color:#fff; padding:12px 24px; border-radius:4px; text-decoration:none; font-weight:bold;">
-                        Đặt lại mật khẩu
-                    </a>
-                </div>
-                <br />
-                <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này. Mật khẩu hiện tại của bạn sẽ không bị thay đổi.</p>
-                <br />
-                <p>Trân trọng,<br />Đội ngũ FireDetect</p>
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align:center; font-size:12px; color:#888; padding-top:30px;">
-                &copy; {datetime.utcnow().year} FireDetect. All rights reserved.
-            </td>
-        </tr>
-    </table>
-    """
+        <table style="width:100%; max-width:600px; margin:0 auto; font-family:Arial,sans-serif; background:#f9f9f9; padding:20px; border-radius:8px;">
+            <tr>
+                <td style="text-align:center;">
+                    <h2 style="color:#e63946;">🔐 Yêu cầu đặt lại mật khẩu</h2>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Xin chào <strong>{user.user_name}</strong>,</p>
+                    <p>Bạn (hoặc ai đó) đã yêu cầu đặt lại mật khẩu cho tài khoản<strong></strong>.</p>
+                    <p>Vui lòng nhấn vào nút bên dưới để tiếp tục.</p>
+                    <p>Liên kết sẽ hết hạn sau <strong>{int(expiry_seconds / 60)} phút</strong>, tức vào lúc <strong>{expire_str}</strong> (giờ Việt Nam).</p>
+                    <br />
+                    <div style="text-align:center; margin:20px 0;">
+                        <a href="{reset_link}" style="background:#1d3557; color:#fff; padding:12px 24px; border-radius:4px; text-decoration:none; font-weight:bold;">
+                            Đặt lại mật khẩu
+                        </a>
+                    </div>
+                    <br />
+                    <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này. Mật khẩu hiện tại của bạn sẽ không bị thay đổi.</p>
+                    <br />
+                    <p>Trân trọng,<br />Đội ngũ FireDetect</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center; font-size:12px; color:#888; padding-top:30px;">
+                    &copy; {datetime.utcnow().year} FireDetect. All rights reserved.
+                </td>
+            </tr>
+        </table>
+        """
+
 
 
     send_email(subject, html_body, email)
