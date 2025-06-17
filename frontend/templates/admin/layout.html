@@ -1,0 +1,44 @@
+<!-- @format -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>
+            {% block title %}Trang quản trị{% endblock %} | FireDetect Admin
+        </title>
+        {% include 'admin/partials/head.html' %} {% block extra_css %}{%
+        endblock %}
+    </head>
+
+    <!-- body start -->
+    <body data-menu-color="ligth" data-sidebar="default">
+        <!-- Begin page -->
+        <div id="app-layout">
+            <!-- Topbar Start -->
+            {% include 'admin/partials/topbar.html' %}
+            <!-- end Topbar -->
+
+            <!-- Left Sidebar Start -->
+            {% include 'admin/partials/sidebar.html' %}
+            <!-- Left Sidebar End -->
+
+            <!-- Start Page Content here -->
+            <div class="content-page">
+                <div class="content">
+                    <!-- Start Content -->
+                    {% block content %} {% endblock %}
+                    <!-- end container -->
+                </div>
+                <!-- end content -->
+
+                <!-- Footer -->
+                {% include 'admin/partials/footer.html' %}
+            </div>
+            <!-- end content-page -->
+        </div>
+        <!-- END wrapper -->
+
+        <!-- Scripts -->
+        {% include 'admin/partials/scripts.html' %} {% block extra_js %}{%
+        endblock %}
+    </body>
+</html>

@@ -1,3 +1,4 @@
+# backen
 import base64
 import io
 import json
@@ -29,6 +30,7 @@ def register_frame_events(socketio, _perf_monitor):
     @socketio.on('frame')
     def handle_frame(data):
         try:
+            overall_start = time.time()  # Bắt đầu đo
             parsed_data = json.loads(data) if isinstance(data, str) else data
             image_b64 = parsed_data.get('image')
             if not image_b64:
@@ -62,7 +64,15 @@ def register_frame_events(socketio, _perf_monitor):
             else:
                 detections = result.get("detections", [])
 
+
+            # ✅ Tính thời gian xử lý YOLO + decode + logic
+            elapsed = time.time() - overall_start
+            current_fps = 1.0 / elapsed if elapsed > 0 else 0
+
+
+            # ✅ Cập nhật thống kê
             perf_monitor.update(len(detections), image_size_kb, recv_time)
+            perf_monitor.last_fps = current_fps  # Thêm dòng này
             emit('detections', {'detections': detections})
 
         except Exception as e:

@@ -1,0 +1,296 @@
+<!-- @format -->
+{% extends "admin/layout.html" %} {% block title %}Thêm mới mô hình{% endblock
+%} {% block extra_css %}
+<style>
+    #drop-zone.dragover {
+        border-color: #0d6efd;
+        background-color: #e9f2ff;
+    }
+</style>
+{% endblock %} {% block content %}
+<div class="container-xxl">
+    <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
+        <div class="flex-grow-1">
+            <h4 class="fs-18 fw-semibold m-0">Thêm mới mô hình</h4>
+        </div>
+        <div class="text-end">
+            <ol class="breadcrumb m-0 py-0">
+                <li class="breadcrumb-item">
+                    <a href="/admin/models">Danh sách mô hình</a>
+                </li>
+                <li class="breadcrumb-item active">Tạo mới</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="form-add-model" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label">Tên mô hình</label>
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        required
+                    />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"
+                        >Chọn file .pt không vượt 200MB</label
+                    >
+                    <div
+                        id="drop-zone"
+                        class="border border-dashed rounded p-3 text-center text-muted"
+                        style="cursor: pointer"
+                    >
+                        <i
+                            class="mdi mdi-cloud-upload-outline fs-1 text-primary"
+                        ></i>
+                        <p class="mb-0">
+                            Kéo & thả file .pt vào đây, hoặc
+                            <strong>nhấn để chọn</strong>
+                        </p>
+                        <input
+                            type="file"
+                            name="model_file"
+                            id="model_file"
+                            accept=".pt"
+                            hidden
+                        />
+                    </div>
+                    <small
+                        id="file-name"
+                        class="text-success d-block mt-1"
+                    ></small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"
+                        >Tên tập tin khi lưu. Vị trí lưu: /Yolo/*.pt</label
+                    >
+                    <input
+                        type="text"
+                        name="path"
+                        class="form-control"
+                        placeholder="Yolo_v8n.pt"
+                        required
+                        pattern="^[a-zA-Z0-9_\-.]+\.pt$"
+                        title="Chỉ nhập tên file định dạng .pt, không dấu / và khoảng trắng"
+                    />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tiêu đề ngắn</label>
+                    <input
+                        type="text"
+                        name="short_title"
+                        class="form-control"
+                        placeholder="Ví dụ: Nhanh, Chính xác cao"
+                    />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Giải thích</label>
+                    <textarea
+                        name="tooltip"
+                        class="form-control"
+                        rows="2"
+                        placeholder="Mô tả thêm về đặc điểm mô hình"
+                    ></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+                <a href="/admin/models" class="btn btn-secondary">Hủy</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block extra_js %}
+
+<script>
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+    });
+
+    const fileInput = document.querySelector('input[name="model_file"]');
+    const pathInput = document.querySelector('input[name="path"]');
+    const nameInput = document.querySelector('input[name="name"]');
+
+    const dropZone = document.getElementById('drop-zone');
+    const hiddenFileInput = document.getElementById('model_file');
+    const fileNameText = document.getElementById('file-name');
+
+    // Click mở file dialog
+    dropZone.addEventListener('click', () => hiddenFileInput.click());
+
+    // Highlight khi kéo file vào
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+
+        const file = e.dataTransfer.files[0];
+        if (file && file.name.endsWith('.pt')) {
+            hiddenFileInput.files = e.dataTransfer.files;
+            handleFileSelected(file);
+        } else {
+            Toast.fire({ icon: 'error', title: 'Chỉ được chọn file .pt' });
+        }
+    });
+
+    // Khi chọn file từ dialog
+    hiddenFileInput.addEventListener('change', () => {
+        const file = hiddenFileInput.files[0];
+        if (file) handleFileSelected(file);
+    });
+
+    // ✅ Hàm xử lý khi chọn file
+    function handleFileSelected(file) {
+        if (!file.name.endsWith('.pt')) {
+            Toast.fire({ icon: 'error', title: 'Chỉ được chọn file .pt' });
+            hiddenFileInput.value = '';
+            return;
+        }
+
+        if (file.size > 200 * 1024 * 1024) {
+            Toast.fire({
+                icon: 'error',
+                title: 'Dung lượng file vượt quá 200MB',
+            });
+            hiddenFileInput.value = '';
+            return;
+        }
+
+        const filename = file.name.replace('.pt', '');
+        fileNameText.textContent = `Đã chọn: ${file.name}`;
+
+        // Tự động gán nếu người dùng chưa chỉnh
+        if (!pathInput.dataset.edited) {
+            pathInput.value = `${filename}.pt`;
+        }
+        if (!nameInput.dataset.edited) {
+            nameInput.value = filename.replace(/_/g, ' ');
+        }
+    }
+
+    fileInput?.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+
+            if (!file.name.endsWith('.pt')) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Chỉ được chọn file .pt',
+                });
+                fileInput.value = '';
+                return;
+            }
+
+            if (file.size > 200 * 1024 * 1024) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Dung lượng file vượt quá 200MB',
+                });
+                fileInput.value = '';
+                return;
+            }
+
+            const filename = file.name.replace('.pt', '');
+
+            if (!pathInput.dataset.edited) {
+                pathInput.value = `${filename}.pt`;
+            }
+
+            if (!nameInput.dataset.edited) {
+                nameInput.value = filename.replace(/_/g, ' ');
+            }
+        }
+    });
+
+    nameInput?.addEventListener('input', () => {
+        nameInput.dataset.edited = 'true';
+    });
+    pathInput?.addEventListener('input', () => {
+        pathInput.dataset.edited = 'true';
+    });
+
+    document
+        .getElementById('form-add-model')
+        ?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const form = e.target;
+
+            const name = form.name.value.trim();
+            const path = form.path.value.trim();
+            const short_title = form.short_title.value.trim();
+            const tooltip = form.tooltip.value.trim();
+            const file = form.model_file.files[0];
+
+            const validPath = /^[a-zA-Z0-9_\-\.]+\.pt$/;
+            if (!validPath.test(path)) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Tên đường dẫn chỉ được dạng <tên>.pt, không có dấu / hoặc ký tự đặc biệt',
+                });
+                return;
+            }
+
+            if (!file || file.size > 200 * 1024 * 1024) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'File không hợp lệ hoặc vượt quá 200MB',
+                });
+                return;
+            }
+
+            const formData = new FormData(form);
+            formData.append('name', name);
+            formData.append('path', path);
+            formData.append('short_title', short_title);
+            formData.append('tooltip', tooltip);
+            formData.append('status', true);
+
+            fetch('/api/admin/models/create', {
+                method: 'POST',
+                body: formData,
+            })
+                .then((res) => res.json())
+                .then(({ success, message }) => {
+                    if (success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Tạo mô hình thành công!',
+                            showConfirmButton: false,
+                            timer: 2000,
+                        }).then(() => {
+                            window.location.href = '/admin/models';
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Thất bại!',
+                            text: message || 'Không thể tạo mô hình',
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.error(err);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi hệ thống',
+                        text: err.message || 'Không thể gửi dữ liệu',
+                    });
+                });
+        });
+</script>
+
+{% endblock %}

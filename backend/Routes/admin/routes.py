@@ -13,11 +13,53 @@ def inject_user_from_session():
         user_name=session.get("user_name"),
         user_avatar=session.get("user_avatar") or "/static/admin/assets/images/users/user.jpg"
     )
-
+########### DASHBOARD ROUTES ###########
 @bp.route('/')
 @admin_required
 def dashboard():
     return render_template('admin/index.html')
+
+
+
+
+############ MODELS ROUTES STARTS ############
+@bp.route("/models", methods=["GET"])
+@admin_required
+def models_list_page():
+    return render_template("admin/admin_models.html")
+
+
+@bp.route("/models/create", methods=["GET"])
+@admin_required
+def create_models_page():
+    return render_template("admin/admin_models_create.html")
+
+
+@bp.route("/models/edit/<int:model_id>", methods=["GET"])
+@admin_required
+def edit_model_page(model_id):
+    return render_template("admin/admin_models_edit.html", model_id=model_id)
+############ MODELS ROUTES ENDS ############
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @bp.route('/<path:page>')
 @admin_required
