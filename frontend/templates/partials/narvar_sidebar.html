@@ -1,6 +1,10 @@
 <!-- @format -->
 
 <style>
+    .invisible {
+        visibility: hidden;
+        height: 0;
+    }
     i.bx.bx-user,
     i.bx.bx-log-out {
         transform: none !important;
@@ -44,29 +48,201 @@
         border-radius: 50%;
         object-fit: cover;
     }
+    #user-info-mobile {
+        z-index: 1100;
+    }
+
     /* Khi navbar dính lên (cuộn xuống), đổi màu chữ user-info */
     .navbar-area.sticky-nav .dropdown-toggle,
     .navbar-area.sticky-nav .user-avatar {
         color: white !important;
-        filter: brightness(0) invert(1); /* đảo màu avatar xám nhạt */
+        /*filter: brightness(0) invert(1); /* đảo màu avatar xám nhạt */
+    }
+
+    .user-info .dropdown-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 8px;
+        transition: all 0.3s;
+        color: #333;
+        text-decoration: none;
+    }
+
+    .user-info .dropdown-toggle:hover {
+        background-color: #f8f9fa;
+    }
+
+    .user-info .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .user-info .dropdown-menu {
+        min-width: 180px;
+        font-size: 0.875rem;
+    }
+
+    /**/
+    @media (max-width: 991px) {
+        .mobile-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            position: relative;
+        }
+
+        /* Hamburger menu bên trái */
+        .meanmenu-reveal {
+            position: absolute !important;
+            left: 10px !important;
+            right: auto !important;
+            z-index: 1001;
+        }
+
+        /* Logo ở giữa */
+        .mobile-nav .logo {
+            position: static !important;
+            margin: 0 auto;
+        }
+
+        /* Đăng nhập / đăng ký bên phải */
+        .mobile-nav .auth-buttons {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .mobile-nav .btn-login,
+        .mobile-nav .btn-register {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+        }
+        /* Ẩn tên user trên avatar khi ở mobile */
+        #user-name {
+            display: none;
+        }
+
+        /* Điều chỉnh kích thước avatar */
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Avatar cố định bên phải */
+        #user-info {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1001;
+        }
+
+        /* Dropdown ở mobile canh chỉnh đẹp */
+        .dropdown-menu {
+            font-size: 0.875rem;
+            min-width: 160px;
+        }
+
+        .dropdown-menu li {
+            text-align: left;
+        }
+        #user-name-mobile {
+            font-size: 0.875rem;
+            color: #333;
+        }
     }
 </style>
 
 <div class="navbar-area">
     <!-- Menu For Mobile Device -->
     <div class="mobile-nav">
-        <a href="index-new.html" class="logo">
+        <!-- Hamburger (meanmenu-reveal sẽ được JS tự động chèn vào) -->
+
+        <!-- Logo giữa -->
+        <a href="/" class="logo mx-auto">
             <img
                 src="/static/assets/img/logo.png"
-                class="logo-one"
                 alt="Logo"
+                class="logo-one"
             />
             <img
                 src="/static/assets/img/sticky-logo.png"
-                class="logo-two"
                 alt="Logo"
+                class="logo-two"
             />
         </a>
+
+        <!-- Nút bên phải -->
+        <!-- Nút bên phải (Auth hoặc Avatar mobile) -->
+        <div
+            class="auth-buttons d-flex align-items-center invisible"
+            id="auth-buttons-mobile"
+        >
+            <a
+                href="/sign-in.html"
+                class="btn btn-login me-2"
+                id="btn-login-mobile"
+                >Đăng nhập</a
+            >
+        </div>
+
+        <!-- Mobile Dropdown Avatar -->
+        <div
+            class="auth-buttons d-flex align-items-center invisible"
+            id="auth-buttons-mobile"
+        >
+            <a
+                href="/sign-in.html"
+                class="btn btn-login me-2"
+                id="btn-login-mobile"
+                >Đăng nhập</a
+            >
+        </div>
+
+        <div
+            class="dropdown d-flex align-items-center invisible"
+            id="user-info-mobile"
+        >
+            <a
+                href="#"
+                class="dropdown-toggle d-flex align-items-center"
+                id="userDropdownMobile"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+            >
+                <img src="" class="user-avatar me-2" alt="Avatar" />
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li class="nav-item text-center border-bottom">
+                    <strong id="user-name-menu" class="d-block py-2"></strong>
+                </li>
+                <li class="nav-item">
+                    <a href="/profile" class="dropdown-item"
+                        ><i class="bx bx-user me-2"></i>Thông tin cá nhân</a
+                    >
+                </li>
+                <li class="nav-item">
+                    <a
+                        href="/logout"
+                        class="dropdown-item"
+                        id="btn-logout-mobile"
+                        ><i class="bx bx-log-out me-2"></i>Đăng xuất</a
+                    >
+                </li>
+            </ul>
+        </div>
     </div>
 
     <!-- Menu For Desktop Device -->
@@ -86,57 +262,32 @@
                 >
                     <ul class="navbar-nav m-auto">
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                Home
-                                <i class="bx bxs-chevron-right"></i>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item">
-                                    <a href="index.html" class="nav-link">
-                                        Home One
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="index-two.html" class="nav-link">
-                                        Home Two
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a
-                                        href="index-three.html"
-                                        class="nav-link active"
-                                    >
-                                        Home Three
-                                    </a>
-                                </li>
-                            </ul>
+                            <a href="index.html" class="nav-link"> Trang Chủ </a>
                         </li>
                         <li class="nav-item">
-                            <a href="about.html" class="nav-link"> About </a>
+                            <a href="about.html" class="nav-link"> Giới Thiệu </a>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                Pages
+                                Phát Hiện Đám Cháy
                                 <i class="bx bxs-chevron-right"></i>
                             </a>
                             <ul class="dropdown-menu">
-                                <li class="nav-item">
-                                    <a href="sign-in.html" class="nav-link">
-                                        Login
-                                    </a>
+                                <li
+                                    class="nav-item text-center d-md-none border-bottom"
+                                >
+                                    <strong
+                                        id="user-name-mobile"
+                                        class="d-block py-2"
+                                    ></strong>
                                 </li>
-                                <li class="nav-item">
-                                    <a href="sign-up.html" class="nav-link">
-                                        Register
-                                    </a>
-                                </li>
-
+                                
                                 <li class="nav-item">
                                     <a
                                         href="detect-image.html"
                                         class="nav-link"
                                     >
-                                        Detect Picture
+                                        Qua Ảnh
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -144,7 +295,7 @@
                                         href="detect-video.html"
                                         class="nav-link"
                                     >
-                                        Detect Video
+                                        Qua Video
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -152,22 +303,7 @@
                                         href="detect-camera.html"
                                         class="nav-link"
                                     >
-                                        Detect Camera
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a
-                                        href="recover-password.html"
-                                        class="nav-link"
-                                        >Recover Password</a
-                                    >
-                                </li>
-                                <li class="nav-item">
-                                    <a
-                                        href="terms-condition.html"
-                                        class="nav-link"
-                                    >
-                                        Terms & Conditions
+                                        Qua Camera
                                     </a>
                                 </li>
                             </ul>
@@ -253,9 +389,18 @@
         const authButtons = document.getElementById('auth-buttons');
         const userInfo = document.getElementById('user-info');
         const userNameEl = document.getElementById('user-name');
-        const avatarEl = document.querySelector('.user-avatar');
+        const avatarEl = document.querySelector('#user-info .user-avatar');
 
-        if (!authButtons || !userInfo || !userNameEl || !avatarEl) return;
+        const authMobile = document.getElementById('auth-buttons-mobile');
+        const userMobile = document.getElementById('user-info-mobile');
+        const userNameMobile = document.getElementById('user-name-menu');
+
+        // Ẩn ban đầu để tránh giật
+        authMobile.style.display = 'none';
+        userMobile.style.display = 'none';
+        const avatarMobile = document.querySelector(
+            '#user-info-mobile .user-avatar'
+        );
 
         try {
             const res = await fetch('/api/auth/me', {
@@ -265,27 +410,53 @@
             });
             const data = await res.json();
 
-            if (!res.ok || data.error) {
-                authButtons.classList.remove('d-none');
-                userInfo.classList.add('d-none');
+            const loggedIn = res.ok && !data.error;
+            // Mobile xử lý mượt
+            if (loggedIn) {
+                authMobile.classList.add('invisible');
+                userMobile.classList.remove('invisible');
             } else {
-                authButtons.classList.add('d-none');
-                userInfo.classList.remove('d-none');
-                userNameEl.innerText = data.user_name;
+                authMobile.classList.remove('invisible');
+                userMobile.classList.add('invisible');
+            }
 
-                // Gán avatar nếu có, không thì fallback
+            if (loggedIn) {
+                // Desktop
+                authButtons?.classList.add('d-none');
+                userInfo?.classList.remove('d-none');
+                userInfo?.classList.add('d-flex');
+                userNameEl.innerText = data.user_name;
                 avatarEl.src =
                     data.user_avatar || '/static/assets/img/favicon.png';
+
+                // Mobile
+                authMobile?.classList.add('d-none');
+                userMobile?.classList.remove('d-none');
+                userMobile?.classList.add('d-flex');
+                userNameMobile.innerText = data.user_name;
+                avatarMobile.src =
+                    data.user_avatar || '/static/assets/img/favicon.png';
+            } else {
+                authButtons?.classList.remove('d-none');
+                userInfo?.classList.add('d-none');
+                userInfo?.classList.remove('d-flex');
+
+                authMobile?.classList.remove('d-none');
+                userMobile?.classList.add('d-none');
+                userMobile?.classList.remove('d-flex');
             }
         } catch (err) {
             console.error('Lỗi kiểm tra đăng nhập:', err);
-            authButtons.classList.remove('d-none');
-            userInfo.classList.add('d-none');
+            authButtons?.classList.remove('d-none');
+            userInfo?.classList.add('d-none');
+            authMobile?.classList.remove('d-none');
+            userMobile?.classList.add('d-none');
         }
 
-        const logoutBtn = document.getElementById('btn-logout');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', async function (e) {
+        // Logout
+        document
+            .getElementById('btn-logout')
+            ?.addEventListener('click', async function (e) {
                 e.preventDefault();
                 await fetch('/api/auth/logout', {
                     method: 'POST',
@@ -293,6 +464,16 @@
                 });
                 window.location.reload();
             });
-        }
+
+        document
+            .getElementById('btn-logout-mobile')
+            ?.addEventListener('click', async function (e) {
+                e.preventDefault();
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include',
+                });
+                window.location.reload();
+            });
     });
 </script>
