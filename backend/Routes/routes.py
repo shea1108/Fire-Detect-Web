@@ -102,6 +102,3 @@ def show_reset_form(token):
     if not email:
         return "Link không hợp lệ hoặc đã hết hạn", 400
     return render_template('reset-password.html', token=token)
-
-
-

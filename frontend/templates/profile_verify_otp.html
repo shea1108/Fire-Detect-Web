@@ -1,62 +1,71 @@
+<!-- @format -->
+
 <!DOCTYPE html>
 <html lang="vn">
-<head>
-    {% include ('partials/head.html') %}
-    <link rel="stylesheet" href="../templates/partials/static/footer.css">
-</head>
-<body>
-    {% include ('partials/narvar_sidebar.html') %}
+    <head>
+        {% include ('partials/head.html') %}
+        <link rel="stylesheet" href="../templates/partials/static/footer.css" />
+    </head>
+    <body>
+        {% include ('partials/narvar_sidebar.html') %}
 
-    <section class="sign-up-area ptb-100">
-        <div class="container">
-            <div class="section-title text-center">
-                <h2>Xác thực thay đổi Email</h2>
-                <p>
-                    Một mã xác thực gồm 6 chữ số đã được gửi đến email mới của bạn: <b>{{ new_email }}</b>.
-                    <br>Vui lòng kiểm tra và nhập vào bên dưới. Mã có hiệu lực trong 5 phút.
-                </p>
-            </div>
+        <section class="sign-up-area ptb-100">
+            <div class="container">
+                <div class="section-title text-center">
+                    <h2>Xác thực thay đổi Email</h2>
+                    <p>
+                        Một mã xác thực gồm 6 chữ số đã được gửi đến email mới
+                        của bạn: <b>{{ new_email }}</b>. <br />Vui lòng kiểm tra
+                        và nhập vào bên dưới. Mã có hiệu lực trong 5 phút.
+                    </p>
+                </div>
 
-            <div class="contact-wrap-form log-in-width">
-                
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} text-center" role="alert">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-
-                {# <<< SỬA LỖI Ở ĐÂY: Sửa lại tên endpoint trong url_for >>> #}
-                <form id="verify-otp-form" method="post" action="{{ url_for('user_check.handle_verify_email_change') }}">
-                    <div class="row justify-content-center">
-                        <div class="col-12">
-                            <div class="form-group">
-                                <input
-                                    class="form-control"
-                                    type="text"
-                                    name="otp"
-                                    placeholder="Nhập mã OTP"
-                                    required
-                                    maxlength="6"
-                                    pattern="\d{6}"
-                                    title="Mã OTP phải là 6 chữ số"
-                                />
-                            </div>
-                        </div>
-                        <div class="col-12 text-center">
-                            <button class="default-btn btn-two" type="submit">
-                                Xác nhận
-                            </button>
-                        </div>
+                <div class="contact-wrap-form log-in-width">
+                    {% with messages =
+                    get_flashed_messages(with_categories=true) %} {% if messages
+                    %} {% for category, message in messages %}
+                    <div
+                        class="alert alert-{{ category }} text-center"
+                        role="alert"
+                    >
+                        {{ message }}
                     </div>
-                </form>
+                    {% endfor %} {% endif %} {% endwith %} {# <<< SỬA LỖI Ở ĐÂY:
+                    Sửa lại tên endpoint trong url_for >>> #}
+                    <form
+                        id="verify-otp-form"
+                        method="post"
+                        action="{{ url_for('user_check.handle_verify_email_change') }}"
+                    >
+                        <div class="row justify-content-center">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <input
+                                        class="form-control"
+                                        type="text"
+                                        name="otp"
+                                        placeholder="Nhập mã OTP"
+                                        required
+                                        maxlength="6"
+                                        pattern="\d{6}"
+                                        title="Mã OTP phải là 6 chữ số"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button
+                                    class="default-btn btn-two"
+                                    type="submit"
+                                >
+                                    Xác nhận
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    {% include ('partials/footer.html') %}
-</body>
+        {% include ('partials/footer.html') %}
+    </body>
 </html>

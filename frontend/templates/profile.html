@@ -99,7 +99,7 @@
                                 accept="image/*"
                                 onchange="previewAvatar(event)"
                             />
-                            <br>
+                            <br />
                             <small class="form-text text-muted"
                                 >Chọn ảnh JPG, PNG dưới 2MB</small
                             >
@@ -250,15 +250,23 @@
                     const meData = await meRes.json();
 
                     if (meRes.ok) {
-                        document.querySelector('[name="user_name"]').value = meData.user_name;
-                        document.querySelector('[name="user_phone_num"]').value = meData.user_phone_num || '';
-                        document.querySelector('[name="user_email"]').value = meData.user_email;
-                        const avatar = document.getElementById('avatar-preview');
+                        document.querySelector('[name="user_name"]').value =
+                            meData.user_name;
+                        document.querySelector(
+                            '[name="user_phone_num"]'
+                        ).value = meData.user_phone_num || '';
+                        document.querySelector('[name="user_email"]').value =
+                            meData.user_email;
+                        const avatar =
+                            document.getElementById('avatar-preview');
                         if (meData.user_avatar) {
                             avatar.src = meData.user_avatar;
                         }
-                        document.querySelector('.fw-bold').innerText = meData.user_name;
-                        document.querySelectorAll('.text-muted.small.mb-1, .text-muted.small')[0].innerText = meData.user_email;
+                        document.querySelector('.fw-bold').innerText =
+                            meData.user_name;
+                        document.querySelectorAll(
+                            '.text-muted.small.mb-1, .text-muted.small'
+                        )[0].innerText = meData.user_email;
                     }
                 } catch (err) {
                     console.error('Lỗi khi gọi /api/auth/me:', err);
@@ -274,59 +282,79 @@
                 reader.readAsDataURL(event.target.files[0]);
             }
 
-            document.getElementById('edit-profile-form').addEventListener('submit', async function (e) {
-                e.preventDefault();
+            document
+                .getElementById('edit-profile-form')
+                .addEventListener('submit', async function (e) {
+                    e.preventDefault();
 
-                // <<< BƯỚC 1: HIỂN THỊ THÔNG BÁO "ĐANG TẢI" NGAY LẬP TỨC >>>
-                Swal.fire({
-                    title: 'Đang xử lý...',
-                    text: 'Hệ thống đang gửi email xác thực, vui lòng chờ.',
-                    allowOutsideClick: false, // Không cho người dùng đóng bằng cách click ra ngoài
-                    didOpen: () => {
-                        Swal.showLoading(); // Hiển thị icon loading
-                    }
-                });
-
-                const form = e.target;
-                const formData = new FormData(form);
-
-                try {
-                    const response = await fetch('/api/user/edit', {
-                        method: 'POST',
-                        body: formData,
+                    // <<< BƯỚC 1: HIỂN THỊ THÔNG BÁO "ĐANG TẢI" NGAY LẬP TỨC >>>
+                    Swal.fire({
+                        title: 'Đang xử lý...',
+                        text: 'Hệ thống đang gửi email xác thực, vui lòng chờ.',
+                        allowOutsideClick: false, // Không cho người dùng đóng bằng cách click ra ngoài
+                        didOpen: () => {
+                            Swal.showLoading(); // Hiển thị icon loading
+                        },
                     });
 
-                    const data = await response.json();
+                    const form = e.target;
+                    const formData = new FormData(form);
 
-                    if (response.ok) {
-                        if (data.redirect) {
-                            // Nếu có redirect, không cần đóng Swal, trang sẽ tự chuyển hướng
-                            // và pop-up sẽ biến mất theo.
-                            window.location.href = data.redirect;
+                    try {
+                        const response = await fetch('/api/user/edit', {
+                            method: 'POST',
+                            body: formData,
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            if (data.redirect) {
+                                // Nếu có redirect, không cần đóng Swal, trang sẽ tự chuyển hướng
+                                // và pop-up sẽ biến mất theo.
+                                window.location.href = data.redirect;
+                            } else {
+                                // Nếu là cập nhật thành công tại chỗ (không đổi email)
+                                Swal.close(); // <<< BƯỚC 2: ĐÓNG POP-UP "LOADING"
+                                Swal.fire({
+                                    icon: 'success',
+                                    title:
+                                        data.message ||
+                                        'Đã cập nhật thành công!',
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                    timerProgressBar: true,
+                                });
+                                profileUpdateUI();
+                            }
                         } else {
-                            // Nếu là cập nhật thành công tại chỗ (không đổi email)
+                            // Nếu có lỗi từ server
                             Swal.close(); // <<< BƯỚC 2: ĐÓNG POP-UP "LOADING"
+                            let message = data.error || 'Có lỗi xảy ra!';
+                            if (message === 'Email already registered')
+                                message = 'Email đã được đăng ký!';
+                            if (message === 'Phone number already registered')
+                                message = 'Số điện thoại đã được đăng ký!';
+
                             Swal.fire({
-                                icon: 'success',
-                                title: data.message || 'Đã cập nhật thành công!',
+                                icon: 'error',
+                                title: message,
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
-                                timer: 2000,
+                                timer: 2500,
                                 timerProgressBar: true,
                             });
-                            profileUpdateUI();
                         }
-                    } else {
-                        // Nếu có lỗi từ server
+                    } catch (err) {
+                        // Nếu có lỗi mạng hoặc lỗi hệ thống
                         Swal.close(); // <<< BƯỚC 2: ĐÓNG POP-UP "LOADING"
-                        let message = data.error || 'Có lỗi xảy ra!';
-                        if (message === 'Email already registered') message = 'Email đã được đăng ký!';
-                        if (message === 'Phone number already registered') message = 'Số điện thoại đã được đăng ký!';
-
+                        console.error('Lỗi:', err);
                         Swal.fire({
                             icon: 'error',
-                            title: message,
+                            title: 'Lỗi hệ thống. Vui lòng thử lại.',
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,
@@ -334,21 +362,7 @@
                             timerProgressBar: true,
                         });
                     }
-                } catch (err) {
-                    // Nếu có lỗi mạng hoặc lỗi hệ thống
-                    Swal.close(); // <<< BƯỚC 2: ĐÓNG POP-UP "LOADING"
-                    console.error('Lỗi:', err);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi hệ thống. Vui lòng thử lại.',
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 2500,
-                        timerProgressBar: true,
-                    });
-                }
-            });
+                });
         </script>
 
         <!-- Footer Area -->
