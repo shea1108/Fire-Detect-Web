@@ -8,6 +8,8 @@ import ssl
 # context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 # context.load_cert_chain(certfile='certs/cert.pem', keyfile='certs/key.pem')
 # load_dotenv()  # Nạp biến môi trường từ file .env
+import eventlet
+eventlet.monkey_patch()
 
 app = create_app()
 

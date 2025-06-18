@@ -10,6 +10,6 @@ load_dotenv()
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
-socketio = SocketIO()
+socketio = SocketIO(async_mode='eventlet')
 mail = Mail()
 oauth = OAuth()

@@ -1,4 +1,5 @@
 import os
+import logging
 from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -43,6 +44,7 @@ from backend.Routes.admin import admin_routes, admin_models, admin_users
 
 
 def create_app():
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s | %(levelname)s | %(message)s')
     # 1. Load biến môi trường ĐẦU TIÊN
     load_dotenv()
 
