@@ -56,7 +56,111 @@
     .navbar-area.sticky-nav .dropdown-toggle,
     .navbar-area.sticky-nav .user-avatar {
         color: white !important;
-        filter: brightness(0) invert(1); /* đảo màu avatar xám nhạt */
+        /*filter: brightness(0) invert(1); /* đảo màu avatar xám nhạt */
+    }
+
+    .user-info .dropdown-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 8px;
+        transition: all 0.3s;
+        color: #333;
+        text-decoration: none;
+    }
+
+    .user-info .dropdown-toggle:hover {
+        background-color: #f8f9fa;
+    }
+
+    .user-info .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .user-info .dropdown-menu {
+        min-width: 180px;
+        font-size: 0.875rem;
+    }
+
+    /**/
+    @media (max-width: 991px) {
+        .mobile-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            position: relative;
+        }
+
+        /* Hamburger menu bên trái */
+        .meanmenu-reveal {
+            position: absolute !important;
+            left: 10px !important;
+            right: auto !important;
+            z-index: 1001;
+        }
+
+        /* Logo ở giữa */
+        .mobile-nav .logo {
+            position: static !important;
+            margin: 0 auto;
+        }
+
+        /* Đăng nhập / đăng ký bên phải */
+        .mobile-nav .auth-buttons {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .mobile-nav .btn-login,
+        .mobile-nav .btn-register {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+        }
+        /* Ẩn tên user trên avatar khi ở mobile */
+        #user-name {
+            display: none;
+        }
+
+        /* Điều chỉnh kích thước avatar */
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Avatar cố định bên phải */
+        #user-info {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1001;
+        }
+
+        /* Dropdown ở mobile canh chỉnh đẹp */
+        .dropdown-menu {
+            font-size: 0.875rem;
+            min-width: 160px;
+        }
+
+        .dropdown-menu li {
+            text-align: left;
+        }
+        #user-name-mobile {
+            font-size: 0.875rem;
+            color: #333;
+        }
     }
 
     .user-info .dropdown-toggle {
@@ -262,37 +366,14 @@
                 >
                     <ul class="navbar-nav m-auto">
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                Home
-                                <i class="bx bxs-chevron-right"></i>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item">
-                                    <a href="index.html" class="nav-link">
-                                        Home One
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="index-two.html" class="nav-link">
-                                        Home Two
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a
-                                        href="index-three.html"
-                                        class="nav-link active"
-                                    >
-                                        Home Three
-                                    </a>
-                                </li>
-                            </ul>
+                            <a href="index.html" class="nav-link"> Trang Chủ </a>
                         </li>
                         <li class="nav-item">
-                            <a href="about.html" class="nav-link"> About </a>
+                            <a href="about.html" class="nav-link"> Giới Thiệu </a>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                Pages
+                                Phát Hiện Đám Cháy
                                 <i class="bx bxs-chevron-right"></i>
                             </a>
                             <ul class="dropdown-menu">
@@ -303,24 +384,16 @@
                                         id="user-name-mobile"
                                         class="d-block py-2"
                                     ></strong>
+=======
+>>>>>>> origin/phong
                                 </li>
-                                <li class="nav-item">
-                                    <a href="sign-in.html" class="nav-link">
-                                        Login
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="sign-up.html" class="nav-link">
-                                        Register
-                                    </a>
-                                </li>
-
+                                
                                 <li class="nav-item">
                                     <a
                                         href="detect-image.html"
                                         class="nav-link"
                                     >
-                                        Detect Picture
+                                        Qua Ảnh
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -328,7 +401,7 @@
                                         href="detect-video.html"
                                         class="nav-link"
                                     >
-                                        Detect Video
+                                        Qua Video
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -336,22 +409,7 @@
                                         href="detect-camera.html"
                                         class="nav-link"
                                     >
-                                        Detect Camera
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a
-                                        href="recover-password.html"
-                                        class="nav-link"
-                                        >Recover Password</a
-                                    >
-                                </li>
-                                <li class="nav-item">
-                                    <a
-                                        href="terms-condition.html"
-                                        class="nav-link"
-                                    >
-                                        Terms & Conditions
+                                        Qua Camera
                                     </a>
                                 </li>
                             </ul>
