@@ -4,12 +4,13 @@ import os
 from dotenv import load_dotenv, dotenv_values
 from backend import create_app, socketio
 import ssl
+import logging
 
 # context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 # context.load_cert_chain(certfile='certs/cert.pem', keyfile='certs/key.pem')
 # load_dotenv()  # Nạp biến môi trường từ file .env
-import eventlet
-eventlet.monkey_patch()
+# Ẩn lỗi do client ngắt video sớm
+logging.getLogger("eventlet.wsgi.server").setLevel(logging.ERROR)
 
 app = create_app()
 

@@ -15,11 +15,11 @@
         <section class="sign-in-area ptb-100">
             <div class="container">
                 <div class="section-title text-center">
-                    <h2>Sign In to your account!</h2>
+                    <h2>Đăng nhập vào tài khoản của bạn!</h2>
                 </div>
                 <div class="contact-wrap-form log-in-width">
                     <form id="login-form" method="post">
-                        <p>With your social network</p>
+                        <p>Đăng nhập bằng mạng xã hội</p>
                         <div class="row justify-content-center">
                             <div class="col-lg-4 col-md-4 col-sm-4">
                                 <button
@@ -56,27 +56,41 @@
                             </div>
 
                             <div class="col-12">
-                                <div class="form-group">
+                                <div class="form-group position-relative">
                                     <input
                                         class="form-control"
                                         type="password"
                                         name="user_password"
-                                        placeholder="Password"
+                                        id="user_password"
+                                        placeholder="Mật khẩu"
                                         required
                                     />
+                                    <i
+                                        class="bx bx-show toggle-password"
+                                        id="togglePassword"
+                                        style="
+                                            position: absolute;
+                                            top: 50%;
+                                            right: 15px;
+                                            transform: translateY(-50%);
+                                            cursor: pointer;
+                                        "
+                                    ></i>
                                 </div>
                             </div>
 
                             <div class="col-lg-6 col-sm-6 form-condition">
                                 <div class="agree-label">
                                     <input type="checkbox" id="chb1" />
-                                    <label for="chb1"> Remember Me </label>
+                                    <label for="chb1">
+                                        Ghi nhớ đăng nhập
+                                    </label>
                                 </div>
                             </div>
 
                             <div class="col-lg-6 col-sm-6">
                                 <a class="forget" href="recover-password.html"
-                                    >Forgot my password?</a
+                                    >Quên mật khẩu?</a
                                 >
                             </div>
 
@@ -184,6 +198,19 @@
                             text: 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.',
                         });
                     }
+                });
+        </script>
+        <script>
+            document
+                .getElementById('togglePassword')
+                .addEventListener('click', function () {
+                    const passwordInput =
+                        document.getElementById('user_password');
+                    const icon = this;
+                    const isPassword = passwordInput.type === 'password';
+                    passwordInput.type = isPassword ? 'text' : 'password';
+                    icon.classList.toggle('bx-show');
+                    icon.classList.toggle('bx-hide');
                 });
         </script>
 
