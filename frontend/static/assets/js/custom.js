@@ -251,10 +251,10 @@
         jQuery('.preloader').fadeOut(500);
     });
 
-    // Switch Btn
-    $('body').append(
-        "<div class='switch-box'><label id='switch' class='switch'><input type='checkbox' onchange='toggleTheme()' id='slider'><span class='slider round'></span></label></div>"
-    );
+    // // Switch Btn
+    // $('body').append(
+    //     "<div class='switch-box'><label id='switch' class='switch'><input type='checkbox' onchange='toggleTheme()' id='slider'><span class='slider round'></span></label></div>"
+    // );
 })(jQuery);
 
 // function to set a given theme/color-scheme
