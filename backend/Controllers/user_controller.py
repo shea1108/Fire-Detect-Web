@@ -184,7 +184,8 @@ def recover_password():
 
     from backend.utils.token_utils import generate_reset_token
     token = generate_reset_token(email)
-    reset_link = f"http://localhost:5000/reset-password/{token}"
+    # reset_link = f"http://localhost:5000/reset-password/{token}"
+    reset_link = url_for('web.show_reset_form', token=token, _external=True)
 
 
     # --> LƯU token & hạn sử dụng
