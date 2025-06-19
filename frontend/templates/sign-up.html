@@ -4,8 +4,12 @@
 <html lang="vi">
     <head>
         {% include ('partials/head.html')%}
-        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-        
+        <script
+            src="https://www.google.com/recaptcha/api.js"
+            async
+            defer
+        ></script>
+
         <style>
             .is-valid {
                 border-color: #28a745 !important;
@@ -41,37 +45,112 @@
                                 </button>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-4">
-                                <button class="login-social-btn" type="button"><i class="bx bxl-facebook"></i></button>
+                                <button class="login-social-btn" type="button">
+                                    <i class="bx bxl-facebook"></i>
+                                </button>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-4">
-                                <button class="login-social-btn" type="button"><i class="bx bxl-twitter"></i></button>
+                                <button class="login-social-btn" type="button">
+                                    <i class="bx bxl-twitter"></i>
+                                </button>
                             </div>
 
                             <!-- Form Inputs -->
-                            <div class="col-12"><div class="form-group"><input class="form-control" type="text" name="user_name" placeholder="Họ và tên" required /></div></div>
-                            <div class="col-12"><div class="form-group"><input class="form-control" type="email" name="user_email" placeholder="Email" required /></div></div>
-                            <div class="col-12"><div class="form-group"><input class="form-control" type="tel" name="user_phone_num" placeholder="Số điện thoại" pattern="^\d{10}$" maxlength="10" required /></div></div>
-                            <input type="hidden" name="user_role" value="user" />
-                            <div class="col-12"><div class="form-group"><input class="form-control" type="password" name="user_password" placeholder="Mật khẩu" required /></div></div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <input
+                                        class="form-control"
+                                        type="text"
+                                        name="user_name"
+                                        placeholder="Họ và tên"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <input
+                                        class="form-control"
+                                        type="email"
+                                        name="user_email"
+                                        placeholder="Email"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <input
+                                        class="form-control"
+                                        type="text"
+                                        name="user_phone_num"
+                                        placeholder="Số điện thoại"
+                                        maxlength="10"
+                                        pattern="\d{10}"
+                                        inputmode="numeric"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <input
+                                type="hidden"
+                                name="user_role"
+                                value="user"
+                            />
+                            <div class="form-group position-relative">
+                                <input
+                                    class="form-control"
+                                    type="password"
+                                    name="user_password"
+                                    id="register_password"
+                                    placeholder="Mật khẩu"
+                                    required
+                                />
+                                <i
+                                    class="bx bx-show toggle-password"
+                                    id="toggleRegisterPassword"
+                                    style="
+                                        position: absolute;
+                                        top: 50%;
+                                        right: 25px;
+                                        transform: translateY(-50%);
+                                        cursor: pointer;
+                                    "
+                                ></i>
+                            </div>
 
                             <!-- reCAPTCHA Widget -->
                             <div class="col-12">
-                                <div class="form-group d-flex justify-content-center">
-                                    <div class="g-recaptcha" 
+                                <div
+                                    class="form-group d-flex justify-content-center"
+                                >
+                                    <div
+                                        class="g-recaptcha"
                                         data-sitekey="{{ recaptcha_site_key }}"
                                         data-callback="onCaptchaVerified"
-                                        data-expired-callback="onCaptchaExpired">
-                                    </div>
+                                        data-expired-callback="onCaptchaExpired"
+                                    ></div>
                                 </div>
                             </div>
 
                             <!-- Submit Button -->
                             <div class="col-12 text-center">
                                 <!-- Nút này không còn bị vô hiệu hóa bởi JavaScript -->
-                                <button class="default-btn btn-two" type="submit">Đăng ký</button>
+                                <button
+                                    class="default-btn btn-two"
+                                    type="submit"
+                                >
+                                    Đăng ký
+                                </button>
                             </div>
                             <div class="col-12">
-                                <p class="account-desc">Đã có tài khoản? <a href="{{ url_for('web.sign_in') }}">Đăng nhập tại đây</a></p>
+                                <p class="account-desc">
+                                    Đã có tài khoản?
+                                    <a href="{{ url_for('web.sign_in') }}"
+                                        >Đăng nhập tại đây</a
+                                    >
+                                </p>
                             </div>
                         </div>
                     </form>
@@ -81,20 +160,31 @@
 
         <!-- SCRIPT SECTION -->
         <script>
-          
             function onCaptchaVerified() {
-                document.dispatchEvent(new CustomEvent('captchaStateChange', { detail: { verified: true } }));
+                document.dispatchEvent(
+                    new CustomEvent('captchaStateChange', {
+                        detail: { verified: true },
+                    })
+                );
             }
             function onCaptchaExpired() {
-                document.dispatchEvent(new CustomEvent('captchaStateChange', { detail: { verified: false } }));
+                document.dispatchEvent(
+                    new CustomEvent('captchaStateChange', {
+                        detail: { verified: false },
+                    })
+                );
             }
 
             // === LOGIC CHÍNH CỦA FORM ===
             document.addEventListener('DOMContentLoaded', function () {
                 // --- Lấy các phần tử DOM ---
                 const form = document.getElementById('register-form');
-                const emailInput = form.querySelector('input[name="user_email"]');
-                const phoneInput = form.querySelector('input[name="user_phone_num"]');
+                const emailInput = form.querySelector(
+                    'input[name="user_email"]'
+                );
+                const phoneInput = form.querySelector(
+                    'input[name="user_phone_num"]'
+                );
                 const submitBtn = form.querySelector('button[type="submit"]');
 
                 // --- Biến trạng thái ---
@@ -103,15 +193,15 @@
                     isPhoneOk: false,
                     isCaptchaOk: false,
                     emailDebounce: null,
-                    phoneDebounce: null
+                    phoneDebounce: null,
                 };
 
                 // --- Lắng nghe sự kiện từ reCAPTCHA ---
-                document.addEventListener('captchaStateChange', e => {
+                document.addEventListener('captchaStateChange', (e) => {
                     state.isCaptchaOk = e.detail.verified;
                     // Không cần gọi toggleSubmitButton ở đây nữa
                 });
-                
+
                 // --- Hàm cập nhật giao diện cho input (viền xanh/đỏ) ---
                 const updateInputFeedback = (input, isValid, message = '') => {
                     input.classList.remove('is-valid', 'is-invalid');
@@ -122,7 +212,7 @@
                         input.title = message;
                     }
                 };
-                
+
                 // === CÁC HÀM VALIDATION ===
 
                 const validateEmail = async () => {
@@ -132,23 +222,34 @@
                         updateInputFeedback(emailInput, null);
                         return;
                     }
-                    
+
                     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     if (!emailPattern.test(email)) {
                         state.isEmailOk = false;
-                        updateInputFeedback(emailInput, false, 'Email không hợp lệ.');
+                        updateInputFeedback(
+                            emailInput,
+                            false,
+                            'Email không hợp lệ.'
+                        );
                         return;
                     }
 
                     try {
-                        const res = await fetch('/api/user/check-email-exists', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ email }),
-                        });
+                        const res = await fetch(
+                            '/api/user/check-email-exists',
+                            {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ email }),
+                            }
+                        );
                         const result = await res.json();
                         state.isEmailOk = !result.exists;
-                        updateInputFeedback(emailInput, state.isEmailOk, 'Email này đã được sử dụng');
+                        updateInputFeedback(
+                            emailInput,
+                            state.isEmailOk,
+                            'Email này đã được sử dụng'
+                        );
                     } catch (err) {
                         console.error('Lỗi kiểm tra email:', err);
                         state.isEmailOk = false;
@@ -157,7 +258,7 @@
 
                 const validatePhone = async () => {
                     const phone = phoneInput.value.trim();
-                     if (!phone) {
+                    if (!phone) {
                         state.isPhoneOk = false;
                         updateInputFeedback(phoneInput, null);
                         return;
@@ -165,27 +266,38 @@
 
                     if (!/^\d{10}$/.test(phone)) {
                         state.isPhoneOk = false;
-                        updateInputFeedback(phoneInput, false, 'Số điện thoại phải có 10 chữ số.');
+                        updateInputFeedback(
+                            phoneInput,
+                            false,
+                            'Số điện thoại phải có 10 chữ số.'
+                        );
                         return;
                     }
-                    
+
                     try {
-                        const res = await fetch('/api/user/check-phone-exists', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ phone }),
-                        });
+                        const res = await fetch(
+                            '/api/user/check-phone-exists',
+                            {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ phone }),
+                            }
+                        );
                         const result = await res.json();
                         state.isPhoneOk = !result.exists;
-                        updateInputFeedback(phoneInput, state.isPhoneOk, 'Số điện thoại này đã được sử dụng');
+                        updateInputFeedback(
+                            phoneInput,
+                            state.isPhoneOk,
+                            'Số điện thoại này đã được sử dụng'
+                        );
                     } catch (err) {
                         console.error('Lỗi kiểm tra số điện thoại:', err);
                         state.isPhoneOk = false;
                     }
                 };
-                
+
                 // === GẮN EVENT LISTENERS ===
-                
+
                 emailInput.addEventListener('input', () => {
                     clearTimeout(state.emailDebounce);
                     updateInputFeedback(emailInput, null);
@@ -214,9 +326,18 @@
                     const { isEmailOk, isPhoneOk, isCaptchaOk } = state;
                     if (!isEmailOk || !isPhoneOk || !isCaptchaOk) {
                         let errorMessages = [];
-                        if (!isEmailOk) errorMessages.push('Email không hợp lệ hoặc đã được sử dụng.');
-                        if (!isPhoneOk) errorMessages.push('Số điện thoại không hợp lệ hoặc đã được sử dụng.');
-                        if (!isCaptchaOk) errorMessages.push('Vui lòng xác thực bạn không phải là robot.');
+                        if (!isEmailOk)
+                            errorMessages.push(
+                                'Email không hợp lệ hoặc đã được sử dụng.'
+                            );
+                        if (!isPhoneOk)
+                            errorMessages.push(
+                                'Số điện thoại không hợp lệ hoặc đã được sử dụng.'
+                            );
+                        if (!isCaptchaOk)
+                            errorMessages.push(
+                                'Vui lòng xác thực bạn không phải là robot.'
+                            );
 
                         Swal.fire({
                             icon: 'error',
@@ -254,12 +375,16 @@
                                 timerProgressBar: true,
                                 showConfirmButton: false,
                             });
-                            window.location.href = `/register/verify-otp?email=${encodeURIComponent(data.email)}`;
+                            window.location.href = `/register/verify-otp?email=${encodeURIComponent(
+                                data.email
+                            )}`;
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Đăng ký thất bại',
-                                text: data.error || 'Có lỗi xảy ra, vui lòng thử lại.',
+                                text:
+                                    data.error ||
+                                    'Có lỗi xảy ra, vui lòng thử lại.',
                             });
                             if (typeof grecaptcha !== 'undefined') {
                                 grecaptcha.reset();
@@ -268,12 +393,28 @@
                         }
                     } catch (err) {
                         Swal.close();
-                        Swal.fire({ icon: 'error', title: 'Lỗi kết nối', text: 'Không thể kết nối đến máy chủ.' });
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi kết nối',
+                            text: 'Không thể kết nối đến máy chủ.',
+                        });
                     }
                 });
             });
         </script>
 
+        <script>
+            // 👁 Toggle mật khẩu đăng ký
+            document
+                .getElementById('toggleRegisterPassword')
+                .addEventListener('click', function () {
+                    const input = document.getElementById('register_password');
+                    const isHidden = input.type === 'password';
+                    input.type = isHidden ? 'text' : 'password';
+                    this.classList.toggle('bx-show', !isHidden);
+                    this.classList.toggle('bx-hide', isHidden);
+                });
+        </script>
         <!-- Footer và các script khác của template -->
         {% include ('partials/footer.html') %}
         <script src="/static/assets/js/jquery.min.js"></script>

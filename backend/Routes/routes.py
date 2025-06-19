@@ -1,5 +1,5 @@
 # backend/Routes/routes.py
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, current_app
 import os
 from flask import Blueprint, render_template, session, redirect, url_for
 from backend.utils.auth_utils import login_required_redirect
@@ -102,3 +102,14 @@ def show_reset_form(token):
     if not email:
         return "Link không hợp lệ hoặc đã hết hạn", 400
     return render_template('reset-password.html', token=token)
+
+
+
+@bp.route('/change-password', methods=['GET'])
+def change_password():
+    return render_template('change-password.html', recaptcha_site_key=current_app.config['RECAPTCHA_SITE_KEY'])
+
+
+@bp.route('/otp-change-password', methods=['GET'])
+def render_otp_change_password():
+    return render_template('otp-change-password.html')

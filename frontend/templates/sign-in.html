@@ -56,21 +56,35 @@
                             </div>
 
                             <div class="col-12">
-                                <div class="form-group">
+                                <div class="form-group position-relative">
                                     <input
                                         class="form-control"
                                         type="password"
                                         name="user_password"
+                                        id="user_password"
                                         placeholder="Mật khẩu"
                                         required
                                     />
+                                    <i
+                                        class="bx bx-show toggle-password"
+                                        id="togglePassword"
+                                        style="
+                                            position: absolute;
+                                            top: 50%;
+                                            right: 15px;
+                                            transform: translateY(-50%);
+                                            cursor: pointer;
+                                        "
+                                    ></i>
                                 </div>
                             </div>
 
                             <div class="col-lg-6 col-sm-6 form-condition">
                                 <div class="agree-label">
                                     <input type="checkbox" id="chb1" />
-                                    <label for="chb1"> Ghi nhớ đăng nhập </label>
+                                    <label for="chb1">
+                                        Ghi nhớ đăng nhập
+                                    </label>
                                 </div>
                             </div>
 
@@ -184,6 +198,19 @@
                             text: 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.',
                         });
                     }
+                });
+        </script>
+        <script>
+            document
+                .getElementById('togglePassword')
+                .addEventListener('click', function () {
+                    const passwordInput =
+                        document.getElementById('user_password');
+                    const icon = this;
+                    const isPassword = passwordInput.type === 'password';
+                    passwordInput.type = isPassword ? 'text' : 'password';
+                    icon.classList.toggle('bx-show');
+                    icon.classList.toggle('bx-hide');
                 });
         </script>
 
