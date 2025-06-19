@@ -358,6 +358,10 @@
                         ctx.fillText(confText, x1, y1 > 20 ? y1 - 5 : y1 + 20);
                     });
                 }
+                // ✅ Nếu backend gửi `fps`, thì dùng luôn nó
+                if (data.fps !== undefined) {
+                    fpsEl.textContent = data.fps.toFixed(1);
+                }
             });
 
             socket.on('save_log_response', (data) => {
@@ -386,10 +390,10 @@
 
             function updateStats() {
                 const elapsed = (Date.now() - startTime) / 1000;
-                const fps = frameCount / elapsed;
+                // const fps = frameCount / elapsed;
                 frameCountEl.textContent = frameCount;
                 detectCountEl.textContent = detectCount;
-                fpsEl.textContent = fps.toFixed(1);
+                // fpsEl.textContent = fps.toFixed(1);
                 uptimeEl.textContent = Math.floor(elapsed) + 's';
             }
 

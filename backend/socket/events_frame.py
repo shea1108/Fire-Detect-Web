@@ -1,4 +1,4 @@
-# backen
+# backend/socket/events_frame.py
 import base64
 import io
 import json
@@ -72,8 +72,9 @@ def register_frame_events(socketio, _perf_monitor):
 
             # ✅ Cập nhật thống kê
             perf_monitor.update(len(detections), image_size_kb, recv_time)
-            perf_monitor.last_fps = current_fps  # Thêm dòng này
-            emit('detections', {'detections': detections})
+            perf_monitor.last_fps = current_fps  # ✅ Thêm dòng này để cập nhật giá trị mới
+            # perf_monitor.last_fps = current_fps  # Thêm dòng này
+            emit('detections', {'detections': detections, 'fps': perf_monitor.last_fps})
 
         except Exception as e:
             logger.error(f"Error in handle_frame: {e}")

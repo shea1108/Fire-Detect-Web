@@ -14,16 +14,6 @@ DROP TABLE IF EXISTS permissions;
 DROP TABLE IF EXISTS roles;
 
 
-
--- ALTER TABLE models DROP COLUMN IF EXISTS model_config;
-
-
--- ALTER TABLE models
--- ADD COLUMN model_short_title VARCHAR(100),
--- ADD COLUMN model_tooltip TEXT;
-
-
-
 -- TABLE: users  
 CREATE TABLE users (
     user_id         SERIAL PRIMARY KEY,
@@ -54,13 +44,13 @@ CREATE TABLE devices (
 
 -- TABLE: models
 CREATE TABLE models (
-    model_id        SERIAL PRIMARY KEY,
-    model_name      VARCHAR(100) NOT NULL,
-    model_path      TEXT         NOT NULL,
-    model_short_title VARCHAR(100),
-    model_tooltip TEXT,
-    model_status    BOOLEAN      NOT NULL,
-    model_create_at TIMESTAMP    NOT NULL DEFAULT NOW()
+    model_id            SERIAL PRIMARY KEY,
+    model_name          VARCHAR(100) NOT NULL,
+    model_path          TEXT         NOT NULL,
+    model_short_title   VARCHAR(100),
+    model_tooltip       TEXT,
+    model_status        BOOLEAN      NOT NULL,
+    model_create_at     TIMESTAMP    NOT NULL DEFAULT NOW()
 );
 
 -- TABLE: logs
@@ -168,13 +158,13 @@ CREATE TABLE role_permissions (
     FOREIGN KEY (perm_id) REFERENCES permissions(perm_id) ON DELETE CASCADE
 );
 -- Thêm roles
-INSERT INTO roles (role_name) VALUES ('admin'), ('guest'), ('user'), ('police');
+INSERT INTO roles (role_name) VALUES ('admin'), ('user'), ('police');
 
 
-INSERT INTO models (model_name, model_path, model_config, model_status) VALUES
-('Fire_Detect 1.3', 'Yolo/best.pt', '{}', TRUE),
-('Fire_Detect 1.2', 'Yolo/best1.pt', '{}', TRUE),
-('Fire_Detect 1.1', 'Yolo/best2.pt', '{}', TRUE);
+INSERT INTO models (model_name, model_path, model_status) VALUES
+('Fire_Detect 1.3', 'Yolo/best.pt', TRUE),
+('Fire_Detect 1.2', 'Yolo/best1.pt', TRUE),
+('Fire_Detect 1.1', 'Yolo/best2.pt', TRUE);
 
 --admin
 INSERT INTO user_roles(user_id, role_id)
@@ -183,4 +173,4 @@ VALUES (1, 1)
 
 --USER
 INSERT INTO user_roles(user_id, role_id)
-VALUES (2, 3)
+VALUES (2, 2)

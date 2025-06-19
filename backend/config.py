@@ -13,3 +13,5 @@ class Config:
     REGISTER_OTP_EXPIRY_SECONDS = int(os.getenv('REGISTER_OTP_EXPIRY_SECONDS', 300))  # mặc định 5 phút
     RECAPTCHA_SITE_KEY = os.getenv("RECAPTCHA_SITE_KEY", "")
     RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY")
+
+    SEND_NOTIFICATION_EMAIL = os.getenv("SEND_NOTIFICATION_EMAIL", "True") == "True"
