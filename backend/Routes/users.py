@@ -5,7 +5,9 @@ from backend.Controllers.user_controller import (
     edit_user_profile,
     recover_password,
     submit_reset_password,
-    verify_email_change
+    verify_email_change,
+    request_password_change,
+    confirm_password_change
 )
 
 bp = Blueprint('user_check', __name__, url_prefix='/api/user')
@@ -53,3 +55,17 @@ def api_recover_password():
 @bp.route('/reset-password/<token>', methods=['POST'])
 def api_submit_reset_password(token):
     return submit_reset_password(token)
+
+
+
+
+
+# Đăng ký route gửi OTP đổi mật khẩu (POST)
+@bp.route('/request-password-change', methods=['POST'])
+def route_request_password_change():
+    return request_password_change()
+
+# Đăng ký route xác nhận OTP và đổi mật khẩu (POST)
+@bp.route('/confirm-password-change', methods=['POST'])
+def route_confirm_password_change():
+    return confirm_password_change()

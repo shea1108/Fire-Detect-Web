@@ -9,6 +9,7 @@ import os
 from zoneinfo import ZoneInfo 
 import random # Thêm thư viện random để tạo OTP
 from backend.Controllers.mail_controller import send_email # Giả định bạn có hàm này
+import requests
 
 # --- CẤU HÌNH VÀ HÀM HỖ TRỢ (GIỮ NGUYÊN) ---
 UPLOAD_FOLDER = 'frontend/static/image/user'
@@ -275,3 +276,134 @@ def submit_reset_password(token: str):
 
     return jsonify(success=True,
                    message='Đặt lại mật khẩu thành công'), 200
+
+
+
+
+
+def request_password_change():
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Chưa đăng nhập'}), 401
+    data = request.get_json()  # ✅ Cần có dòng này TRƯỚC khi dùng data.get
+    recaptcha_token = data.get('g-recaptcha-response')
+    if not recaptcha_token:
+        return jsonify({'success': False, 'message': 'Thiếu mã reCAPTCHA'}), 400
+
+    # Gửi request xác minh với Google
+    recaptcha_secret = current_app.config.get("RECAPTCHA_SECRET_KEY")
+    verify_url = 'https://www.google.com/recaptcha/api/siteverify'
+    payload = {
+        'secret': recaptcha_secret,
+        'response': recaptcha_token
+    }
+    try:
+        r = requests.post(verify_url, data=payload)
+        result = r.json()
+        if not result.get('success'):
+            return jsonify({'success': False, 'message': 'Xác minh reCAPTCHA thất bại'}), 400
+    except Exception as e:
+        print(f"[ERROR] Gửi xác minh reCAPTCHA: {e}")
+        return jsonify({'success': False, 'message': 'Không thể xác minh reCAPTCHA'}), 500
+    old_pw = data.get('old_password')
+    new_pw = data.get('new_password')
+
+    if not old_pw or not new_pw or len(new_pw.strip()) < 6:
+        return jsonify({'success': False, 'message': 'Dữ liệu không hợp lệ'}), 400
+
+    user = User.query.get(session['user_id'])
+    if not user or not bcrypt.check_password_hash(user.user_password, old_pw):
+        return jsonify({'success': False, 'message': 'Mật khẩu cũ không đúng'}), 400
+    # 👉 Kiểm tra nếu mật khẩu mới trùng với mật khẩu cũ
+    if bcrypt.check_password_hash(user.user_password, new_pw):
+        return jsonify({'success': False, 'message': 'Mật khẩu mới không được trùng với mật khẩu cũ'}), 400
+    # Lưu mật khẩu mới vào session
+    session['pending_new_password'] = new_pw.strip()
+    otp = str(random.randint(100000, 999999))
+    session['change_pw_otp'] = otp
+    session['change_pw_expiry'] = (datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")) + timedelta(minutes=5)).isoformat()
+    session.modified = True
+    vn_now = datetime.now(ZoneInfo('Asia/Ho_Chi_Minh'))
+    expire_at = vn_now + timedelta(minutes=5)
+    expire_str = expire_at.strftime('%H:%M:%S %d/%m/%Y')  # Ví dụ: 14:23:00 19/06/2025
+
+    try:
+        subject = "🔐 Xác Nhận Đổi Mật Khẩu Mới - FireDetect"
+        html_body = f"""
+            <table style="width:100%; max-width:600px; margin:0 auto; font-family:Arial,sans-serif; background:#f9f9f9; padding:20px; border-radius:8px;">
+            <tr>
+                <td style="text-align:center;">
+                    <h2 style="color:#e63946;">🔐 Xác Nhận Đổi Mật Khẩu Mới</h2>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Xin chào <strong>{user.user_name}</strong>,</p>
+                    <p>Bạn (hoặc ai đó) đã yêu cầu đổi mật khẩu cho tài khoản của bạn.</p>
+                    <p>Vui lòng nhập mã OTP bên dưới để xác thực việc đổi mật khẩu:</p>
+
+                    <div style="text-align:center; margin:24px 0;">
+                        <div style="display:inline-block; background:#1d3557; color:#fff; font-size:24px; font-weight:bold; padding:12px 24px; border-radius:6px;">
+                            {otp}
+                        </div>
+                    </div>
+
+                    <p>Mã này có hiệu lực trong <strong>5 phút</strong>, tức là đến <strong>{expire_str}</strong> (giờ Việt Nam).</p>
+                    <p>Nếu bạn không yêu cầu đổi mật khẩu, vui lòng bỏ qua email này.</p>
+
+                    <br />
+                    <p>Trân trọng,<br />Đội ngũ FireDetect</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center; font-size:12px; color:#888; padding-top:30px;">
+                    &copy; {datetime.utcnow().year} FireDetect. All rights reserved.
+                </td>
+            </tr>
+        </table>
+        """
+
+        send_email(subject, html_body, user.user_email)
+        return jsonify({'success': True, 'redirect': url_for('web.render_otp_change_password')}), 200
+    except Exception as e:
+        print(f"[ERROR] Gửi email OTP đổi mật khẩu: {e}")
+        return jsonify({'success': False, 'message': 'Không thể gửi email xác thực'}), 500
+
+
+
+
+def confirm_password_change():
+    if 'user_id' not in session:
+        return redirect(url_for('web.sign_in'))
+
+    otp = request.form.get('otp')
+    stored_otp = session.get('change_pw_otp')
+    expiry_str = session.get('change_pw_expiry')
+    new_pw = session.get('pending_new_password')
+
+    if not all([otp, stored_otp, expiry_str, new_pw]):
+        flash('Thông tin không hợp lệ hoặc đã hết hạn', 'danger')
+        return redirect(url_for('web.render_otp_change_password'))
+
+    if datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")) > datetime.fromisoformat(expiry_str):
+        flash('OTP đã hết hạn', 'danger')
+        return redirect(url_for('web.render_otp_change_password'))
+
+    if otp != stored_otp:
+        flash('OTP không chính xác', 'danger')
+        return redirect(url_for('web.render_otp_change_password'))
+
+    user = User.query.get(session['user_id'])
+    user.user_password = bcrypt.generate_password_hash(new_pw).decode('utf-8')
+
+    try:
+        db.session.commit()
+        session.pop('pending_new_password', None)
+        session.pop('change_pw_otp', None)
+        session.pop('change_pw_expiry', None)
+        session.modified = True
+        flash('✅ Đổi mật khẩu thành công. Vui lòng đăng nhập lại.', 'success')
+        return redirect(url_for('web.render_otp_change_password'))
+    except Exception as e:
+        db.session.rollback()
+        flash('Lỗi hệ thống khi đổi mật khẩu', 'danger')
+        return redirect(url_for('web.render_otp_change_password'))
