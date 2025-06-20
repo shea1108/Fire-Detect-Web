@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Data Tables | User Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc."/>
+    <meta name="author" content="Zoyothemes"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="shortcut icon" href="/static/admin/assets/images/favicon.ico">
+
+    <link href="/static/admin/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="/static/admin/assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="/static/admin/assets/libs/datatables.net-fixedcolumns-bs5/css/fixedColumns.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+    <link href="/static/admin/assets/css/app.min.css" rel="stylesheet" type="text/css" id="app-style" />
+    <link href="/static/admin/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    
+    <style>
+        /* Canh giữa nội dung trong tất cả các ô của bảng */
+        #datatable-users td,
+        #datatable-users thead th { 
+            vertical-align: middle; 
+        }
+        /* Canh giữa tiêu đề bảng */
+        #datatable-users thead th {
+            text-align: center;
+        }
+
+        /* Giới hạn cột "Device" và "Role" hiển thị 1 dòng kèm dấu ... */
+        #datatable-users td.ellipsis {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px; /* Điều chỉnh độ rộng tối đa nếu cần */
+        }
+        
+        /* Cho phép cột "Name" có thể xuống dòng nếu cần */
+        #datatable-users td.wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+        }
+
+        /* Ẩn bộ lọc mặc định của DataTables */
+        div.dataTables_filter {
+            display: none;
+        }
+
+        /* Tùy chỉnh thanh cuộn cho cột Role đẹp hơn */
+        .role-cell-scroll {
+            max-height: 110px; 
+            overflow-y: auto; 
+            padding-right: 10px;
+        }
+    </style>
+</head>
+
+<body data-menu-color="light" data-sidebar="default">
+    <div id="app-layout">
+        {% include 'admin/partials/topbar.html' %}
+        {% include 'admin/partials/sidebar.html' %}
+        
+        <div class="content-page">
+            <div class="content">
+                <div class="container-xxl">
+
+                    <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
+                        <div class="flex-grow-1">
+                            <h4 class="fs-18 fw-semibold m-0">User Management</h4>
+                        </div>
+                        <div class="text-end">
+                            <ol class="breadcrumb m-0 py-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">Admin</a></li>
+                                <li class="breadcrumb-item active">Users</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">User List</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center">
+                                                <label for="status-filter" class="form-label me-2 mb-0">Lọc:</label>
+                                                <select class="form-select" id="status-filter" style="width: 180px;">
+                                                    <option value="active" {% if current_status == 'active' %}selected{% endif %}>Đang hoạt động</option>
+                                                    <option value="inactive" {% if current_status == 'inactive' %}selected{% endif %}>Tạm ngưng</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center justify-content-md-end">
+                                                <label for="custom-search-input" class="form-label me-2 mb-0">Tìm kiếm:</label>
+                                                <input type="search" class="form-control" id="custom-search-input" placeholder="Gõ để tìm..." style="width: 250px;">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <table id="datatable-users" class="table table-striped w-100 nowrap">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align: center;">Name</th>
+                                                <th style="text-align: center;">Device</th>
+                                                <th style="text-align: center;">Role</th>
+                                                <th style="text-align: center;">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for user in users %}
+                                            <tr id="user-row-{{ user.user_id }}">
+                                                <td class="wrap-text">
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="{{ user.user_avatar or '/static/admin/assets/images/users/avatar-1.jpg' }}" alt="avatar" class="rounded-circle me-2" width="40" height="40">
+                                                        <div>
+                                                            <h5 class="m-0">{{ user.user_name }}</h5>
+                                                            <p class="m-0 text-muted fs-13">{{ user.user_email }}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="ellipsis" style="text-align: center;">
+                                                    {% set devices = user.devices.limit(3).all() %}
+                                                    {% if devices %}
+                                                        {{ devices|map(attribute='dev_name')|join(', ') }}
+                                                        {% if user.devices.count() > 3 %}, ...{% endif %}
+                                                    {% else %}
+                                                        <span class="text-muted">No devices</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class="role-cell-scroll">
+                                                        {% for role in roles %}
+                                                        <div class="form-check">
+                                                            <input class="form-check-input user-role-checkbox" type="checkbox" value="{{ role.role_id }}" id="user-{{ user.user_id }}-role-{{ role.role_id }}" data-user-id="{{ user.user_id }}" {% if role in user.roles %}checked{% endif %}>
+                                                            <label class="form-check-label" for="user-{{ user.user_id }}-role-{{ role.role_id }}">
+                                                                {{ role.role_name | title }}
+                                                            </label>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-sm btn-success btn-save-roles me-2" data-user-id="{{ user.user_id }}" disabled title="Lưu vai trò">
+                                                        <i class="mdi mdi-check"></i> Lưu
+                                                    </button>
+                                                    {% if user.user_status %}
+                                                        <button class="btn btn-sm btn-info edit-user-btn me-1" data-user-id="{{ user.user_id }}" title="Sửa thông tin">
+                                                            <i class="mdi mdi-pencil"></i> Sửa
+                                                        </button>
+                                                        <button class="btn btn-sm btn-danger delete-user-btn" data-user-id="{{ user.user_id }}" title="Tạm ngưng">
+                                                            <i class="mdi mdi-delete"></i> Xóa
+                                                        </button>
+                                                    {% else %}
+                                                        <button class="btn btn-sm btn-success restore-user-btn" data-user-id="{{ user.user_id }}" title="Khôi phục">
+                                                            <i class="mdi mdi-restore"></i> Khôi phục
+                                                        </button>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div> 
+        </div>
+    </div>
+
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Sửa thông tin người dùng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editUserForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="edit-user-id">
+                        <div class="mb-3">
+                            <label for="edit-user-name" class="form-label">Tên người dùng</label>
+                            <input type="text" class="form-control" id="edit-user-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-user-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="edit-user-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-user-phone" class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" id="edit-user-phone">
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="edit-user-status">
+                            <label class="form-check-label" for="edit-user-status">Kích hoạt tài khoản</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/admin/assets/libs/jquery/jquery.min.js"></script>
+    <script src="/static/admin/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/admin/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="/static/admin/assets/libs/node-waves/waves.min.js"></script>
+    
+    <script src="/static/admin/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="/static/admin/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="/static/admin/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="/static/admin/assets/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+    <script src="/static/admin/assets/libs/datatables.net-fixedcolumns/js/dataTables.fixedColumns.min.js"></script>
+
+    <script src="/static/admin/assets/libs/feather-icons/feather.min.js"></script>
+    <script src="/static/admin/assets/js/app.js"></script>
+
+    <script>
+    $(document).ready(function() {
+        var table = $('#datatable-users').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "scrollX": true,
+            "responsive": false,
+            "fixedColumns": {
+                "rightColumns": 1
+            },
+            "columnDefs": [
+                { "orderable": false, "targets": [2, 3] },
+                { "className": "wrap-text", "targets": 0 },
+                { "className": "ellipsis", "targets": 1 },
+            ],
+            "language": {
+                "info": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "paginate": { "previous": "<", "next": ">" },
+                "search": "Tìm kiếm:",
+                "lengthMenu": "Hiển thị _MENU_ mục"
+            },
+            "pageLength": 10,
+            "lengthMenu": [10, 20, 50, 100],
+        });
+
+        $('#custom-search-input').on('keyup', function() {
+            table.search(this.value).draw();
+        });
+        
+        $('#status-filter').on('change', function() {
+            window.location.href = '/admin/users?status=' + $(this).val();
+        });
+
+        $('.user-role-checkbox').on('change', function() {
+            const userId = $(this).data('user-id');
+            $(`.btn-save-roles[data-user-id="${userId}"]`).prop('disabled', false);
+        });
+
+        $('.btn-save-roles').on('click', function() {
+            const saveButton = $(this);
+            const userId = saveButton.data('user-id');
+            const selectedRoleIds = $(`.user-role-checkbox[data-user-id="${userId}"]:checked`).map(function() { return $(this).val(); }).get();
+            saveButton.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+            fetch('/admin/users/update_roles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, role_ids: selectedRoleIds.map(Number) })
+            }).then(res => res.json()).then(data => {
+                if(data.status === 'success') { alert(data.message); } 
+                else { alert('Lỗi: ' + data.message); }
+            }).catch(err => console.error(err)).finally(() => {
+                saveButton.html('<i class="mdi mdi-check"></i> Lưu');
+            });
+        });
+
+        $(document).on('click', '.edit-user-btn', function() {
+            const userId = $(this).data('user-id');
+            fetch(`/admin/users/${userId}/data`)
+                .then(res => res.json())
+                .then(data => {
+                    $('#edit-user-id').val(data.user_id);
+                    $('#edit-user-name').val(data.user_name);
+                    $('#edit-user-email').val(data.user_email);
+                    $('#edit-user-phone').val(data.user_phone_num);
+                    $('#edit-user-status').prop('checked', data.user_status);
+                    new bootstrap.Modal(document.getElementById('editUserModal')).show();
+                });
+        });
+
+        $('#editUserForm').on('submit', function(e) {
+            e.preventDefault();
+            const userId = $('#edit-user-id').val();
+            const userData = {
+                user_name: $('#edit-user-name').val(),
+                user_email: $('#edit-user-email').val(),
+                user_phone_num: $('#edit-user-phone').val(),
+                user_status: $('#edit-user-status').is(':checked')
+            };
+            fetch(`/admin/users/${userId}/edit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData)
+            }).then(res => res.json()).then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    location.reload();
+                } else { alert('Lỗi: ' + data.message); }
+            });
+        });
+
+        function handleAction(button, url, confirmMessage) {
+            if (!confirm(confirmMessage)) return;
+            const userId = $(button).data('user-id');
+            fetch(url, { method: 'POST' }).then(res => res.json()).then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    location.reload();
+                } else { alert('Lỗi: ' + data.message); }
+            });
+        }
+
+        $(document).on('click', '.delete-user-btn', function() {
+            handleAction(this, `/admin/users/${$(this).data('user-id')}/delete`, 'Bạn có chắc chắn muốn tạm ngưng người dùng này?');
+        });
+
+        $(document).on('click', '.restore-user-btn', function() {
+            handleAction(this, `/admin/users/${$(this).data('user-id')}/restore`, 'Bạn có chắc chắn muốn khôi phục người dùng này?');
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
+    });
+    </script>
+</body>
+</html>

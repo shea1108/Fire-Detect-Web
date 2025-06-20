@@ -15,7 +15,6 @@ from backend.Routes import routes
 from backend.Routes import auth
 from backend.Routes import predict
 #from backend.Routes import socketio as socket
-from backend.Routes.admin import routes as admin_routes
 from backend.Routes.models import bp as models_bp
 from backend.Routes.notification import bp as notification_bp
 from backend.Routes.users import bp as user_bp
@@ -28,18 +27,8 @@ from backend.Models import *  # Chỉ cần 1 dòng
 from backend.socket import register_socketio
 
 
-
-
-
-
 ################ ADMIN ROUTES ################
 from backend.Routes.admin import admin_routes, admin_models, admin_users
-
-
-
-
-
-
 
 
 
@@ -102,8 +91,6 @@ def create_app():
     
     #socket.register_socketio(socketio)
     register_socketio(socketio)
-
-
 
 
 

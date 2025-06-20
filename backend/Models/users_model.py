@@ -27,7 +27,12 @@ class User(db.Model):
         back_populates="users",
         lazy="joined",
     )
-
+    devices = db.relationship(
+        "Device",
+        backref="user",
+        lazy="dynamic",
+        cascade="all, delete-orphan"
+    )
     # ---- tiện ích: lấy nhanh toàn bộ permission của user ----
     @property
     def permissions(self) -> set[str]:
