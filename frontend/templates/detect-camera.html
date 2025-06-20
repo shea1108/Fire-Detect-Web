@@ -109,10 +109,7 @@
                                     style="display: none"
                                 >
                                     <div class="fw-bold">Tag:</div>
-                                    <span
-                                        id="model-tag"
-                                        
-                                    ></span>
+                                    <span id="model-tag"></span>
                                     <div class="fw-bold mt-2">Giải thích:</div>
                                     <div
                                         id="model-tooltip"
@@ -330,7 +327,8 @@
                         '❌ Lỗi khi truy cập camera hoặc liệt kê:',
                         err
                     );
-                    statusEl.textContent = '❌ Lỗi: Không thể truy cập camera.';
+                    statusEl.textContent =
+                        '❌ Lỗi: Không thể truy cập camera. Vui lòng đăng nhập để tiếp tục.';
                     statusEl.className = 'status error';
                     startBtn.disabled = true;
                 }

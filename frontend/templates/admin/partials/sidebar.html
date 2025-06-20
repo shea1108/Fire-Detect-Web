@@ -51,9 +51,7 @@
                     <div class="collapse" id="sidebarDashboards">
                         <ul class="nav-second-level">
                             <li>
-                                <a href="/admin" class="tp-link"
-                                    >Analytical</a
-                                >
+                                <a href="/admin" class="tp-link">Analytical</a>
                             </li>
                             <li>
                                 <a href="ecommerce.html" class="tp-link"
@@ -79,15 +77,76 @@
                                 >
                             </li>
                             <li>
-                                <a
-                                    href="/admin/models/create"
-                                    class="tp-link"
+                                <a href="/admin/models/create" class="tp-link"
                                     >Thêm mô hình mới</a
                                 >
                             </li>
                         </ul>
                     </div>
+                </li>
 
+                <li class="menu-title">Quản lý Vai Trò và Quyền Hạn</li>
+                <li>
+                    <a href="#sidebarRoles" data-bs-toggle="collapse">
+                        <i data-feather="lock"></i>
+                        <span> Vai Trò</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarRoles">
+                        <ul class="nav-second-level">
+                            <li>
+                                <a href="/admin/roles/get-list" class="tp-link"
+                                    >Danh sách Vai Trò</a
+                                >
+                            </li>
+                            <li>
+                                <a href="/admin/roles/create" class="tp-link"
+                                    >Thêm Vai trò mới</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+
+                    <a href="#sidebarPermissions" data-bs-toggle="collapse">
+                        <i data-feather="tag"></i>
+                        <span> Quyền hạn </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarPermissions">
+                        <ul class="nav-second-level">
+                            <li>
+                                <a
+                                    href="/admin/permissions/get-list"
+                                    class="tp-link"
+                                    >Danh sách Quyền hạn</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    href="/admin/permissions/create"
+                                    class="tp-link"
+                                    >Thêm Quyền hạn mới</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+
+                    <a href="#sidebarRolesPermissions" data-bs-toggle="collapse">
+                        <i data-feather="shield"></i>
+                        <span> Phân Quyền Vai Trò </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarRolesPermissions">
+                        <ul class="nav-second-level">
+                            <li>
+                                <a
+                                    href="/admin/roles-permissions/get-list"
+                                    class="tp-link"
+                                    >Danh sách Phân Quyền</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
                 </li>
 
                 <li class="menu-title">Pages</li>

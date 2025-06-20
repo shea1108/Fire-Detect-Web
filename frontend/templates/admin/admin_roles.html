@@ -1,0 +1,368 @@
+<!-- @format -->
+{% extends "admin/layout.html" %}
+<!-- Tiêu đề trang -->
+{% block title %} Danh sách Vai trò {% endblock%}
+
+<!-- CSS bổ sung -->
+{% block extra_css %}
+<style>
+    /* Cho phép "Tiêu đề ngắn" xuống dòng */
+    td.wrap-text {
+        white-space: normal !important;
+        word-break: break-word;
+    }
+
+    /* Giới hạn "Giải thích" hiển thị 1 dòng kèm dấu ... */
+    td.ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px;
+    }
+    /* Fit nội dung cho cột ID và các cột có nội dung ngắn */
+    th.fit,
+    td.fit {
+        white-space: nowrap;
+        width: 1%;
+    }
+</style>
+{% endblock %}
+
+<!-- Nội dung chính của trang -->
+
+{% block content %}
+<div class="container-xxl">
+    <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
+        <div class="flex-grow-1">
+            <h4 class="fs-18 fw-semibold m-0">Danh sách Vai trò</h4>
+        </div>
+        <div class="text-end">
+            <ol class="breadcrumb m-0 py-0">
+                <li class="breadcrumb-item">
+                    <a href="javascript:void(0);">Vai trò</a>
+                </li>
+                <li class="breadcrumb-item active">Thông tin</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div
+                    class="card-header d-flex justify-content-between align-items-center"
+                >
+                    <h5 class="card-title mb-0">Danh sách Vai trò</h5>
+                    <a
+                        href="/admin/roles/create"
+                        class="btn btn-primary btn-md"
+                    >
+                        <i class="feather icon-plus"></i>
+                        Thêm mới
+                    </a>
+                </div>
+                <div class="card-body">
+                    <table
+                        id="datatable-roles"
+                        class="table table-striped w-100 nowrap"
+                    >
+                        <thead>
+                            <tr>
+                                <th class="fit">ID</th>
+                                <th>Tên vai trò</th>
+                                <th class="fit text-center">Loại</th>
+                                <th class="fit text-center">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                    <!-- Modal -->
+                    <div
+                        class="modal fade"
+                        id="roleDetailModal"
+                        tabindex="-1"
+                        aria-hidden="true"
+                    >
+                        <div
+                            class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"
+                        >
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        Chi tiết vai trò
+                                    </h5>
+                                    <button
+                                        type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Đóng"
+                                    ></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="roles-detail-content">
+                                        Đang tải...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Modal -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- JS mở rộng -->
+{% block extra_js %}
+<!-- Load js chung -->
+{% include "admin/partials/scripts_datatables.html" %}
+
+<script>
+    // Thay thế toàn bộ JavaScript event handling bằng code này:
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const selector = '#datatable-roles';
+        const table = initDatatable(selector, {
+            scrollX: true,
+            fixedColumns: { leftColumns: 0, rightColumns: 1 },
+            columnDefs: [
+                { orderable: false, targets: [-1] },
+                { targets: [2, 3], className: 'text-center' },
+            ],
+
+            order: [[0, 'asc']],
+            pageLength: 10,
+            lengthMenu: [5, 10, 20, 50, 100],
+        });
+
+        if (table) {
+            fetch('/api/admin/rbac/roles/get-all')
+                .then((res) => res.json())
+                .then(({ data }) => {
+                    table.clear();
+
+                    data.forEach((role) => {
+                        const statusBadge =
+                            role.name === 'admin' || role.name === 'user'
+                                ? '<span class="badge text-bg-primary">🔒 Hệ thống</span>'
+                                : '<span class="badge text-bg-secondary">✏️ Tùy chỉnh</span>';
+
+                        table.row.add([
+                            role.id,
+                            role.name,
+                            statusBadge,
+                            `
+                                <div class="text-center">
+                                    <button class="btn btn-sm btn-info me-1 btn-view" data-id="${
+                                        role.id
+                                    }">
+                                        <i class="mdi mdi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning me-1 btn-edit" data-id="${
+                                        role.id
+                                    }"
+                                        ${role.name === 'admin' || role.name === 'user' ? 'disabled' : ''}>
+                                        <i class="mdi mdi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger btn-delete" data-id="${role.id}"
+                                        ${role.name === 'admin' || role.name === 'user' ? 'disabled' : ''}>
+                                        <i class="mdi mdi-delete"></i>
+                                    </button>
+
+                                </div>
+                                `,
+                        ]);
+                    });
+
+                    table.draw();
+
+                    // ✅ Gắn events AFTER table được render
+                    attachButtonEvents();
+                });
+        }
+
+        // Select all checkbox
+        document
+            .getElementById('select-all')
+            ?.addEventListener('click', function () {
+                const checked = this.checked;
+                document.querySelectorAll('.row-select').forEach((cb) => {
+                    cb.checked = checked;
+                });
+            });
+    });
+
+    // ✅ Hàm gắn events cho tất cả containers của DataTables
+    function attachButtonEvents() {
+        // Gắn event cho cả wrapper container (bao gồm fixed columns)
+        const wrapperSelector = '#datatable-roles_wrapper';
+
+        // Loại bỏ events cũ trước khi gắn mới
+        $(wrapperSelector).off('click.modelActions');
+
+        // Gắn event mới
+        $(wrapperSelector).on(
+            'click.modelActions',
+            'button[data-id]',
+            function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const modelId = $(this).attr('data-id') || $(this).data('id');
+                console.log(
+                    'Button clicked, Model ID:',
+                    modelId,
+                    'Button classes:',
+                    this.className
+                );
+
+                if (!modelId) {
+                    console.error('No model ID found');
+                    return;
+                }
+
+                if ($(this).hasClass('btn-view')) {
+                    console.log('View action');
+                    handleViewClick(modelId);
+                } else if ($(this).hasClass('btn-edit')) {
+                    console.log('Edit action');
+                    handleEditClick(modelId);
+                } else if ($(this).hasClass('btn-delete')) {
+                    console.log('Delete action');
+                    handleDeleteClick(modelId);
+                }
+            }
+        );
+
+        // Thêm event delegation cho document để bắt mọi trường hợp
+        $(document).off('click.modelActionsGlobal');
+        $(document).on(
+            'click.modelActionsGlobal',
+            '.btn-edit, .btn-delete, .btn-view',
+            function (e) {
+                const modelId = $(this).attr('data-id') || $(this).data('id');
+                if (!modelId) return;
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                console.log(
+                    'Global event - Button clicked, Model ID:',
+                    modelId,
+                    'Button classes:',
+                    this.className
+                );
+
+                if ($(this).hasClass('btn-view')) {
+                    handleViewClick(modelId);
+                } else if ($(this).hasClass('btn-edit')) {
+                    handleEditClick(modelId);
+                } else if ($(this).hasClass('btn-delete')) {
+                    handleDeleteClick(modelId);
+                }
+            }
+        );
+    }
+
+    // ✅ Các hàm xử lý action
+    function handleViewClick(roleID) {
+        const container = document.getElementById('roles-detail-content');
+
+        fetch(`/api/admin/rbac/roles/get-one/${roleID}`)
+            .then((res) => res.json())
+            .then(({ success, data }) => {
+                if (!success || !data) {
+                    Swal.fire(
+                        'Không tìm thấy',
+                        'Vai trò này không tồn tại...',
+                        'warning'
+                    );
+
+                    return;
+                }
+
+                container.innerHTML = `
+                <p><strong>ID:</strong> ${data.id}</p>
+                <p><strong>Tên Vai trò:</strong> ${data.name}</p>
+                <p><strong>Loại: </strong> ${
+                    data.name === 'admin' || data.name === 'user'
+                        ? '<span class="badge text-bg-danger">🔐Hệ thống</span>'
+                        : '<span class="badge text-bg-success">✏️ Tùy chỉnh</span>'
+                }</p>
+            `;
+
+                const modal = new bootstrap.Modal(
+                    document.getElementById('roleDetailModal')
+                );
+                modal.show();
+            })
+            .catch((error) => {
+                console.error('Error loading role details:', error);
+                Swal.fire('Lỗi!', 'Không thể tải chi tiết vai trò.', 'error');
+            });
+    }
+
+    function handleEditClick(roleId) {
+        window.location.href = `/admin/roles/edit/${roleId}`;
+    }
+
+    function handleDeleteClick(roleId) {
+        Swal.fire({
+            title: 'Bạn có chắc chắn?',
+            text: 'Vai trò này sẽ bị xóa khỏi hệ thống!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Huỷ',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+
+            Swal.fire({
+                title: 'Đang xoá...',
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                allowOutsideClick: false,
+            });
+
+            fetch(`/api/admin/rbac/roles/delete/${roleId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then((res) => {
+                    if (!res.ok) throw new Error(`HTTP status ${res.status}`);
+                    return res.json();
+                })
+                .then(({ success, message }) => {
+                    if (success) {
+                        Swal.fire(
+                            'Đã xoá!',
+                            'Vai trò đã được xoá thành công.',
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire(
+                            'Lỗi!',
+                            message || 'Không thể xóa vai trò.',
+                            'error'
+                        );
+                    }
+                })
+                .catch((err) => {
+                    console.error('Delete error:', err);
+                    Swal.fire('Lỗi hệ thống', err.message, 'error');
+                });
+        });
+    }
+</script>
+
+{% endblock %}

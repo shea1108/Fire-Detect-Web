@@ -1,0 +1,105 @@
+<!-- @format -->
+
+{% extends "admin/layout.html" %} {% block title %}Thêm Quyền hạn{% endblock %}
+{% block content %}
+<div class="container-xxl">
+    <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
+        <div class="flex-grow-1">
+            <h4 class="fs-18 fw-semibold m-0">Thêm Quyền hạn</h4>
+        </div>
+        <div class="text-end">
+            <ol class="breadcrumb m-0 py-0">
+                <li class="breadcrumb-item">
+                    <a href="/admin/permissions/get-list"
+                        >Danh sách Quyền hạn</a
+                    >
+                </li>
+                <li class="breadcrumb-item active">Tạo mới</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="form-add-permission">
+                <div class="mb-3">
+                    <label class="form-label">Tên Quyền hạn</label>
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        placeholder="Xem nhật ký hệ thống"
+                        required
+                    />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Giải thích (Mô tả quyền)</label>
+                    <textarea
+                        name="desc"
+                        class="form-control"
+                        rows="2"
+                    ></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+                <a href="/admin/permissions/get-list" class="btn btn-secondary"
+                    >Huỷ</a
+                >
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+    document
+        .getElementById('form-add-permission')
+        ?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const form = e.target;
+
+            const name = form.name.value.trim();
+            const desc = form.desc.value.trim();
+
+            if (!name) {
+                Swal.fire({ icon: 'warning', title: 'Thiếu tên quyền' });
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('desc', desc);
+
+            fetch('/api/admin/rbac/permissions/create', {
+                method: 'POST',
+                body: formData,
+            })
+                .then((res) => res.json())
+                .then(({ success, message }) => {
+                    if (success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Tạo quyền thành công',
+                            timer: 2000,
+                            showConfirmButton: false,
+                        }).then(() => {
+                            window.location.href =
+                                '/admin/permissions/get-list';
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: message,
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.error(err);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi hệ thống',
+                        text: err.message || 'Không gửi được dữ liệu',
+                    });
+                });
+        });
+</script>
+{% endblock %}
