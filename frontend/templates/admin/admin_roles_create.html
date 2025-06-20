@@ -1,0 +1,92 @@
+<!-- @format -->
+
+{% extends "admin/layout.html" %} {% block title %}Thêm mới Vai trò{% endblock
+%} {% block content %}
+<div class="container-xxl">
+    <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
+        <div class="flex-grow-1">
+            <h4 class="fs-18 fw-semibold m-0">Thêm mới Vai trò</h4>
+        </div>
+        <div class="text-end">
+            <ol class="breadcrumb m-0 py-0">
+                <li class="breadcrumb-item">
+                    <a href="/admin/roles/get-list">Danh sách Vai trò</a>
+                </li>
+                <li class="breadcrumb-item active">Tạo mới</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="form-add-role">
+                <div class="mb-3">
+                    <label class="form-label">Tên Vai trò</label>
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        required
+                    />
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+                <a href="/admin/roles/get-list" class="btn btn-secondary"
+                    >Hủy</a
+                >
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+    document
+        .getElementById('form-add-role')
+        ?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const form = e.target;
+            const name = form.name.value.trim();
+
+            if (!name) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Vui lòng nhập tên vai trò',
+                });
+                return;
+            }
+
+            fetch('/api/admin/rbac/roles/create', {
+                method: 'POST',
+                body: new URLSearchParams({ name }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            })
+                .then((res) => res.json())
+                .then(({ success, message }) => {
+                    if (success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thêm vai trò thành công!',
+                        }).then(
+                            () =>
+                                (window.location.href = '/admin/roles/get-list')
+                        );
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: message || 'Không thể tạo vai trò',
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.error(err);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi hệ thống',
+                        text: err.message,
+                    });
+                });
+        });
+</script>
+{% endblock %}

@@ -128,7 +128,11 @@ def render_verify_page():
 # <<< HÀM MỚI: Dùng để xử lý form submit OTP khi đổi email >>>
 def verify_email_change():
     if 'user_id' not in session:
-        return redirect(url_for('web.sign_in'))
+        return jsonify({
+            'success': False,
+            'message': 'Vui lòng đăng nhập.',
+            'redirect': url_for('web.sign_in')
+        })
 
     submitted_otp = request.form.get('otp')
     stored_otp = session.get('email_change_otp')
@@ -136,21 +140,29 @@ def verify_email_change():
     otp_expiry_str = session.get('otp_expiry')
 
     if not all([submitted_otp, stored_otp, new_email, otp_expiry_str]):
-        flash('Phiên làm việc không hợp lệ hoặc đã hết hạn.', 'danger')
-        return redirect(url_for('web.render_profile_verify_page'))
+        return jsonify({
+            'success': False,
+            'message': 'Thông tin không hợp lệ hoặc đã hết hạn.',
+            'redirect': url_for('web.profile')  # Hoặc "/" nếu muốn
+        })
 
     otp_expiry = datetime.fromisoformat(otp_expiry_str)
     if datetime.now(ZoneInfo('Asia/Ho_Chi_Minh')) > otp_expiry:
-        flash('Mã OTP đã hết hạn. Vui lòng thực hiện lại việc đổi email.', 'danger')
         session.pop('email_change_otp', None)
         session.pop('new_email_pending', None)
         session.pop('otp_expiry', None)
         session.modified = True
-        return redirect(url_for('web.profile'))
+        return jsonify({
+            'success': False,
+            'message': 'Mã OTP đã hết hạn. Vui lòng thử lại.',
+            'redirect': url_for('web.profile')  # hoặc "/"
+        })
 
     if submitted_otp != stored_otp:
-        flash('Mã OTP không chính xác.', 'danger')
-        return redirect(url_for('web.render_profile_verify_page'))
+        return jsonify({
+            'success': False,
+            'message': 'Mã OTP không chính xác.'
+        })
 
     user = User.query.get(session['user_id'])
     user.user_email = new_email
@@ -162,12 +174,19 @@ def verify_email_change():
         session.pop('new_email_pending', None)
         session.pop('otp_expiry', None)
         session.modified = True
-        flash('Cập nhật email thành công!', 'success')
-        return redirect(url_for('web.profile'))
+
+        return jsonify({
+            'success': True,
+            'message': 'Cập nhật email thành công!',
+            'redirect': url_for('web.profile')  # hoặc "/"
+        })
     except Exception as e:
         db.session.rollback()
-        flash('Lỗi hệ thống khi cập nhật email.', 'danger')
-        return redirect(url_for('web.render_profile_verify_page'))
+        return jsonify({
+            'success': False,
+            'message': 'Lỗi hệ thống khi cập nhật email.'
+        })
+
 
 # <<< CÁC HÀM KHÔI PHỤC MẬT KHẨU (GIỮ NGUYÊN) >>>
 def recover_password():

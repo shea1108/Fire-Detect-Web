@@ -46,6 +46,55 @@ def edit_model_page(model_id):
 
 
 
+############ ROLES ROUTES STARTS ###############
+@bp.route("/roles/get-list", methods=["GET"])
+@admin_required
+def roles_list_page():
+    return render_template("admin/admin_roles.html")
+
+
+@bp.route("/roles/create", methods=["GET"])
+@admin_required
+def create_roles_page():
+    return render_template("admin/admin_roles_create.html")
+
+
+@bp.route("/roles/edit/<int:role_id>", methods=["GET"])
+@admin_required
+def edit_roles_page(role_id):
+    return render_template("admin/admin_roles_edit.html", role_id=role_id)
+############ ROLES ROUTES ENDS  ###############
+
+
+
+
+############ PERMISSIONS ROUTES STARTS ###############
+@bp.route("/permissions/get-list", methods=["GET"])
+@admin_required
+def permissions_list_page():
+    return render_template("admin/admin_permissions.html")
+
+
+@bp.route("/permissions/create", methods=["GET"])
+@admin_required
+def create_permissions_page():
+    return render_template("admin/admin_permissions_create.html")
+
+
+@bp.route("/permissions/edit/<int:permission_id>", methods=["GET"])
+@admin_required
+def edit_permissions_page(permission_id):
+    return render_template("admin/admin_permissions_edit.html", permission_id=permission_id)
+############ PERMISSIONS ROUTES ENDS  ###############
+
+
+############ ROLES_PERMISSIONS ROUTES STARTS ###############
+@bp.route("/roles-permissions/get-list", methods=["GET"])
+@admin_required
+def models_roles_permissions_page():
+    return render_template("admin/admin_rolespermissions.html")
+
+############ ROLES_PERMISSIONS ROUTES ENDS  ###############
 
 
 

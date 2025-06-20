@@ -1,0 +1,126 @@
+<!-- @format -->
+
+{% extends "admin/layout.html" %} {% block title %}Chỉnh sửa Vai trò{% endblock
+%} {% block content %}
+<div class="container-xxl">
+    <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
+        <div class="flex-grow-1">
+            <h4 class="fs-18 fw-semibold m-0">Chỉnh sửa Vai trò</h4>
+        </div>
+        <div class="text-end">
+            <ol class="breadcrumb m-0 py-0">
+                <li class="breadcrumb-item">
+                    <a href="/admin/roles/get-list">Danh sách Vai trò</a>
+                </li>
+                <li class="breadcrumb-item active">Chỉnh sửa</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="form-edit-role">
+                <input type="hidden" name="id" />
+                <div class="mb-3">
+                    <label class="form-label">Tên Vai trò</label>
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        required
+                    />
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Lưu thay đổi
+                </button>
+                <a href="/admin/roles/get-list" class="btn btn-secondary"
+                    >Huỷ</a
+                >
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+    const roleId = window.location.pathname.split('/').pop();
+    const protectedRoles = ['admin', 'user'];
+
+    if (!/^\d+$/.test(roleId)) {
+        window.location.href = '/admin/roles/get-list';
+    }
+
+    // Load thông tin cũ
+    fetch(`/api/admin/rbac/roles/get-one/${roleId}`)
+        .then((res) => res.json())
+        .then(({ success, data }) => {
+            if (!success) throw new Error('Không tìm thấy vai trò');
+
+            document.querySelector('[name="id"]').value = data.id;
+            document.querySelector('[name="name"]').value = data.name;
+
+            if (protectedRoles.includes(data.name)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Không thể chỉnh sửa vai trò hệ thống',
+                }).then(() => (window.location.href = '/admin/roles/get-list'));
+            }
+        })
+        .catch((err) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi tải dữ liệu',
+                text: err.message,
+            }).then(() => (window.location.href = '/admin/roles/get-list'));
+        });
+
+    document
+        .getElementById('form-edit-role')
+        ?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const form = e.target;
+            const name = form.name.value.trim();
+
+            if (!name) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Vui lòng nhập tên vai trò',
+                });
+                return;
+            }
+
+            fetch(`/api/admin/rbac/roles/update/${roleId}`, {
+                method: 'POST',
+                body: new URLSearchParams({ name }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            })
+                .then((res) => res.json())
+                .then(({ success, message }) => {
+                    if (success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Cập nhật thành công!',
+                        }).then(
+                            () =>
+                                (window.location.href = '/admin/roles/get-list')
+                        );
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: message || 'Không thể cập nhật vai trò',
+                        });
+                    }
+                })
+                .catch((err) => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi hệ thống',
+                        text: err.message,
+                    });
+                });
+        });
+</script>
+{% endblock %}
