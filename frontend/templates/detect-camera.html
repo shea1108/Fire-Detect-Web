@@ -1,80 +1,171 @@
 <!-- @format -->
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>🔥 Realtime Fire Detection</title>
+        {% include ('partials/head.html')%}
         <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-        <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-            rel="stylesheet"
-        />
-        <link
-            rel="stylesheet"
-            href="{{ url_for('static', filename='styleofcamera.css') }}"
-        />
         <style>
-            /* CSS của bạn */
+            @media (max-width: 768px) and (orientation: portrait) {
+                #main-flex {
+                    flex-direction: column !important;
+                    align-items: center !important; /* Căn giữa ngang */
+                }
+
+                #main-flex > div:first-child {
+                    order: 2; /* Camera xuống dưới */
+                }
+
+                #main-flex > div:last-child {
+                    order: 1; /* Stats lên trên */
+                    width: 100%;
+                    max-width: 360px; /* Hoặc giữ 320px */
+                }
+            }
         </style>
     </head>
     <body>
-        <div class="container">
-            <div>
-                <div class="video-area">
-                    <video id="video" autoplay muted playsinline></video>
-                    <canvas id="canvas"></canvas>
-                    <canvas id="temp-canvas" style="display: none"></canvas>
-                    <button
-                        id="fullscreen-btn"
-                        style="
-                            position: absolute;
-                            bottom: 10px;
-                            right: 10px;
-                            z-index: 20;
-                            padding: 6px 12px;
-                            border: none;
-                            border-radius: 5px;
-                            background: rgba(0, 0, 0, 0.6);
-                            color: white;
-                            cursor: pointer;
-                        "
+        <!-- Start Navbar Sidebar Area -->
+        {% include ('partials/narvar_sidebar.html') %}
+        <!-- End Navbar Sidebar Modal -->
+
+        <!-- Client Area -->
+        <div class="container-fluid py-4 px-3">
+            <div class="d-flex flex-row gap-3" id="main-flex">
+                <!-- Camera Area chiếm toàn bộ phần còn lại -->
+                <div class="flex-grow-1 position-relative">
+                    <div
+                        class="video-area position-relative"
+                        style="aspect-ratio: 16/9; width: 100%"
                     >
-                        <i class="fas fa-expand"></i> Toàn màn hình
-                    </button>
-                </div>
-            </div>
+                        <video
+                            id="video"
+                            autoplay
+                            muted
+                            playsinline
+                            class="w-100 h-100 object-fit-cover"
+                        ></video>
+                        <canvas
+                            id="canvas"
+                            class="position-absolute top-0 start-0 w-100 h-100"
+                        ></canvas>
+                        <canvas id="temp-canvas" style="display: none"></canvas>
 
-            <div class="stats">
-                <h3>📊 Thống kê</h3>
-                <div id="status" class="status ready">
-                    🥒 Vui lòng nhấn "Bắt đầu"
+                        <button
+                            id="fullscreen-btn"
+                            class="btn btn-dark btn-sm position-absolute bottom-0 end-0 m-2 z-3"
+                        >
+                            <i class="fas fa-expand"></i> Toàn màn hình
+                        </button>
+                    </div>
                 </div>
-                <div class="stat">
-                    Khung hình: <span id="frame-count">0</span>
-                </div>
-                <div class="stat">
-                    Phát hiện: <span id="detect-count">0</span>
-                </div>
-                <div class="stat">FPS: <span id="fps">0</span></div>
-                <div class="stat">Thời gian: <span id="uptime">0s</span></div>
 
-                <div class="controls" style="margin-top: 20px">
-                    <div style="margin-bottom: 10px">
-                        <label for="camera-select">Chọn Camera:</label>
-                        <select id="camera-select"></select>
+                <!-- Stats & Controls -->
+                <div style="width: 320px; max-width: 100%">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">📊 Thống kê</h5>
+                            <div
+                                id="status"
+                                class="alert alert-secondary text-center"
+                            >
+                                🥒 Vui lòng nhấn "Bắt đầu"
+                            </div>
+                            <ul class="list-group mb-3">
+                                <li class="list-group-item">
+                                    Khung hình: <span id="frame-count">0</span>
+                                </li>
+                                <li class="list-group-item">
+                                    Phát hiện: <span id="detect-count">0</span>
+                                </li>
+                                <li class="list-group-item">
+                                    FPS: <span id="fps">0</span>
+                                </li>
+                                <li class="list-group-item">
+                                    Thời gian: <span id="uptime">0s</span>
+                                </li>
+                            </ul>
+                            <div class="mb-3">
+                                <label for="camera-select" class="form-label"
+                                    >Chọn Camera:</label
+                                >
+                                <select
+                                    id="camera-select"
+                                    class="form-select"
+                                ></select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="model-select" class="form-label"
+                                    >Chọn Model:</label
+                                >
+                                <select
+                                    id="model-select"
+                                    class="form-select"
+                                ></select>
+                                <!-- Tooltip hiển thị sau khi chọn -->
+                                <div
+                                    id="model-info"
+                                    class="mt-2"
+                                    style="display: none"
+                                >
+                                    <div class="fw-bold">Tag:</div>
+                                    <span
+                                        id="model-tag"
+                                        
+                                    ></span>
+                                    <div class="fw-bold mt-2">Giải thích:</div>
+                                    <div
+                                        id="model-tooltip"
+                                        class="text-muted small"
+                                    ></div>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button id="start-btn" class="btn btn-success">
+                                    Bắt đầu
+                                </button>
+                                <button
+                                    id="stop-btn"
+                                    class="btn btn-danger"
+                                    style="display: none"
+                                >
+                                    Dừng
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div style="margin-bottom: 10px">
-                        <label for="model-select">Chọn Model:</label>
-                        <select id="model-select"></select>
-                    </div>
-                    <button id="start-btn">Bắt đầu</button>
-                    <button id="stop-btn" style="display: none">Dừng</button>
                 </div>
             </div>
         </div>
 
+        <!-- Client Area End -->
+
+        <!-- Footer Area -->
+        {% include ('partials/footer.html') %}
+        <!-- Footer Area End -->
+
+        <!-- Jquery Min JS -->
+        <script src="/static/assets/js/jquery.min.js"></script>
+        <!-- Bootstrap Bundle Min JS -->
+        <script src="/static/assets/js/bootstrap.bundle.min.js"></script>
+        <!-- Meanmenu JS -->
+        <script src="/static/assets/js/meanmenu.min.js"></script>
+        <!-- Owl Carousel JS -->
+        <script src="/static/assets/js/owl.carousel.min.js"></script>
+        <!-- Magnific Popup JS -->
+        <script src="/static/assets/js/jquery.magnific-popup.min.js"></script>
+        <!-- Wow JS -->
+        <script src="/static/assets/js/wow.min.js"></script>
+        <!-- Ajaxchimp Min JS -->
+        <script src="/static/assets/js/jquery.ajaxchimp.min.js"></script>
+        <!-- Form Validator Min JS -->
+        <script src="/static/assets/js/form-validator.min.js"></script>
+        <!-- Contact Form JS -->
+        <script src="/static/assets/js/contact-form-script.js"></script>
+        <!-- Custom JS -->
+        <script src="/static/assets/js/custom.js"></script>
+
+        <!-- Dự đoán ảnh -->
         <script>
             const socket = io();
             const video = document.getElementById('video');
@@ -150,6 +241,11 @@
                                 const option = document.createElement('option');
                                 option.value = model.model_id;
                                 option.text = model.model_name;
+                                // Lưu thêm tooltip và tag dưới dạng dataset
+                                option.dataset.tooltip =
+                                    model.model_tooltip || '';
+                                option.dataset.tag =
+                                    model.model_short_title || '';
                                 modelSelect.appendChild(option);
                             });
                             resolve();
@@ -440,22 +536,6 @@
                     cameraSelect.options[cameraSelect.selectedIndex];
                 const devName = selectedOption.text || `Camera`;
 
-                modelSelect.onchange = () => {
-                    const selectedModelId = modelSelect.value;
-                    const selectedModelName =
-                        modelSelect.options[modelSelect.selectedIndex].text;
-
-                    console.log(
-                        `Model changed to: ${selectedModelName} (ID: ${selectedModelId})`
-                    );
-
-                    // Gửi thông báo đến backend rằng model đã được thay đổi
-                    socket.emit('model_changed', {
-                        model_id: selectedModelId,
-                        model_name: selectedModelName,
-                    });
-                };
-
                 try {
                     // Gửi thông tin thiết bị lên backend để cập nhật và lấy dev_id (số nguyên) mới
                     await saveDeviceToBackend(selectedDeviceId, devName);
@@ -475,7 +555,61 @@
             window.addEventListener('load', async () => {
                 await listCameras();
                 await listModels();
+                modelSelect.dispatchEvent(new Event('change')); // 👈 Gọi sự kiện thay đổi thủ công
             });
+            const tooltipTriggerList = [].slice.call(
+                document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            );
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            modelSelect.onchange = () => {
+                const selectedOption =
+                    modelSelect.options[modelSelect.selectedIndex];
+                const tagText = selectedOption.dataset.tag || '';
+                const tooltip = selectedOption.dataset.tooltip || '';
+
+                const tagEl = document.getElementById('model-tag');
+                const tooltipEl = document.getElementById('model-tooltip');
+                const infoBox = document.getElementById('model-info');
+
+                if (tagText || tooltip) {
+                    // Clear cũ
+                    tagEl.innerHTML = '';
+
+                    // Tách tag bằng dấu phẩy
+                    const tags = tagText.split(',').map((tag) => tag.trim());
+
+                    const colors = [
+                        'primary',
+                        'success',
+                        'warning',
+                        'info',
+                        'danger',
+                        'secondary',
+                    ];
+                    tags.forEach((t, i) => {
+                        const span = document.createElement('span');
+                        span.className = `badge bg-${
+                            colors[i % colors.length]
+                        } text-white me-1`;
+                        span.textContent = t;
+                        tagEl.appendChild(span);
+                    });
+
+                    tooltipEl.textContent = tooltip;
+                    infoBox.style.display = 'block';
+                } else {
+                    infoBox.style.display = 'none';
+                }
+
+                // Emit event nếu cần
+                socket.emit('model_changed', {
+                    model_id: modelSelect.value,
+                    model_name: selectedOption.text,
+                });
+            };
         </script>
     </body>
 </html>
