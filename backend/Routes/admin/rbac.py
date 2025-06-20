@@ -56,3 +56,17 @@ def update_permission(perm_id):
 @admin_required
 def delete_permission(perm_id):
     return rbac_controller.soft_delete_permission(perm_id)
+
+
+
+#########ROLE PERMISSIONS
+
+@bp.route("/roles/<int:role_id>/permissions", methods=["GET"])
+@admin_required
+def get_role_permissions(role_id):
+    return rbac_controller.get_permissions_of_role(role_id)
+
+@bp.route("/roles/<int:role_id>/permissions", methods=["PUT"])
+@admin_required
+def update_role_permissions(role_id):
+    return rbac_controller.update_permissions_of_role(role_id)

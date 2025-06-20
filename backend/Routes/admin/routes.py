@@ -92,7 +92,7 @@ def edit_permissions_page(permission_id):
 @bp.route("/roles-permissions/get-list", methods=["GET"])
 @admin_required
 def models_roles_permissions_page():
-    return render_template("admin/admin_roles_permissions.html")
+    return render_template("admin/admin_rolespermissions.html")
 
 ############ ROLES_PERMISSIONS ROUTES ENDS  ###############
 

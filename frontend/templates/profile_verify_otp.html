@@ -5,6 +5,13 @@
     <head>
         {% include ('partials/head.html') %}
         <link rel="stylesheet" href="../templates/partials/static/footer.css" />
+        <style>
+            .default-btn.btn-two:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                pointer-events: none;
+            }
+        </style>
     </head>
     <body>
         {% include ('partials/narvar_sidebar.html') %}
@@ -35,6 +42,7 @@
                     <form
                         id="verify-otp-form"
                         method="post"
+                        autocomplete="off"
                         action="{{ url_for('user_check.handle_verify_email_change') }}"
                     >
                         <div class="row justify-content-center">
@@ -56,6 +64,7 @@
                                 <button
                                     class="default-btn btn-two"
                                     type="submit"
+                                    disabled
                                 >
                                     Xác nhận
                                 </button>
@@ -65,6 +74,94 @@
                 </div>
             </div>
         </section>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const form = document.getElementById('verify-otp-form');
+                const otpInput = form.querySelector('input[name="otp"]');
+                const submitBtn = form.querySelector('button[type="submit"]');
+
+                if (!form || !otpInput || !submitBtn) {
+                    console.warn('Không tìm thấy form/input/button');
+                    return;
+                }
+
+                // Bắt đầu với nút bị disable
+                submitBtn.disabled = true;
+
+                // ✅ Xử lý input & bật/tắt nút
+                otpInput.addEventListener('input', () => {
+                    otpInput.value = otpInput.value
+                        .replace(/\D/g, '')
+                        .slice(0, 6); // chỉ giữ số
+                    submitBtn.disabled = otpInput.value.length !== 6;
+                });
+
+                // ⌨️ Chặn nhập không phải số (gõ tay)
+                otpInput.addEventListener('keydown', (e) => {
+                    const allowedKeys = [
+                        'Backspace',
+                        'Delete',
+                        'ArrowLeft',
+                        'ArrowRight',
+                        'Tab',
+                    ];
+                    if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
+                        e.preventDefault();
+                    }
+                });
+
+                // 📨 Xử lý submit bằng AJAX
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    submitBtn.disabled = true;
+
+                    const formData = new FormData(form);
+                    try {
+                        const res = await fetch(form.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        });
+
+                        const data = await res.json();
+                        submitBtn.disabled = false;
+
+                        if (res.ok && data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.message,
+                                timer: 2000,
+                                showConfirmButton: false,
+                                timerProgressBar: true,
+                                willClose: () => {
+                                    window.location.href = data.redirect || '/';
+                                },
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: data.message || 'Xác thực thất bại.',
+                            }).then(() => {
+                                if (data.redirect) {
+                                    window.location.href = data.redirect;
+                                }
+                            });
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        submitBtn.disabled = false;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi hệ thống',
+                            text: 'Không thể xử lý yêu cầu. Vui lòng thử lại sau.',
+                        });
+                    }
+                });
+            });
+        </script>
 
         {% include ('partials/footer.html') %}
     </body>

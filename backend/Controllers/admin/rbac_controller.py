@@ -1,8 +1,7 @@
 from flask import request, jsonify
 from backend.extensions import db
 from backend.Models.rbac_model import Role, Permission
-
-
+from backend.Models.rbac_model import role_permissions
 # ======== ROLES ========
 
 def get_all_roles():
@@ -142,6 +141,37 @@ def soft_delete_permission(perm_id):
         db.session.delete(perm)
         db.session.commit()
         return jsonify({"success": True, "message": "Đã xóa quyền thành công"})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+
+
+
+########
+def get_permissions_of_role(role_id):
+    role = Role.query.get(role_id)
+    if not role:
+        return jsonify({"success": False, "message": "Role không tồn tại"}), 404
+
+    perm_ids = [p.perm_id for p in role.permissions]
+    return jsonify({"success": True, "data": perm_ids})
+
+
+def update_permissions_of_role(role_id):
+    role = Role.query.get(role_id)
+    if not role:
+        return jsonify({"success": False, "message": "Role không tồn tại"}), 404
+
+    perm_ids = request.json.get("perm_ids", [])
+    if not isinstance(perm_ids, list):
+        return jsonify({"success": False, "message": "Dữ liệu không hợp lệ"}), 400
+
+    try:
+        role.permissions = Permission.query.filter(Permission.perm_id.in_(perm_ids)).all()
+        db.session.commit()
+        return jsonify({"success": True, "message": "Cập nhật quyền thành công"})
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "message": str(e)}), 500
