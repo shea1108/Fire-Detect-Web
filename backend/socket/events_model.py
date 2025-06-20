@@ -27,7 +27,16 @@ def register_model_events(socketio):
                 emit('models_list', {'status': 'error', 'message': 'Không tìm thấy model nào hoạt động.'})
                 return
 
-            models_list = [{"model_id": m.model_id, "model_name": m.model_name} for m in models]
+            models_list = [
+                {
+                    "model_id": m.model_id,
+                    "model_name": m.model_name,
+                    "model_tooltip": m.model_tooltip or "",
+                    "model_short_title": m.model_short_title or ""
+                }
+                for m in models
+            ]
+
             emit('models_list', {'status': 'success', 'models': models_list})
             logger.info(f"Sent {len(models_list)} model(s) to the client.")
 
