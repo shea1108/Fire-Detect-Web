@@ -28,7 +28,7 @@ from backend.socket import register_socketio
 
 
 ################ ADMIN ROUTES ################
-from backend.Routes.admin import admin_routes, admin_models, admin_users
+from backend.Routes.admin import admin_routes, admin_models, admin_users, admin_rbac
 
 
 
@@ -98,6 +98,6 @@ def create_app():
     app.register_blueprint(admin_routes)
     app.register_blueprint(admin_models)
     app.register_blueprint(admin_users)
-
+    app.register_blueprint(admin_rbac)
 
     return app

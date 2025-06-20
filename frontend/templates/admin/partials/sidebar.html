@@ -1,21 +1,40 @@
+<!-- @format -->
+
 <div class="app-sidebar-menu">
     <div class="h-100" data-simplebar>
+        <!--- Sidemenu -->
         <div id="sidebar-menu">
             <div class="logo-box">
                 <a href="/admin" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="/static/admin/assets/images/logo-sm.png" alt="" height="22" />
+                        <img
+                            src="/static/admin/assets/images/logo-sm.png"
+                            alt=""
+                            height="22"
+                        />
                     </span>
                     <span class="logo-lg">
-                        <img src="/static/admin/assets/images/logo-light.png" alt="" height="24" />
+                        <img
+                            src="/static/admin/assets/images/logo-light.png"
+                            alt=""
+                            height="24"
+                        />
                     </span>
                 </a>
                 <a href="/admin" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="/static/admin/assets/images/logo-sm.png" alt="" height="22" />
+                        <img
+                            src="/static/admin/assets/images/logo-sm.png"
+                            alt=""
+                            height="22"
+                        />
                     </span>
                     <span class="logo-lg">
-                        <img src="/static/admin/assets/images/logo-dark.png" alt="" height="24" />
+                        <img
+                            src="/static/admin/assets/images/logo-dark.png"
+                            alt=""
+                            height="24"
+                        />
                     </span>
                 </a>
             </div>
@@ -35,27 +54,15 @@
                                 <a href="/admin" class="tp-link">Analytical</a>
                             </li>
                             <li>
-                                <a href="#" class="tp-link">E-commerce</a>
+                                <a href="ecommerce.html" class="tp-link"
+                                    >E-commerce</a
+                                >
                             </li>
                         </ul>
                     </div>
                 </li>
 
                 <li class="menu-title">Quản lý</li>
-
-                <li>
-                    <a href="#sidebarUsers" data-bs-toggle="collapse">
-                        <i data-feather="users"></i>  <span> Quản lý người dùng </span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <div class="collapse" id="sidebarUsers">
-                        <ul class="nav-second-level">
-                            <li>
-                                <a href="/admin/users" class="tp-link">Danh sách người dùng</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
                 <li>
                     <a href="#sidebarModels" data-bs-toggle="collapse">
                         <i data-feather="table"></i>
@@ -65,10 +72,78 @@
                     <div class="collapse" id="sidebarModels">
                         <ul class="nav-second-level">
                             <li>
-                                <a href="/admin/models" class="tp-link">Danh sách mô hình</a>
+                                <a href="/admin/models" class="tp-link"
+                                    >Danh sách mô hình</a
+                                >
                             </li>
                             <li>
-                                <a href="/admin/models/create" class="tp-link">Thêm mô hình mới</a>
+                                <a href="/admin/models/create" class="tp-link"
+                                    >Thêm mô hình mới</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="menu-title">Quản lý Vai Trò và Quyền Hạn</li>
+                <li>
+                    <a href="#sidebarRoles" data-bs-toggle="collapse">
+                        <i data-feather="lock"></i>
+                        <span> Vai Trò</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarRoles">
+                        <ul class="nav-second-level">
+                            <li>
+                                <a href="/admin/roles/get-list" class="tp-link"
+                                    >Danh sách Vai Trò</a
+                                >
+                            </li>
+                            <li>
+                                <a href="/admin/roles/create" class="tp-link"
+                                    >Thêm Vai trò mới</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+
+                    <a href="#sidebarPermissions" data-bs-toggle="collapse">
+                        <i data-feather="tag"></i>
+                        <span> Quyền hạn </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarPermissions">
+                        <ul class="nav-second-level">
+                            <li>
+                                <a
+                                    href="/admin/permissions/get-list"
+                                    class="tp-link"
+                                    >Danh sách Quyền hạn</a
+                                >
+                            </li>
+                            <li>
+                                <a
+                                    href="/admin/permissions/create"
+                                    class="tp-link"
+                                    >Thêm Quyền hạn mới</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+
+                    <a href="#sidebarRolesPermissions" data-bs-toggle="collapse">
+                        <i data-feather="shield"></i>
+                        <span> Phân Quyền Vai Trò </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarRolesPermissions">
+                        <ul class="nav-second-level">
+                            <li>
+                                <a
+                                    href="/admin/roles-permissions/get-list"
+                                    class="tp-link"
+                                    >Danh sách Phân Quyền</a
+                                >
                             </li>
                         </ul>
                     </div>
@@ -558,8 +633,8 @@
                 </li>
             </ul>
         </div>
-            </ul>
-        </div>
+        <!-- End Sidebar -->
+
         <div class="clearfix"></div>
     </div>
 </div>

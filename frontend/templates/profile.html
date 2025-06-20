@@ -51,6 +51,10 @@
                 border-color: #e83e58;
                 color: white;
             }
+            .btn-edit:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
         </style>
     </head>
     <body>
@@ -86,7 +90,7 @@
                         <div class="flex-grow-1">
                             <button
                                 type="button"
-                                class="btn btn-outline-primary"
+                                class="btn-recover"
                                 onclick="document.getElementById('avatarInput').click()"
                             >
                                 Đổi ảnh đại diện
@@ -123,14 +127,18 @@
                             </div>
                             <div class="col">
                                 <label class="form-label">Số điện thoại</label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    name="user_phone_num"
-                                    pattern="^\d{10}$"
-                                    maxlength="10"
-                                    value="{{ user.user_phone_num or '' }}"
-                                />
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        🇻🇳 +84
+                                    </span>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        name="user_phone_num"
+                                        maxlength="10"
+                                        value="{{ user.user_phone_num or '' }}"
+                                    />
+                                </div>
                             </div>
                         </div>
 
@@ -140,12 +148,20 @@
                                 type="email"
                                 class="form-control"
                                 name="user_email"
+                                pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
+                                title="Email phải kết thúc bằng @gmail.com"
+                                required
                                 value="{{ user.user_email }}"
                             />
                         </div>
 
                         <div class="mt-3 d-flex justify-content-center gap-3">
-                            <button type="submit" class="btn-edit">
+                            <button
+                                type="submit"
+                                class="btn-edit"
+                                id="save-btn"
+                                disabled
+                            >
                                 💾 Lưu tài khoản
                             </button>
                             <a href="/change-password" class="btn-recover">
@@ -181,7 +197,7 @@
                         </div>
 
                         <!-- Zalo -->
-                        <div
+                        <!-- <div
                             class="mb-4 d-flex align-items-start justify-content-between"
                         >
                             <div class="d-flex align-items-start">
@@ -206,10 +222,10 @@
                                 >Liên kết</a
                             >
                             {% endif %}
-                        </div>
+                        </div> -->
 
                         <!-- Telegram -->
-                        <div
+                        <!-- <div
                             class="mb-4 d-flex align-items-start justify-content-between"
                         >
                             <div class="d-flex align-items-start">
@@ -234,13 +250,48 @@
                                 >Liên kết</a
                             >
                             {% endif %}
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </form>
         </div>
 
         <script>
+            let initialFormState = {};
+
+            const captureInitialState = () => {
+                const form = document.getElementById('edit-profile-form');
+                initialFormState = {
+                    user_name: form.user_name.value,
+                    user_phone_num: form.user_phone_num.value,
+                    user_email: form.user_email.value,
+                    avatar: '', // Không so sánh ảnh file, chỉ bật nếu có file mới
+                };
+            };
+            const hasFormChanged = () => {
+                const form = document.getElementById('edit-profile-form');
+                return (
+                    form.user_name.value !== initialFormState.user_name ||
+                    form.user_phone_num.value !==
+                        initialFormState.user_phone_num ||
+                    form.user_email.value !== initialFormState.user_email ||
+                    form.avatar.files.length > 0
+                );
+            };
+            const saveBtn = document.getElementById('save-btn');
+
+            document
+                .getElementById('edit-profile-form')
+                .addEventListener('input', () => {
+                    saveBtn.disabled = !hasFormChanged();
+                });
+
+            document
+                .getElementById('avatarInput')
+                .addEventListener('change', () => {
+                    saveBtn.disabled = !hasFormChanged();
+                });
+
             const profileUpdateUI = async () => {
                 try {
                     const meRes = await fetch('/api/auth/me');
@@ -264,6 +315,12 @@
                         document.querySelectorAll(
                             '.text-muted.small.mb-1, .text-muted.small'
                         )[0].innerText = meData.user_email;
+
+                        // ✅ THÊM DÒNG NÀY: chụp lại state ban đầu ngay sau khi load
+                        captureInitialState();
+
+                        // ✅ Disable nút lưu ngay khi mới tải
+                        saveBtn.disabled = true;
                     }
                 } catch (err) {
                     console.error('Lỗi khi gọi /api/auth/me:', err);
@@ -283,19 +340,77 @@
                 .getElementById('edit-profile-form')
                 .addEventListener('submit', async function (e) {
                     e.preventDefault();
-
-                    // <<< BƯỚC 1: HIỂN THỊ THÔNG BÁO "ĐANG TẢI" NGAY LẬP TỨC >>>
-                    Swal.fire({
-                        title: 'Đang xử lý...',
-                        text: 'Hệ thống đang gửi email xác thực, vui lòng chờ.',
-                        allowOutsideClick: false, // Không cho người dùng đóng bằng cách click ra ngoài
-                        didOpen: () => {
-                            Swal.showLoading(); // Hiển thị icon loading
-                        },
-                    });
-
                     const form = e.target;
+                    const phoneInput = form.querySelector(
+                        '[name="user_phone_num"]'
+                    );
+                    const emailInput = form.querySelector(
+                        '[name="user_email"]'
+                    );
+
+                    const phonePattern = /^0\d{9}$/;
+                    const emailPattern =
+                        /^[a-zA-Z][a-zA-Z0-9._%+-]*@gmail\.com$/;
+                    if (!phonePattern.test(phoneInput.value)) {
+                        return Swal.fire({
+                            icon: 'warning',
+                            title: 'Số điện thoại không hợp lệ!',
+                            text: 'Vui lòng nhập đúng 10 chữ số và bắt đầu bằng số 0.',
+                        });
+                    }
+
+                    if (!emailPattern.test(emailInput.value)) {
+                        return Swal.fire({
+                            icon: 'warning',
+                            title: 'Email không hợp lệ!',
+                            text: 'Chỉ chấp nhận địa chỉ @gmail.com.',
+                        });
+                    }
+
                     const formData = new FormData(form);
+                    const newEmail = emailInput.value.trim();
+                    const originalEmail = initialFormState.user_email.trim();
+
+                    if (newEmail !== originalEmail) {
+                        return Swal.fire({
+                            icon: 'warning',
+                            title: 'Xác nhận thay đổi email',
+                            html: `
+                                <p>Bạn có chắc muốn thay đổi email sang <strong>${newEmail}</strong> không?</p>
+                                <small class="text-muted">
+                                    <i class="bi bi-exclamation-circle-fill text-warning"></i>
+                                    Việc thay đổi email sẽ chuyển bạn sang bước xác minh.
+                                    <br/>
+                                    <strong class="text-danger">Mọi thay đổi khác sẽ không được lưu.</strong>
+                                </small>
+                            `,
+                            showCancelButton: true,
+                            confirmButtonText: 'Xác nhận',
+                            cancelButtonText: 'Hủy',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // ✅ Tiếp tục gửi formData lên /api/user/edit → server sẽ xử lý redirect
+                                if (result.isConfirmed) {
+                                    // ✅ Hiện loading NGAY LẬP TỨC
+                                    Swal.fire({
+                                        title: 'Đang xử lý...',
+                                        text: 'Hệ thống đang gửi email xác thực, vui lòng chờ.',
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        },
+                                        willClose: () => {
+                                            // Ngăn bị “treo” nếu người dùng quay lại trước redirect
+                                            Swal.hideLoading();
+                                        },
+                                    });
+
+                                    // ✅ Sau đó mới gọi submit
+                                    submitEditForm(form);
+                                }
+                            }
+                        });
+                    }
 
                     try {
                         const response = await fetch('/api/user/edit', {
@@ -306,60 +421,192 @@
                         const data = await response.json();
 
                         if (response.ok) {
+                            // ✅ Loading chỉ hiện nếu cập nhật thành công
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Đang cập nhật thông tin...',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                },
+                            });
+
                             if (data.redirect) {
-                                // Nếu có redirect, không cần đóng Swal, trang sẽ tự chuyển hướng
-                                // và pop-up sẽ biến mất theo.
                                 window.location.href = data.redirect;
                             } else {
-                                // Nếu là cập nhật thành công tại chỗ (không đổi email)
-                                Swal.close(); // <<< BƯỚC 2: ĐÓNG POP-UP "LOADING"
+                                Swal.close(); // Tắt loading
+
+                                // ✅ Nếu có cập nhật ảnh đại diện → reload trang
+                                if (formData.get('avatar')?.name) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title:
+                                            data.message ||
+                                            'Cập nhật ảnh đại diện thành công!',
+                                        toast: false,
+                                        position: 'center',
+                                        showConfirmButton: false,
+                                        timer: 1500,
+                                        timerProgressBar: true,
+                                        didClose: () => {
+                                            location.reload(); // Reload sau khi popup biến mất
+                                        },
+                                    });
+                                    return;
+                                }
+
                                 Swal.fire({
                                     icon: 'success',
                                     title:
                                         data.message ||
                                         'Đã cập nhật thành công!',
-                                    toast: true,
-                                    position: 'top-end',
+                                    position: 'center',
                                     showConfirmButton: false,
                                     timer: 2000,
                                     timerProgressBar: true,
+                                    didClose: () => {
+                                        location.reload(); // ✅ F5 lại sau khi popup tắt
+                                    },
                                 });
+
                                 profileUpdateUI();
+                                captureInitialState();
                             }
                         } else {
-                            // Nếu có lỗi từ server
-                            Swal.close(); // <<< BƯỚC 2: ĐÓNG POP-UP "LOADING"
                             let message = data.error || 'Có lỗi xảy ra!';
                             if (message === 'Email already registered')
                                 message = 'Email đã được đăng ký!';
                             if (message === 'Phone number already registered')
                                 message = 'Số điện thoại đã được đăng ký!';
 
-                            Swal.fire({
+                            return Swal.fire({
                                 icon: 'error',
                                 title: message,
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 2500,
-                                timerProgressBar: true,
+                                toast: false,
+                                position: 'center',
+                                showConfirmButton: true,
                             });
                         }
                     } catch (err) {
-                        // Nếu có lỗi mạng hoặc lỗi hệ thống
-                        Swal.close(); // <<< BƯỚC 2: ĐÓNG POP-UP "LOADING"
                         console.error('Lỗi:', err);
-                        Swal.fire({
+                        return Swal.fire({
                             icon: 'error',
                             title: 'Lỗi hệ thống. Vui lòng thử lại.',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 2500,
-                            timerProgressBar: true,
+                            toast: false,
+                            position: 'center',
+                            showConfirmButton: true,
                         });
                     }
                 });
+            async function submitEditForm(form, isEmailChange = false) {
+                const formData = new FormData(form);
+                try {
+                    const response = await fetch('/api/user/edit', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // ✅ Nếu không phải đổi email → mới show popup cập nhật
+                        if (!isEmailChange) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Đang cập nhật thông tin...',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                },
+                            });
+                        }
+
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                        } else {
+                            Swal.close(); // Tắt loading nếu không có redirect
+
+                            // Reload lại nếu đổi avatar
+                            if (formData.get('avatar')?.name) {
+                                return Swal.fire({
+                                    icon: 'success',
+                                    title:
+                                        data.message || 'Đổi ảnh thành công!',
+                                    didClose: () => location.reload(),
+                                });
+                            }
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.message || 'Cập nhật thành công!',
+                                position: 'center',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                didClose: () => location.reload(), // ✅ F5 lại luôn
+                            });
+                            profileUpdateUI();
+                            captureInitialState();
+                        }
+                    } else {
+                        const message =
+                            data.error === 'Email đã được đăng ký'
+                                ? 'Email đã được đăng ký!'
+                                : data.error === 'Số điện thoại đã được đăng ký'
+                                ? 'Số điện thoại đã được đăng ký!'
+                                : data.error || 'Có lỗi xảy ra!';
+                        return Swal.fire({
+                            icon: 'error',
+                            title: message,
+                            position: 'center',
+                            showConfirmButton: true,
+                        });
+                    }
+                } catch (err) {
+                    console.error('Lỗi:', err);
+                    return Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi hệ thống. Vui lòng thử lại.',
+                    });
+                }
+            }
+
+            const phoneInput = document.querySelector(
+                '[name="user_phone_num"]'
+            );
+
+            phoneInput.addEventListener('keydown', function (e) {
+                if (
+                    [
+                        'Backspace',
+                        'Delete',
+                        'ArrowLeft',
+                        'ArrowRight',
+                        'Tab',
+                    ].includes(e.key)
+                ) {
+                    return;
+                }
+                if (!/^\d$/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
+
+            phoneInput.addEventListener('input', function (e) {
+                this.value = this.value.replace(/\D/g, ''); // Ngăn dán ký tự lạ
+            });
+            window.addEventListener('pageshow', function (event) {
+                if (
+                    event.persisted ||
+                    performance.getEntriesByType('navigation')[0].type ===
+                        'back_forward'
+                ) {
+                    Swal.close(); // ✅ Đóng mọi popup đang treo nếu quay lại từ lịch sử trình duyệt
+                }
+            });
+
+            window.addEventListener('DOMContentLoaded', () => {
+                profileUpdateUI(); // load thông tin và chụp trạng thái ban đầu
+            });
         </script>
 
         <!-- Footer Area -->

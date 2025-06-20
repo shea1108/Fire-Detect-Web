@@ -23,11 +23,47 @@
                 }
             }
         </style>
+        <link
+            href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+            rel="stylesheet"
+        />
+        <style>
+            /* Làm input lớn hơn và dễ nhìn hơn */
+            .select2-container--default .select2-selection--single {
+                height: 48px;
+                padding: 10px 12px;
+                font-size: 16px;
+                border-radius: 8px;
+                border: 1px solid #ccc;
+                display: flex;
+                align-items: center;
+            }
+
+            /* Phần dropdown kết quả */
+            .select2-results__option {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            /* Khi chọn rồi */
+            .select2-selection__rendered {
+                line-height: 1.4;
+            }
+            /* ✅ Khi hover chọn: xám nhạt như select mặc định */
+            .select2-results__option--highlighted {
+                background-color: #e9ecef !important;
+                color: #000 !important;
+            }
+            /* Đảm bảo badge xuống dòng đẹp */
+            .select2-results__option span.badge {
+                display: inline-block;
+                margin-bottom: 4px;
+            }
+        </style>
     </head>
     <body>
         <!-- Start Navbar Sidebar Area -->
         {% include ('partials/narvar_sidebar.html') %}
-        <!-- End Navbar Sidebar Modal -->
 
         <!-- Client Area -->
         <div class="container-fluid py-4 px-3">
@@ -78,9 +114,9 @@
                                 <li class="list-group-item">
                                     Phát hiện: <span id="detect-count">0</span>
                                 </li>
-                                <li class="list-group-item">
+                                <!-- <li class="list-group-item">
                                     FPS: <span id="fps">0</span>
-                                </li>
+                                </li> -->
                                 <li class="list-group-item">
                                     Thời gian: <span id="uptime">0s</span>
                                 </li>
@@ -109,10 +145,7 @@
                                     style="display: none"
                                 >
                                     <div class="fw-bold">Tag:</div>
-                                    <span
-                                        id="model-tag"
-                                        
-                                    ></span>
+                                    <span id="model-tag"></span>
                                     <div class="fw-bold mt-2">Giải thích:</div>
                                     <div
                                         id="model-tooltip"
@@ -166,6 +199,7 @@
         <script src="/static/assets/js/custom.js"></script>
 
         <!-- Dự đoán ảnh -->
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script>
             const socket = io();
             const video = document.getElementById('video');
@@ -241,13 +275,13 @@
                                 const option = document.createElement('option');
                                 option.value = model.model_id;
                                 option.text = model.model_name;
-                                // Lưu thêm tooltip và tag dưới dạng dataset
                                 option.dataset.tooltip =
                                     model.model_tooltip || '';
                                 option.dataset.tag =
                                     model.model_short_title || '';
                                 modelSelect.appendChild(option);
                             });
+
                             resolve();
                         } else {
                             const option = document.createElement('option');
@@ -330,7 +364,8 @@
                         '❌ Lỗi khi truy cập camera hoặc liệt kê:',
                         err
                     );
-                    statusEl.textContent = '❌ Lỗi: Không thể truy cập camera.';
+                    statusEl.textContent =
+                        '❌ Lỗi: Không thể truy cập camera. Vui lòng đăng nhập để tiếp tục.';
                     statusEl.className = 'status error';
                     startBtn.disabled = true;
                 }
@@ -555,6 +590,47 @@
             window.addEventListener('load', async () => {
                 await listCameras();
                 await listModels();
+                $(modelSelect).select2({
+                    placeholder: 'Chọn mô hình',
+                    width: '100%',
+                    templateResult: function (data) {
+                        if (!data.id) return data.text;
+
+                        const tag = $(data.element).data('tag');
+                        const name = data.text;
+
+                        if (tag) {
+                            const colors = [
+                                'primary',
+                                'secondary',
+                                'success',
+                                'danger',
+                                'warning',
+                                'info',
+                            ];
+                            const tagHtml = tag
+                                .split(',')
+                                .map((t, i) => {
+                                    const color = colors[i % colors.length];
+                                    return `<span class="badge bg-${color} me-1 mb-1">${t.trim()}</span>`;
+                                })
+                                .join('');
+
+                            return $(`
+                <div>
+                    <div><strong>${name}</strong></div>
+                    <div class="mt-1">${tagHtml}</div>
+                </div>
+            `);
+                        }
+
+                        return `<span>${name}</span>`;
+                    },
+                    templateSelection: function (data) {
+                        return data.text;
+                    },
+                });
+
                 modelSelect.dispatchEvent(new Event('change')); // 👈 Gọi sự kiện thay đổi thủ công
             });
             const tooltipTriggerList = [].slice.call(
