@@ -89,6 +89,11 @@ def detect_video():
 def detect_camera():
     return render_template('detect-camera.html')
 
+@bp.route('/logs')
+@bp.route('/user_logs.html')
+def user_logs():
+    return render_template('user_logs.html')
+
 ##########
 @bp.route('/recover-password', methods=['GET'])
 @bp.route('/recover-password.html', methods=['GET'])

@@ -18,6 +18,7 @@ from backend.Routes import predict
 from backend.Routes.models import bp as models_bp
 from backend.Routes.notification import bp as notification_bp
 from backend.Routes.users import bp as user_bp
+from backend.Routes.log import bp as log_creation_bp
 
 
 #MODELS
@@ -82,9 +83,11 @@ def create_app():
     app.register_blueprint(auth.bp)
     app.register_blueprint(routes.bp)
     app.register_blueprint(predict.bp)
-    
     app.register_blueprint(notification_bp)
     app.register_blueprint(user_bp)
+
+    app.register_blueprint(log_creation_bp)
+
 
 
 
