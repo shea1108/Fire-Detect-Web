@@ -8,13 +8,11 @@ from PIL import Image, ImageDraw, ImageFont
 from flask import current_app, session, has_request_context, jsonify, request
 from backend.Models.users_model import User
 from backend.extensions import socketio
-
 from backend.Models import db, Log, Model
 from backend.Models.log_bboxes_model import LogBBox
 from backend.utils.models_manager import model_manager
 from backend.services.log_noti_send_email import handle_post_log_events
 from backend.services.fire_persistence_tracker import FirePersistenceTracker
-
 from sqlalchemy import or_
 from backend.Models.devices_model import Device
 
@@ -22,14 +20,12 @@ last_log_times = {}
 fire_persist_tracker = FirePersistenceTracker(min_duration=5, cooldown=6000)
 fire_log_buffer = {}
 
-# === SỬA LỖI BƯỚC 1: Thêm origin_path và bbox_path vào chữ ký hàm ===
 def trigger_notification_in_background(app, log_id, user_email, user_name, origin_path, bbox_path):
     with app.app_context():
         try:
-            # === SỬA LỖI BƯỚC 2: Truyền đường dẫn ảnh vào hàm xử lý ===
             ok, msg, noti_id = handle_post_log_events(
-                log_id, user_email, user_name, 
-                origin_path=origin_path, 
+                log_id, user_email, user_name,
+                origin_path=origin_path,
                 bbox_path=bbox_path
             )
             if ok:
@@ -37,8 +33,7 @@ def trigger_notification_in_background(app, log_id, user_email, user_name, origi
             else:
                 logging.warning(f"Gửi thông báo thất bại cho log_id: {log_id}. Lý do: {msg}")
         except Exception as e:
-            logging.error(f"Lỗi không xác định trong tác vụ nền cho log_id: {log_id}. Lỗi: {e}", exc_info=True)
-
+            logging.error(f"Lỗi khi gửi thông báo nền cho log_id: {log_id}. Lỗi: {e}", exc_info=True)
 
 def handle_detect_from_api(data):
     from backend.socket.common import perf_monitor
@@ -86,11 +81,12 @@ def handle_detect_from_api(data):
         db.session.flush()
         log_id = new_log.log_id
 
-        file_name = f"{log_id}_origin_model{model_id}_dev{dev_id}.jpg"
-        save_dir_physical = os.path.join('static', 'log_images', str(dev_id))
+        static_root_path = current_app.static_folder
+        save_dir_physical = os.path.join(static_root_path, 'log_images', str(dev_id))
         os.makedirs(save_dir_physical, exist_ok=True)
-        origin_path = os.path.join(save_dir_physical, file_name)
 
+        file_name = f"{log_id}_origin_model{model_id}_dev{dev_id}.jpg"
+        origin_path = os.path.join(save_dir_physical, file_name)
         bbox_file_name = file_name.replace("_origin_", "_bbox_")
         bbox_path = os.path.join(save_dir_physical, bbox_file_name)
 
@@ -100,20 +96,29 @@ def handle_detect_from_api(data):
             font = ImageFont.truetype("arial.ttf", 15)
         except IOError:
             font = ImageFont.load_default()
+
         for det in fire_detections:
             x1, y1, x2, y2 = det['bbox']
             draw.rectangle([x1, y1, x2, y2], outline="red", width=3)
 
-        image.save(origin_path) # Lưu ảnh gốc
-        bbox_image.save(bbox_path) # Lưu ảnh có bounding box
-        
+        image.save(origin_path)
+        bbox_image.save(bbox_path)
+
         db_image_path = os.path.join('log_images', str(dev_id), file_name).replace("\\", "/")
         new_log.log_image_path = db_image_path
 
         for det in fire_detections:
             x1, y1, x2, y2 = det['bbox']
             width, height = x2 - x1, y2 - y1
-            db.session.add(LogBBox(log_id=log_id, confidence=float(det['confidence']), x_center=x1 + width / 2, y_center=y1 + height / 2, width=width, height=height))
+            db.session.add(LogBBox(
+                log_id=log_id,
+                confidence=float(det['confidence']),
+                x_center=x1 + width / 2,
+                y_center=y1 + height / 2,
+                width=width,
+                height=height
+            ))
+
         db.session.commit()
         last_log_times[dev_id] = now
 
@@ -130,7 +135,7 @@ def handle_detect_from_api(data):
             fire_log_buffer.pop(dev_id, None)
 
         if fire_persist_tracker.should_send_alert(dev_id, is_fire):
-            logging.info(f"🔥 Thiết bị {dev_id} đủ điều kiện gửi email")
+            logging.info(f"Thiết bị {dev_id} đủ điều kiện gửi email")
             if has_request_context() and "user_id" in session:
                 user = User.query.get(session['user_id'])
                 if user:
@@ -138,27 +143,21 @@ def handle_detect_from_api(data):
                     top_log = max(fire_log_buffer.get(dev_id, []), key=lambda x: x["confidence"], default=None)
                     fire_log_buffer.pop(dev_id, None)
                     if top_log:
-                        logging.info(f"🔥 Chọn log_id={top_log['log_id']} để gửi email (conf={top_log['confidence']:.2f})")
-                        
-                        # === SỬA LỖI BƯỚC 3: Thêm origin_path và bbox_path vào các tham số của tác vụ nền ===
                         socketio.start_background_task(
                             target=trigger_notification_in_background,
                             app=app_context,
                             log_id=top_log["log_id"],
                             user_email=user.user_email,
                             user_name=user.user_name,
-                            origin_path=top_log["origin_path"], # Thêm vào
-                            bbox_path=top_log["bbox_path"]      # Thêm vào
+                            origin_path=top_log["origin_path"],
+                            bbox_path=top_log["bbox_path"]
                         )
 
         return True, {"detections": detections, "message": "Đã lưu log", "log_id": log_id}
     except Exception as e:
         db.session.rollback()
-        logging.error(f"Lỗi nghiêm trọng trong handle_detect_from_api: {e}", exc_info=True)
+        logging.error(f"Lỗi trong handle_detect_from_api: {e}", exc_info=True)
         return False, f"Lỗi xử lý: {str(e)}"
-
-
-# ==================== CÁC HÀM KHÁC ====================
 
 def get_all_logs_for_datatable():
     try:
@@ -207,14 +206,15 @@ def get_all_logs_for_datatable():
         } for row in results]
 
         return jsonify({
-            'draw': draw, 'recordsTotal': total_records,
-            'recordsFiltered': filtered_records, 'data': data
+            'draw': draw,
+            'recordsTotal': total_records,
+            'recordsFiltered': filtered_records,
+            'data': data
         })
 
     except Exception as e:
-        logging.error(f"Lỗi khi lấy dữ liệu cho DataTables: {e}", exc_info=True)
-        return jsonify({'draw': int(request.form.get('draw', 0)), 'recordsTotal': 0, 'recordsFiltered': 0, 'data': [], 'error': "Lỗi server"})
-
+        logging.error(f"Lỗi khi lấy dữ liệu log: {e}", exc_info=True)
+        return jsonify({'draw': 0, 'recordsTotal': 0, 'recordsFiltered': 0, 'data': [], 'error': "Lỗi server"})
 
 def get_log_details(log_id):
     try:

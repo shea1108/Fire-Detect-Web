@@ -19,7 +19,7 @@ from backend.Routes.models import bp as models_bp
 from backend.Routes.notification import bp as notification_bp
 from backend.Routes.users import bp as user_bp
 from backend.Routes.log import bp as log_creation_bp
-
+from flask import send_from_directory
 
 #MODELS
 from backend.Models import *  # Chỉ cần 1 dòng
@@ -42,7 +42,6 @@ def create_app():
     app.config.from_object(Config)
     # 2. Cấu hình app từ các biến môi trường
     app.permanent_session_lifetime = timedelta(days=7)
-
     # Cấu hình MAIL
     # Cấu hình MAIL
     # Load cấu hình mail từ biến môi trường
