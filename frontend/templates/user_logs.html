@@ -122,11 +122,11 @@
         // Khởi tạo DataTable
         const table = $('#datatable-logs').DataTable({
           responsive: true,
-          processing: true, // Hiển thị thông báo "đang xử lý"
-          serverSide: true, // Bật chế độ xử lý phía server
+          processing: true, 
+          serverSide: true,
           ajax: {
-            url: '/api/log/get-all', // API endpoint để lấy dữ liệu
-            type: 'POST', // Sử dụng POST để gửi các tham số của DataTable
+            url: '/api/log/get-all', 
+            type: 'POST', 
           },
           columns: [
             { data: 'id' },
@@ -155,13 +155,13 @@
               },
             },
           ],
-          order: [[4, 'desc']], // Sắp xếp mặc định theo ngày tạo mới nhất
+          order: [[4, 'desc']], 
           language: {
-            url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json', // Việt hóa DataTable
+            url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json', 
           },
         });
 
-        // Bắt sự kiện click vào nút "Xem" hoặc ảnh thumbnail
+      
         $('#datatable-logs tbody').on('click', 'button.btn-view, img.log-image-thumbnail', function () {
           const logId = $(this).data('id');
           if (logId) {
@@ -192,7 +192,7 @@
               return;
             }
 
-            // Hiển thị chi tiết bounding boxes nếu có
+
             let bboxesHtml = '<p>Không có dữ liệu bounding box.</p>';
             if (data.bboxes && data.bboxes.length > 0) {
               bboxesHtml = '<h6><i class="bx bx-selection"></i> Bounding Boxes:</h6><ul class="list-group">';
@@ -208,7 +208,6 @@
                       <h5><i class="bx bx-info-circle"></i> Thông tin chung</h5>
                       <p><strong>ID Log:</strong> ${data.id}</p>
                       <p><strong>Thiết bị:</strong> ${data.device_name || 'N/A'}</p>
-                      <p><strong>Vị trí:</strong> ${data.device_location || 'N/A'}</p>
                       <p><strong>Mô hình:</strong> ${data.model_name}</p>
                       <p><strong>Ngày tạo:</strong> ${new Date(data.created_at).toLocaleString('vi-VN')}</p>
                   </div>
