@@ -93,7 +93,7 @@ def register_send_otp(data):
     if not success:
         return jsonify({"error": "Không thể gửi email xác thực. Vui lòng thử lại."}), 500
 
-    role = Role.query.filter_by(role_id=3).first()
+    role = Role.query.filter_by(role_id=2).first()
     if not role:
         return jsonify({"error": "Vai trò mặc định không tồn tại."}), 500
 
@@ -132,7 +132,7 @@ def register_verify_otp(data):
         user_phone_num=reg.get('user_phone_num'),
         user_status=True
     )
-    role = Role.query.filter_by(role_id=3).first()
+    role = Role.query.filter_by(role_id=2).first()
     if not role:
         return jsonify({"error": "Vai trò không hợp lệ"}), 400
     new_user.roles.append(role)
@@ -191,7 +191,7 @@ def handle_google_callback():
             user_password='',
             user_status=True
         )
-        default_role = Role.query.filter_by(role_id=3).first()
+        default_role = Role.query.filter_by(role_id=2).first()
         if default_role:
             user.roles.append(default_role)
         db.session.add(user)
