@@ -3,6 +3,7 @@ import random
 import os
 import string
 import requests
+import re
 import bcrypt
 from datetime import datetime, timedelta
 from flask import jsonify, session, current_app, redirect, url_for
@@ -17,7 +18,7 @@ def generate_otp():
     return ''.join(random.choices(string.digits, k=6))
 
 def register_send_otp(data):
-    # <<< BẮT ĐẦU KHỐI CODE THÊM MỚI: Xác thực reCAPTCHA >>>
+
     recaptcha_token = data.get('g-recaptcha-response')
     if not recaptcha_token:
         return jsonify({"error": "Vui lòng xác thực CAPTCHA."}), 400
@@ -37,8 +38,11 @@ def register_send_otp(data):
     except requests.exceptions.RequestException as e:
         print(f"Lỗi khi gọi reCAPTCHA API: {e}")
         return jsonify({"error": "Không thể xác thực CAPTCHA vào lúc này."}), 500
-    # <<< KẾT THÚC KHỐI CODE THÊM MỚI >>>
-
+    phone_number = data.get('user_phone_num', '').strip()
+    if phone_number: 
+        vietnamese_phone_pattern = r'^0(9[0-9]|8[1-9]|7[0|6|7|8|9]|5[2|6|8|9]|3[2-9])\d{7}$'
+        if not re.match(vietnamese_phone_pattern, phone_number):
+            return jsonify({"error": "Số điện thoại không đúng định dạng của Việt Nam."}), 400
 
     required_fields = ['user_name', 'user_email', 'user_password', 'user_role']
     if not all(data.get(f) for f in required_fields):

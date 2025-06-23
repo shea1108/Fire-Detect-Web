@@ -1,17 +1,17 @@
 # controller/user_controller.py
 from datetime import datetime, timedelta
-# <<< THÊM MỚI: Các import cần thiết từ Flask và thư viện chuẩn >>>
+
 from flask import request, jsonify, session, current_app, render_template, redirect, url_for, flash
 from backend.Models.users_model import User
 from backend.extensions import db, bcrypt
 from backend.utils.token_utils import verify_reset_token
 import os
 from zoneinfo import ZoneInfo 
-import random # Thêm thư viện random để tạo OTP
-from backend.Controllers.mail_controller import send_email # Giả định bạn có hàm này
+import random 
+from backend.Controllers.mail_controller import send_email 
 import requests
+import re
 
-# --- CẤU HÌNH VÀ HÀM HỖ TRỢ (GIỮ NGUYÊN) ---
 UPLOAD_FOLDER = 'frontend/static/image/user'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
@@ -24,6 +24,7 @@ def edit_user_profile():
 
     user_id = session['user_id']
     user = User.query.get(user_id)
+    user_phone_num = request.form.get('user_phone_num', '').strip()
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
@@ -32,7 +33,14 @@ def edit_user_profile():
     new_phone = data.get('user_phone_num')
     new_email = data.get('user_email').strip() if data.get('user_email') else None
 
-    # <<< THAY ĐỔI: Tích hợp luồng gửi OTP khi đổi email >>>
+
+    if user_phone_num:
+        vietnamese_phone_pattern = r'^0(9[0-9]|8[1-9]|7[0|6|7|8|9]|5[2|6|8|9]|3[2-9])\d{7}$'
+        if not re.match(vietnamese_phone_pattern, user_phone_num):
+            # Trả về lỗi nếu SĐT không hợp lệ
+            return jsonify({"error": "Số điện thoại không đúng định dạng của Việt Nam."}), 400
+        
+        
     if new_email and new_email.lower() != user.user_email.lower():
         existing_email = User.query.filter(User.user_email == new_email, User.user_id != user_id).first()
         if existing_email:
@@ -70,7 +78,6 @@ def edit_user_profile():
             """
             send_email(subject, html_body, new_email)
 
-            # Trả về URL của trang xác thực để JavaScript chuyển hướng
             return jsonify({'redirect': url_for('web.render_profile_verify_page')}), 200
 
         except Exception as e:
@@ -79,8 +86,9 @@ def edit_user_profile():
 
     # --- Cập nhật các thông tin khác (nếu không đổi email) ---
     if new_phone:
-        if not new_phone.isdigit() or len(new_phone) != 10:
-            return jsonify({'error': 'Số điện thoại phải gồm 10 chữ số'}), 400
+        # <<< ĐÃ XÓA: Dòng kiểm tra SĐT thừa và không chính xác ở đây. >>>
+        # Việc kiểm tra định dạng đã được thực hiện ở đầu hàm.
+        
         existing_phone = User.query.filter(User.user_phone_num == new_phone, User.user_id != user_id).first()
         if existing_phone:
             return jsonify({'error': 'Số điện thoại đã được đăng ký'}), 400
@@ -93,13 +101,19 @@ def edit_user_profile():
         file = request.files['avatar']
         if file and allowed_file(file.filename):
             ext = file.filename.rsplit('.', 1)[1].lower()
-            filename = f"{user_id}_avatar.{ext}"
+            # Thêm timestamp vào tên file để tránh lỗi cache của trình duyệt
+            filename = f"{user_id}_avatar_{int(datetime.now().timestamp())}.{ext}"
             filepath = os.path.join(UPLOAD_FOLDER, filename)
             os.makedirs(UPLOAD_FOLDER, exist_ok=True)
             if user.user_avatar:
-                old_path = os.path.join('frontend', user.user_avatar.lstrip('/'))
-                if os.path.exists(old_path) and os.path.basename(old_path) != filename:
-                    os.remove(old_path)
+                # Xóa avatar cũ nếu nó không phải là link từ Google
+                if 'googleusercontent' not in user.user_avatar:
+                    old_path = os.path.join('frontend', user.user_avatar.lstrip('/'))
+                    if os.path.exists(old_path):
+                        try:
+                            os.remove(old_path)
+                        except OSError as e:
+                            print(f"Lỗi khi xóa avatar cũ: {e}")
             file.save(filepath)
             user.user_avatar = f"/static/image/user/{filename}"
 
@@ -115,8 +129,9 @@ def edit_user_profile():
         db.session.rollback()
         print(f"[ERROR] Lỗi khi cập nhật profile: {e}")
         return jsonify({'error': 'Lỗi hệ thống'}), 500
+    
 
-# <<< HÀM MỚI: Dùng để hiển thị trang nhập OTP khi đổi email >>>
+
 def render_verify_page():
     if 'user_id' not in session or 'new_email_pending' not in session:
         flash('Phiên làm việc không hợp lệ. Vui lòng thử lại từ trang thông tin tài khoản.', 'warning')

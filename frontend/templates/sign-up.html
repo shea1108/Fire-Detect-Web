@@ -264,15 +264,16 @@
                         return;
                     }
 
-                    if (!/^\d{10}$/.test(phone)) {
-                        state.isPhoneOk = false;
-                        updateInputFeedback(
-                            phoneInput,
-                            false,
-                            'Số điện thoại phải có 10 chữ số.'
-                        );
-                        return;
-                    }
+                const vietnamesePhonePattern = /^0(9[0-9]|8[1-9]|7[0|6|7|8|9]|5[2|6|8|9]|3[2-9])\d{7}$/;
+                            if (!vietnamesePhonePattern.test(phone)) {
+                                state.isPhoneOk = false;
+                                updateInputFeedback(
+                                    phoneInput,
+                                    false,
+                                    'Số điện thoại không đúng định dạng của Việt Nam.'
+                                );
+                                return;
+                            }
 
                     try {
                         const res = await fetch(
