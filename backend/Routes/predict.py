@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from PIL import Image
 import io
 import base64
-
+from backend.Controllers.detect_controller import handle_detect_preview
 
 from backend.utils.models_manager import model_manager
 
@@ -11,41 +11,29 @@ bp = Blueprint('predict', __name__, url_prefix='/api/predict')
 
 @bp.route('/detect_image', methods=['POST'])
 def detect_image_with_model():
-    """
-    Dự đoán từ file ảnh và model do người dùng chọn.
-    """
     if 'file' not in request.files:
         return jsonify({'error': 'Không có tệp ảnh trong yêu cầu'}), 400
 
     file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'Chưa chọn tệp ảnh'}), 400
-
     model_id = request.form.get('model_id')
-    if not model_id:
-        return jsonify({'error': 'Thiếu model_id'}), 400
-
-    current_model = model_manager.get_model(model_id)
-    if not current_model:
-        return jsonify({'error': f'Model ID {model_id} không hợp lệ'}), 400
+    if not model_id or file.filename == '':
+        return jsonify({'error': 'Thiếu model_id hoặc ảnh'}), 400
 
     try:
-        image = Image.open(file.stream).convert('RGB')
-        results = current_model(image, conf=0.25, iou=0.45, verbose=False)
+        image_bytes = file.read()
+        encoded_image = base64.b64encode(image_bytes).decode('utf-8')
+        image_b64 = f"data:image/jpeg;base64,{encoded_image}"
 
-        detections = []
-        for result in results:
-            for box in result.boxes.data.tolist():
-                if len(box) >= 6:
-                    x1, y1, x2, y2, score, cls = box
-                    detections.append({
-                        'bbox': [x1, y1, x2, y2],
-                        'confidence': float(score),
-                        'class_id': int(cls),
-                        'label': current_model.names.get(int(cls), 'unknown')
-                    })
+        payload = {
+            "image": image_b64,
+            "model_id": model_id
+        }
 
-        return jsonify({'model_used': model_id, 'detections': detections})
+        success, result = handle_detect_preview(payload)
+        if not success:
+            return jsonify({'error': result}), 500
+        return jsonify(result)
+
     except Exception as e:
         return jsonify({'error': f'Lỗi xử lý ảnh: {str(e)}'}), 500
 

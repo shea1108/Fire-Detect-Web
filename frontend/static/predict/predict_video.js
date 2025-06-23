@@ -14,22 +14,33 @@ let scaleX = 1,
     scaleY = 1;
 
 // 🧠 Load models từ API
-fetch('/api/models/get_all')
+fetch('/api/auth/me')
     .then((res) => res.json())
-    .then((data) => {
-        if (data.models) {
-            data.models.forEach((model) => {
-                const opt = document.createElement('option');
-                opt.value = model.model_id;
-                opt.textContent = model.model_name;
-                modelSelect.appendChild(opt);
-            });
+    .then((user) => {
+        const currentUserId = user.user_id || null;
 
-            const hasDefault = data.models.some((m) => m.model_id == 1);
-            if (hasDefault) modelSelect.value = '1';
-        }
+        return fetch('/api/models/get_all')
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.models && data.models.length > 0) {
+                    const modelsToShow =
+                        currentUserId === null ? [data.models[0]] : data.models;
+
+                    modelSelect.innerHTML = '';
+                    modelsToShow.forEach((m) => {
+                        const opt = document.createElement('option');
+                        opt.value = m.model_id;
+                        opt.textContent = m.model_name;
+                        modelSelect.appendChild(opt);
+                    });
+
+                    modelSelect.value = modelsToShow[0].model_id;
+                }
+            });
     })
-    .catch((err) => console.error('Không load được danh sách mô hình:', err));
+    .catch((err) => {
+        console.error('Không load được mô hình:', err);
+    });
 
 function updateCanvasSize() {
     const rect = previewVideo.getBoundingClientRect();
