@@ -452,7 +452,8 @@
                         };
                         reader.readAsDataURL(blob);
                     }, 'image/jpeg');
-                }, 1000);
+                    // Đã điều chỉnh từ 200ms → 1000ms để giảm tần suất gửi frame (1 FPS), giúp giảm tải server và tránh trùng log
+                }, 200);
             }
 
             function stopDetection() {

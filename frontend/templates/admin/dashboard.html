@@ -1,0 +1,505 @@
+<!-- @format -->
+
+{% extends "admin/layout.html" %} {% block title %}Dashboard{% endblock %} {%
+block extra_css %}
+<style>
+    .stats-icon {
+        font-size: 24px;
+        color: #4a4a4a;
+        margin-right: 8px;
+        display: flex;
+        align-items: center;
+    }
+
+    .stats-number {
+        font-size: 26px;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    .d-flex.align-items-baseline.mb-2 {
+        gap: 8px;
+    }
+
+    .card-body {
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+</style>
+
+{% endblock%} {% block content %}
+<!-- Start Content-->
+<div class="container-xxl">
+    <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
+        <div class="flex-grow-1">
+            <h4 class="fs-18 fw-semibold m-0">Bảng điều kiển</h4>
+        </div>
+    </div>
+
+    <!-- start row -->
+    <div class="row">
+        <div class="col-md-12 col-xl-12">
+            <div class="row g-3">
+                <div class="col-md-6 col-xl-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="fs-14 mb-1">Tổng số Người dùng</div>
+                            </div>
+
+                            <div class="d-flex align-items-baseline mb-2">
+                                <i data-feather="user" class="stats-icon"></i>
+                                <div id="total-users" class="stats-number">
+                                    --
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="fs-14 mb-1">Tổng số Mô hình</div>
+                            </div>
+
+                            <div class="d-flex align-items-baseline mb-2">
+                                <i
+                                    data-feather="package"
+                                    class="stats-icon"
+                                ></i>
+                                <div id="total-models" class="stats-number">
+                                    --
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="fs-14 mb-1">Tổng số Log</div>
+                            </div>
+
+                            <div class="d-flex align-items-baseline mb-2">
+                                <i
+                                    data-feather="package"
+                                    class="stats-icon"
+                                ></i>
+
+                                <div id="total-logs" class="stats-number">
+                                    --
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="fs-14 mb-1">Tổng số Thông báo</div>
+                            </div>
+
+                            <div class="d-flex align-items-baseline mb-2">
+                                <i data-feather="bell" class="stats-icon"></i>
+
+                                <div id="total-notis" class="stats-number">
+                                    --
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end sales -->
+    </div>
+    <!-- end row -->
+
+    <!-- Start Monthly Sales -->
+    <div class="row">
+        <div class="col-md-6 col-xl-6">
+            <div class="card">
+                <div class="card-header">
+                    <div
+                        class="d-flex justify-content-between align-items-center flex-wrap"
+                    >
+                        <div class="d-flex align-items-center">
+                            <div
+                                class="border border-dark rounded-2 me-2 widget-icons-sections"
+                            >
+                                <i
+                                    data-feather="bar-chart"
+                                    class="widgets-icons"
+                                ></i>
+                            </div>
+                            <h5 class="card-title mb-0">Thống kê nhật ký</h5>
+                        </div>
+
+                        <div class="btn-group dropup mt-2 mt-sm-0">
+                            <button
+                                class="btn btn-outline-primary btn-sm dropdown-toggle"
+                                type="button"
+                                id="rangeDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
+                                7 Ngày <i class="mdi mdi-chevron-up"></i>
+                            </button>
+                            <ul
+                                class="dropdown-menu dropdown-menu-end"
+                                aria-labelledby="rangeDropdown"
+                            >
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-range="1d"
+                                        >1 Ngày</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-range="3d"
+                                        >3 Ngày</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-range="7d"
+                                        >7 Ngày</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-range="1m"
+                                        >1 Tháng</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-range="3m"
+                                        >3 Tháng</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-range="6m"
+                                        >6 Tháng</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-range="1y"
+                                        >1 Năm</a
+                                    >
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div id="monthly-sales" class="apex-charts"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-6">
+            <div class="card">
+                <div class="card-header">
+                    <div
+                        class="d-flex justify-content-between align-items-center flex-wrap"
+                    >
+                        <div class="d-flex align-items-center">
+                            <div
+                                class="border border-dark rounded-2 me-2 widget-icons-sections"
+                            >
+                                <i
+                                    data-feather="bell"
+                                    class="widgets-icons"
+                                ></i>
+                            </div>
+                            <h5 class="card-title mb-0">Thống kê thông báo</h5>
+                        </div>
+                        <div class="btn-group dropup mt-2 mt-sm-0">
+                            <button
+                                class="btn btn-outline-primary btn-sm dropdown-toggle"
+                                type="button"
+                                id="notiRangeDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
+                                7 Ngày <i class="mdi mdi-chevron-up"></i>
+                            </button>
+                            <ul
+                                class="dropdown-menu dropdown-menu-end"
+                                aria-labelledby="notiRangeDropdown"
+                            >
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-noti-range="1d"
+                                        >1 Ngày</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-noti-range="3d"
+                                        >3 Ngày</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-noti-range="7d"
+                                        >7 Ngày</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-noti-range="1m"
+                                        >1 Tháng</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-noti-range="3m"
+                                        >3 Tháng</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-noti-range="6m"
+                                        >6 Tháng</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-noti-range="1y"
+                                        >1 Năm</a
+                                    >
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="notifications-chart" class="apex-charts"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- End Monthly Sales -->
+</div>
+<!-- container-fluid -->
+{% endblock %} {% block extra_js %} {% include
+"admin/partials/scripts_apexcharts.html" %}
+<!-- <script src="/static/admin/assets/js/pages/analytics-dashboard.init.js"></script> -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const res = await fetch('/api/admin/stats/overview');
+            const json = await res.json();
+
+            if (json.success && json.data) {
+                document.getElementById('total-users').textContent =
+                    json.data.users;
+                document.getElementById('total-models').textContent =
+                    json.data.models;
+                document.getElementById('total-logs').textContent =
+                    json.data.logs;
+                document.getElementById('total-notis').textContent =
+                    json.data.notifications;
+            }
+        } catch (error) {
+            console.error('Lỗi khi tải thống kê:', error);
+        }
+    });
+</script>
+<script>
+    let logChart;
+
+    async function loadLogChart(range = '7d') {
+        try {
+            const res = await fetch(
+                `/api/admin/stats/logs-by-date?range=${range}`
+            );
+            const json = await res.json();
+
+            if (json.success) {
+                const labels = json.data.map((d) => d.date);
+                const values = json.data.map((d) => d.count);
+
+                const options = {
+                    chart: { type: 'bar', height: 300, id: 'logsChart' },
+                    series: [{ name: 'Logs', data: values }],
+                    xaxis: {
+                        categories: labels,
+                        labels: { rotate: -45, style: { fontSize: '12px' } },
+                    },
+                    plotOptions: {
+                        bar: {
+                            columnWidth: '50%',
+                            dataLabels: { position: 'top' },
+                        },
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        formatter: (val) => val,
+                        offsetY: -30,
+                        style: {
+                            fontSize: '20px', // ← to hơn
+                            fontWeight: 600,
+                            colors: ['#1a1a1a'], // màu đậm dễ đọc
+                        },
+                    },
+                    colors: ['#537AEF'],
+                    tooltip: { theme: 'light' },
+                    grid: { strokeDashArray: 4 },
+                };
+
+                if (!logChart) {
+                    logChart = new ApexCharts(
+                        document.querySelector('#monthly-sales'),
+                        options
+                    );
+                    logChart.render();
+                } else {
+                    logChart.updateOptions(options, true, true);
+                }
+            }
+        } catch (err) {
+            console.error('Lỗi tải biểu đồ logs:', err);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadLogChart('7d');
+
+        document
+            .querySelectorAll('.dropdown-item[data-range]')
+            .forEach((item) => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const range = item.dataset.range;
+                    const label = item.textContent.trim();
+
+                    loadLogChart(range);
+
+                    // Cập nhật lại nội dung nút dropdown (giữ icon)
+                    document.getElementById(
+                        'rangeDropdown'
+                    ).innerHTML = `${label} <i class="mdi mdi-chevron-up"></i>`;
+                });
+            });
+    });
+</script>
+<script>
+    let notiChart;
+
+    async function loadNotificationChart(range = '7d') {
+        try {
+            const res = await fetch(
+                `/api/admin/stats/notifications-by-date?range=${range}`
+            );
+            const json = await res.json();
+
+            if (json.success) {
+                const labels = json.data.map((d) => d.date);
+                const values = json.data.map((d) => d.count);
+
+                const options = {
+                    chart: { type: 'bar', height: 300, id: 'notisChart' },
+                    series: [{ name: 'Notifications', data: values }],
+                    xaxis: {
+                        categories: labels,
+                        labels: { rotate: -45, style: { fontSize: '12px' } },
+                    },
+                    plotOptions: {
+                        bar: {
+                            columnWidth: '50%',
+                            dataLabels: { position: 'top' },
+                        },
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        formatter: (val) => val,
+                        offsetY: -30,
+                        style: {
+                            fontSize: '20px',
+                            fontWeight: 600,
+                            colors: ['#1a1a1a'],
+                        },
+                    },
+                    colors: ['#ec7f6d'],
+                    tooltip: { theme: 'light' },
+                    grid: { strokeDashArray: 4 },
+                };
+
+                if (!notiChart) {
+                    notiChart = new ApexCharts(
+                        document.querySelector('#notifications-chart'),
+                        options
+                    );
+                    notiChart.render();
+                } else {
+                    notiChart.updateOptions(options, true, true);
+                }
+            }
+        } catch (err) {
+            console.error('Lỗi tải biểu đồ thông báo:', err);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadNotificationChart('7d');
+
+        document.querySelectorAll('[data-noti-range]').forEach((item) => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const range = item.dataset.notiRange;
+                const label = item.textContent.trim();
+                loadNotificationChart(range);
+                document.getElementById(
+                    'notiRangeDropdown'
+                ).innerHTML = `${label} <i class="mdi mdi-chevron-up"></i>`;
+            });
+        });
+    });
+</script>
+
+{% endblock %}

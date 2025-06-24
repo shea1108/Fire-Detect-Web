@@ -19,14 +19,14 @@ def inject_user_from_session():
     )
 
 ########### DASHBOARD ###########
-# @bp.route('/')
-# @admin_required
-# def dashboard():
-#     return render_template('admin/index.html')
+@bp.route('/')
+@bp.route('/dashboard')
+@admin_required
+def dashboard():
+    return render_template('admin/dashboard.html')
 
 
 ########### USER MANAGER ###########
-@bp.route('/')
 @bp.route('/users')
 @admin_required
 def user_list():
@@ -184,10 +184,10 @@ def edit_permissions_page(permission_id):
 
 ############ ROLES-PERMISSIONS ROUTES ############
 
-@bp.route("/roles-permissions/get-list", methods=["GET"])
+@bp.route("/role-perm/assign", methods=["GET"])
 @admin_required
 def models_roles_permissions_page():
-    return render_template("admin/admin_rolespermissions.html")
+    return render_template("admin/admin_assign_permissions.html")
 
 
 ############ FALLBACK ROUTE ############

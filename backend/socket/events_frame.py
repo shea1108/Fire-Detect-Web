@@ -10,7 +10,6 @@ from flask import request
 from flask_socketio import emit
 
 from backend.Models.devices_model import Device
-from backend.Controllers.log_controller import handle_detect_from_api
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +28,8 @@ def register_frame_events(socketio, _perf_monitor):
 
     @socketio.on('frame')
     def handle_frame(data):
+        from backend.Controllers.log_controller import handle_detect_from_api
+
         try:
             overall_start = time.time()  # Bắt đầu đo
             parsed_data = json.loads(data) if isinstance(data, str) else data

@@ -9,12 +9,12 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 import os
 from dotenv import load_dotenv, dotenv_values
 from backend import create_app, socketio
-# import ssl
+import ssl
 import logging
 
-# context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-# context.load_cert_chain(certfile='certs/cert.pem', keyfile='certs/key.pem')
-# load_dotenv()  # Nạp biến môi trường từ file .env
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+context.load_cert_chain(certfile='certs/cert.pem', keyfile='certs/key.pem')
+load_dotenv()  # Nạp biến môi trường từ file .env
 # Ẩn lỗi do client ngắt video sớm
 logging.getLogger("eventlet.wsgi.server").setLevel(logging.ERROR)
 
@@ -23,7 +23,9 @@ app = create_app()
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, use_reloader=True, host='127.0.0.1', port=5000)
-    # socketio.run(app, debug=True, use_reloader=True, host='192.168.10.15', port=5000, ssl_context=context)
+   
+
+    # socketio.run(app, debug=True, use_reloader=True, host='192.168.10.11', port=5000, ssl_context=context)
     
 
 
