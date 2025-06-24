@@ -223,13 +223,13 @@
                         return;
                     }
 
-                    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    const emailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
                     if (!emailPattern.test(email)) {
                         state.isEmailOk = false;
                         updateInputFeedback(
                             emailInput,
                             false,
-                            'Email không hợp lệ.'
+                            'Chỉ chấp nhận email @gmail.com'
                         );
                         return;
                     }
@@ -264,16 +264,17 @@
                         return;
                     }
 
-                const vietnamesePhonePattern = /^0(9[0-9]|8[1-9]|7[0|6|7|8|9]|5[2|6|8|9]|3[2-9])\d{7}$/;
-                            if (!vietnamesePhonePattern.test(phone)) {
-                                state.isPhoneOk = false;
-                                updateInputFeedback(
-                                    phoneInput,
-                                    false,
-                                    'Số điện thoại không đúng định dạng của Việt Nam.'
-                                );
-                                return;
-                            }
+                    const vietnamesePhonePattern =
+                        /^0(9[0-9]|8[1-9]|7[0|6|7|8|9]|5[2|6|8|9]|3[2-9])\d{7}$/;
+                    if (!vietnamesePhonePattern.test(phone)) {
+                        state.isPhoneOk = false;
+                        updateInputFeedback(
+                            phoneInput,
+                            false,
+                            'Số điện thoại không đúng định dạng của Việt Nam.'
+                        );
+                        return;
+                    }
 
                     try {
                         const res = await fetch(

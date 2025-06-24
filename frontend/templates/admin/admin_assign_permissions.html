@@ -1,0 +1,178 @@
+<!-- @format -->
+{% extends "admin/layout.html" %} {% block title %}Gán quyền cho Vai trò{%
+endblock %} {% block content %}
+<div class="container-xxl py-4">
+    <h4 class="mb-4">Gán quyền cho Vai trò</h4>
+
+    <div id="assign-permissions-area">
+        <div class="text-center my-4">
+            <div class="spinner-border" role="status"></div>
+        </div>
+    </div>
+
+    <div class="text-end mt-4">
+        <button class="btn btn-success d-none" id="savePermissionsBtn">
+            <i class="bi bi-save"></i> Lưu thay đổi
+        </button>
+    </div>
+</div>
+{% endblock %} {% block extra_css %}
+<style>
+    .table-wrapper {
+        max-height: 500px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+    }
+
+    table.sticky-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .sticky-table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #f8f9fa;
+    }
+
+    .perm-row:hover td {
+        background-color: #f5f5f5 !important;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .perm-header {
+        background-color: #f1f3f5;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    td input[type='checkbox'] {
+        transform: scale(1.15);
+        cursor: pointer;
+    }
+</style>
+{% endblock %} {% block extra_js %}
+<script>
+    async function fetchJSON(url) {
+        const res = await fetch(url);
+        const data = await res.json();
+        return data.data;
+    }
+
+    async function loadPermissionsMatrix() {
+        const [roles, permissions] = await Promise.all([
+            fetchJSON('/api/admin/rbac/roles/get-all'),
+            fetchJSON('/api/admin/rbac/permissions/get-all'),
+        ]);
+
+        const rolePermissionsMap = {};
+        await Promise.all(
+            roles.map(async (role) => {
+                const res = await fetch(
+                    `/api/admin/rbac/roles/${role.id}/permissions`
+                );
+                const data = await res.json();
+                rolePermissionsMap[role.id] = data.data || [];
+            })
+        );
+
+        const groupedPerms = {};
+        permissions.forEach((perm) => {
+            const [resource, action] = perm.name.split('.');
+            if (!groupedPerms[resource]) groupedPerms[resource] = [];
+            groupedPerms[resource].push({ ...perm, action });
+        });
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-wrapper';
+
+        const table = document.createElement('table');
+        table.className =
+            'table table-bordered align-middle text-center sticky-table';
+
+        const thead = document.createElement('thead');
+        thead.innerHTML = `<tr class="table-light">
+            <th class="text-start">Quyền / Vai trò</th>
+            ${roles.map((r) => `<th>${r.name}</th>`).join('')}
+        </tr>`;
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        for (const [resource, perms] of Object.entries(groupedPerms)) {
+            const headerRow = document.createElement('tr');
+            headerRow.innerHTML = `<td colspan="${
+                roles.length + 1
+            }" class="perm-header">${resource}</td>`;
+            tbody.appendChild(headerRow);
+
+            perms.forEach((perm) => {
+                const row = document.createElement('tr');
+                row.classList.add('perm-row');
+                row.innerHTML =
+                    `<td class="text-start">
+                        <strong>${perm.action}</strong><br>
+                        <small class="text-muted">${perm.desc}</small>
+                    </td>` +
+                    roles
+                        .map((role) => {
+                            const checked = rolePermissionsMap[
+                                role.id
+                            ].includes(perm.id)
+                                ? 'checked'
+                                : '';
+                            return `<td><input type="checkbox" data-role="${role.id}" value="${perm.id}" ${checked}></td>`;
+                        })
+                        .join('');
+                tbody.appendChild(row);
+            });
+        }
+
+        table.appendChild(tbody);
+        wrapper.appendChild(table);
+
+        const area = document.getElementById('assign-permissions-area');
+        area.innerHTML = '';
+        area.appendChild(wrapper);
+
+        document
+            .getElementById('savePermissionsBtn')
+            .classList.remove('d-none');
+    }
+
+    document
+        .getElementById('savePermissionsBtn')
+        .addEventListener('click', async () => {
+            const checkboxes = document.querySelectorAll(
+                'input[type=checkbox]'
+            );
+            const payloads = {};
+
+            checkboxes.forEach((cb) => {
+                const roleId = cb.dataset.role;
+                const permId = parseInt(cb.value);
+                if (!payloads[roleId]) payloads[roleId] = [];
+                if (cb.checked) payloads[roleId].push(permId);
+            });
+
+            const updates = Object.entries(payloads).map(([roleId, permIds]) =>
+                fetch(`/api/admin/rbac/roles/${roleId}/permissions`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ perm_ids: permIds }),
+                })
+            );
+
+            try {
+                await Promise.all(updates);
+                alert('Đã lưu phân quyền thành công!');
+                location.reload();
+            } catch (err) {
+                alert('Lỗi khi lưu phân quyền.');
+                console.error(err);
+            }
+        });
+
+    loadPermissionsMatrix();
+</script>
+{% endblock %}

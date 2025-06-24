@@ -19,6 +19,7 @@ def home():
     return render_template('index.html', user=user)
 
 
+
 @bp.route('/about')
 @bp.route('/about.html')     
 def about():
@@ -50,7 +51,7 @@ def sign_up():
     if 'user_id' in session:
         return redirect(url_for('web.home')) 
     recaptcha_site_key = os.getenv('RECAPTCHA_SITE_KEY')
-    return render_template('sign-up.html', recaptcha_site_key=recaptcha_site_key)
+    return render_template('sign-up.html',recaptcha_site_key=current_app.config['RECAPTCHA_SITE_KEY'])
 
 
 

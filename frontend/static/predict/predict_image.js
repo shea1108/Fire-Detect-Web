@@ -9,25 +9,39 @@ const modelSelect = document.getElementById('modelSelect');
 let selectedFile = null;
 
 // Load danh sách mô hình từ backend
-fetch('/api/models/get_all')
+
+// Bước 1: Lấy user_id từ /api/auth/me
+fetch('/api/auth/me')
     .then((res) => res.json())
-    .then((data) => {
-        if (data.models && data.models.length > 0) {
-            data.models.forEach((m) => {
-                const opt = document.createElement('option');
-                opt.value = m.model_id;
-                opt.textContent = m.model_name;
-                modelSelect.appendChild(opt);
+    .then((user) => {
+        const currentUserId = user.user_id || null;
+
+        // Bước 2: Gọi /api/models/get_all như bình thường
+        return fetch('/api/models/get_all')
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.models && data.models.length > 0) {
+                    const modelsToShow =
+                        currentUserId === null
+                            ? [data.models[0]] // guest → chỉ hiện 1 model
+                            : data.models; // user → hiện tất cả
+
+                    modelSelect.innerHTML = ''; // clear options cũ
+
+                    modelsToShow.forEach((m) => {
+                        const opt = document.createElement('option');
+                        opt.value = m.model_id;
+                        opt.textContent = m.model_name;
+                        modelSelect.appendChild(opt);
+                    });
+
+                    // ✅ Gán mặc định model đầu tiên
+                    modelSelect.value = modelsToShow[0].model_id;
+                }
             });
-            // ✅ Chọn mặc định model ID = 1 nếu tồn tại
-            const hasDefaultModel = data.models.some((m) => m.model_id == 1);
-            if (hasDefaultModel) {
-                modelSelect.value = '1';
-            }
-        }
     })
     .catch((err) => {
-        console.error('Lỗi khi lấy danh sách mô hình:', err);
+        console.error('Lỗi khi lấy mô hình hoặc user:', err);
     });
 
 // Khi người dùng chọn ảnh
@@ -103,23 +117,45 @@ detectBtn.addEventListener('click', () => {
                 Swal.close(); // ✅ Đóng loading
 
                 if (data.detections && data.detections.length > 0) {
-                    uploadCtx.strokeStyle = 'blue';
-                    uploadCtx.lineWidth = 3;
-                    uploadCtx.font = '27px Arial';
-                    uploadCtx.fillStyle = 'blue';
-
                     data.detections.forEach((det) => {
                         const [x1, y1, x2, y2] = det.bbox;
                         const w = x2 - x1;
                         const h = y2 - y1;
 
+                        // 🚩 Vẽ bbox màu đỏ
+                        uploadCtx.strokeStyle = 'red';
+                        uploadCtx.lineWidth = 3;
                         uploadCtx.strokeRect(x1, y1, w, h);
-                        const confText =
-                            (det.confidence * 100).toFixed(1) + '%';
+
+                        // 🚩 Tính toán text % confidence
+                        const confText = `${(det.confidence * 100).toFixed(
+                            1
+                        )}%`;
+
+                        // 👉 Tính font size dựa trên chiều rộng bbox
+                        const fontSize = Math.max(14, Math.floor(w * 0.2)); // đảm bảo tối thiểu 24px
+                        // const fontSize = 32
+                        uploadCtx.font = `${fontSize}px Arial`;
+
+                        // 👉 Đo kích thước text
+                        const textWidth = uploadCtx.measureText(confText).width;
+                        const textHeight = fontSize;
+
+                        // 🚩 Vẽ nền đỏ
+                        uploadCtx.fillStyle = 'red';
+                        uploadCtx.fillRect(
+                            x1,
+                            y1,
+                            textWidth + 16,
+                            textHeight + 16
+                        );
+
+                        // 🚩 Vẽ chữ trắng nằm trên nền
+                        uploadCtx.fillStyle = 'white';
                         uploadCtx.fillText(
                             confText,
-                            x1,
-                            y1 > 20 ? y1 - 5 : y1 + 20
+                            x1 + 13,
+                            y1 + textHeight + 8
                         );
                     });
 
