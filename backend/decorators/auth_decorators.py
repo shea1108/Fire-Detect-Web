@@ -7,7 +7,7 @@ def admin_required(f):
     def decorated(*args, **kwargs):
         if 'user_id' not in session:
             return render_template('401.html'), 401
-        if 'admin' not in session.get('user_role', []):
+        if 'admin' not in session.get('user_roles', []):
             return render_template('403.html'), 403
         return f(*args, **kwargs)
     return decorated

@@ -5,6 +5,7 @@ import string
 import requests
 import re
 import bcrypt
+import logging
 from datetime import datetime, timedelta
 from flask import jsonify, session, current_app, redirect, url_for
 from authlib.integrations.base_client.errors import OAuthError
@@ -163,15 +164,23 @@ def login_user(data):
     session['user_email'] = user.user_email
     session['user_avatar'] = user.user_avatar
     session['user_phone_num'] = user.user_phone_num
-    session['user_role'] = [r.role_name for r in user.roles]
-    session['permissions'] = list(user.permissions)
+    
+    user_roles_list = [r.role_name for r in user.roles]
+    session['user_roles'] = user_roles_list
+    
+    permissions_set = {perm.perm_name for role in user.roles for perm in role.permissions}
+    session['permissions'] = list(permissions_set)
     session.permanent = True
+
+
+    redirect_url = url_for('web.home')
+    if 'admin' in user_roles_list:
+        redirect_url = url_for('admin_routes.dashboard')
 
     return jsonify({
         'message': 'Đăng nhập thành công',
-        'user_id': user.user_id,
-        'user_role': session['user_role'],
-        'permissions': session['permissions']
+        'user_role': user_roles_list,   # <--- Thêm dòng này
+        'redirect_url': url_for('admin_routes.dashboard') if 'admin' in user_roles_list else url_for('web.home')
     }), 200
 
 def handle_google_callback():

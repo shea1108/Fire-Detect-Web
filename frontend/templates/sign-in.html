@@ -180,8 +180,12 @@
                                 showConfirmButton: false,
                             });
 
-                            const isAdmin = data.user_role?.includes('admin'); // ✅ check đúng kiểu array
+                        if (data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                        } else {
+                            const isAdmin = data.user_role?.includes('admin');
                             window.location.href = isAdmin ? '/admin/' : '/';
+                        }
                         } else {
                             await Swal.fire({
                                 icon: 'error',

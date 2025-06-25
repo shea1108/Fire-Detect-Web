@@ -58,6 +58,16 @@
           <p>Dưới đây là danh sách các sự kiện phát hiện được ghi lại bởi hệ thống.</p>
         </div>
 
+        {% if 'admin' in user_roles or 'police' in user_roles %}
+        <div class="row mb-3">
+          <div class="col-12 text-end">
+            <button id="exportCsvBtn" class="btn btn-success">
+              <i class="bx bxs-file-export"></i> Xuất CSV
+            </button>
+          </div>
+        </div>
+        {% endif %}
+
         <div class="row">
           <div class="col-12">
             <div class="card shadow-sm border-0">
@@ -74,13 +84,13 @@
                     </tr>
                   </thead>
                   <tbody>
-                    </tbody>
+                  </tbody>
                 </table>
               </div>
             </div>
           </div>
         </div>
-        </div>
+      </div>
     </div>
     <div class="modal fade" id="logDetailModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
@@ -168,6 +178,12 @@
             handleViewClick(logId);
           }
         });
+
+        // Event listener for the export button
+        $('#exportCsvBtn').on('click', function() {
+          window.location.href = '/api/log/export-csv'; // This will trigger the download
+        });
+
       });
 
       // Hàm xử lý khi nhấn nút xem chi tiết

@@ -1,11 +1,11 @@
 # backend/Routes/log.py
 from flask import Blueprint, request, jsonify
-from backend.Controllers.log_controller import handle_detect_from_api
 from flask import Blueprint, render_template
 from backend.Controllers.log_controller import (
     handle_detect_from_api, 
     get_all_logs_for_datatable, 
-    get_log_details
+    get_log_details,
+    export_logs_to_csv
 )
 
 bp = Blueprint("log", __name__, url_prefix="/api/log")
@@ -49,3 +49,8 @@ def api_get_one_log(log_id):
     API endpoint để lấy chi tiết một log khi người dùng click vào nút "Xem".
     """
     return get_log_details(log_id)
+
+
+@bp.route('/export-csv', methods=['GET'])
+def export_csv():
+    return export_logs_to_csv()
