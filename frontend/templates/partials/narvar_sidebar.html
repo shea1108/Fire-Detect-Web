@@ -403,14 +403,13 @@
                                         Qua Video
                                     </a>
                                 </li>
+                                {% if session['user_id'] %}
                                 <li class="nav-item">
-                                    <a
-                                        href="detect-camera.html"
-                                        class="nav-link"
-                                    >
+                                    <a href="detect-camera.html" class="nav-link">
                                         Qua Camera
                                     </a>
                                 </li>
+                                {% endif %}
                             </ul>
                                 <li class="nav-item">
                                     <a href="/logs" class="nav-link">
