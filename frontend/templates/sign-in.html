@@ -213,6 +213,18 @@
                     icon.classList.toggle('bx-hide');
                 });
         </script>
+        {% if session.get('swal_message') %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: '{{ session["swal_message"]["icon"] }}',
+                    title: '{{ session["swal_message"]["title"] }}',
+                    text: '{{ session["swal_message"]["text"] }}',
+                    confirmButtonText: 'OK',
+                });
+            });
+        </script>
+        {% set _ = session.pop('swal_message') %} {% endif %}
 
         <!-- Footer Area -->
         {% include ('partials/footer.html') %}
