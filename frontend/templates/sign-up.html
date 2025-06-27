@@ -97,11 +97,10 @@
                                         id="floatingPhone"
                                         name="user_phone_num"
                                         placeholder="Ví dụ: 0912345678"
-                                        maxlength="9"
-                                        pattern="\d{9}"
+                                        maxlength="10"
+                                        pattern="\d{10}"
                                         inputmode="numeric"
                                         oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                        aria-describedby="vietnam-prefix"
                                         required
                                     />
                                 </div>
@@ -289,8 +288,8 @@
                         return;
                     }
 
-                    const vietnamesePhonePattern =
-                        /^0(9[0-9]|8[1-9]|7[0|6|7|8|9]|5[2|6|8|9]|3[2-9])\d{7}$/;
+                    const vietnamesePhonePattern = /^0\d{9}$/;
+
                     if (!vietnamesePhonePattern.test(phone)) {
                         state.isPhoneOk = false;
                         updateInputFeedback(

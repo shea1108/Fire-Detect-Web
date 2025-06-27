@@ -1,7 +1,6 @@
 # backend/Routes/log.py
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, Response
 from backend.Controllers.log_controller import handle_detect_from_api
-from flask import Blueprint, render_template
 from backend.Controllers.log_controller import (
     handle_detect_from_api, 
     get_all_logs_for_datatable, 
@@ -52,6 +51,19 @@ def api_get_one_log(log_id):
     return get_log_details(log_id)
 
 
-@bp.route('/export-csv', methods=['GET'])
-def export_csv():
-    return export_logs_to_csv()
+
+@bp.route("/export-csv", methods=['GET'])
+def export_logs_csv():
+    """
+    API endpoint để xuất toàn bộ log dưới dạng CSV.
+    """
+    try:
+        csv_data = export_logs_to_csv()
+        return Response(
+            csv_data,
+            mimetype="text/csv",
+            headers={"Content-Disposition": "attachment;filename=logs.csv"},
+        )
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+

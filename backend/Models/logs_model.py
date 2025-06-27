@@ -12,5 +12,6 @@ class Log(db.Model):
     log_image_path = db.Column(db.String(255), nullable=True)
     log_create_at = db.Column(db.DateTime, default=lambda: datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
     bboxes = db.relationship('LogBBox', backref='log', lazy=True, cascade="all, delete-orphan")
+    device = db.relationship('Device', backref='logs', lazy=True)
     def __repr__(self):
         return f'<Log {self.log_id}>'

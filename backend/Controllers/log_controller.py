@@ -24,6 +24,11 @@ from backend.services.fire_persistence_tracker import FirePersistenceTracker
 
 from backend.socket.common import perf_monitor  # Theo dõi FPS mô hình
 
+
+import csv
+from io import StringIO
+
+
 # Lưu thời gian log gần nhất theo thiết bị để giới hạn tốc độ ghi log (0.3s)
 last_log_times = {}
 
@@ -307,66 +312,37 @@ def get_log_details(log_id):
 
 
 
+
+
 def export_logs_to_csv():
-    try:
-        user_id = session.get('user_id')
-        user_roles = session.get('user_roles', [])
-        if not user_id:
-            return Response("Unauthorized", status=401)
+    logs = (
+        db.session.query(Log)
+        .order_by(Log.log_create_at.desc())
+        .all()
+    )
 
-        search_value = request.args.get('search', '').strip()
+    si = StringIO()
+    writer = csv.writer(si)
+    writer.writerow(["ID Log", "Device", "Model", "Confident", "Created At"])
 
+    for log in logs:
+        dev_name = log.device.dev_name if hasattr(log, "device") and log.device else "N/A"
+        model_name = log.model.model_name if hasattr(log, "model") and log.model else "N/A"
 
-        bbox_subquery = db.session.query(
-            LogBBox.log_id,
-            func.max(LogBBox.confidence).label('max_confidence')
-        ).group_by(LogBBox.log_id).subquery()
+        # Tính độ tin cậy trung bình từ các bounding box
+        bboxes = log.bboxes if log.bboxes else []
+        if bboxes:
+            avg_conf = sum([b.confidence for b in bboxes]) / len(bboxes)
+        else:
+            avg_conf = 0.0
 
-        base_query = db.session.query(
-            Log.log_id,
-            Device.dev_name,
-            Model.model_name,
-            Log.log_create_at,
-            bbox_subquery.c.max_confidence  
-        ).join(Device, Log.dev_id == Device.dev_id)\
-         .join(Model, Log.model_id == Model.model_id)\
-         .outerjoin(bbox_subquery, Log.log_id == bbox_subquery.c.log_id) 
+        writer.writerow([
+            log.log_id,
+            dev_name,
+            model_name,
+            f"{avg_conf:.2f}",
+            log.log_create_at.strftime("%Y-%m-%d %H:%M:%S") if log.log_create_at else "N/A",
+        ])
 
-        if 'admin' not in user_roles:
-            base_query = base_query.filter(Device.user_id == user_id)
+    return si.getvalue()
 
-        if search_value:
-            base_query = base_query.filter(or_(
-                Device.dev_name.ilike(f'%{search_value}%'),
-                Model.model_name.ilike(f'%{search_value}%')
-            ))
-
-        results = base_query.order_by(Log.log_create_at.desc()).all()
-
-        output = io.StringIO()
-        writer = csv.writer(output)
-
-        writer.writerow(['ID Log', 'Tên thiết bị', 'Tên mô hình', 'Ngày tạo', 'Độ tin cậy cao nhất (%)'])
-
-        for row in results:
-
-            confidence_percent = f"{(row.max_confidence * 100):.2f}" if row.max_confidence is not None else "N/A"
-            
-            writer.writerow([
-                row.log_id,
-                row.dev_name,
-                row.model_name,
-                row.log_create_at.strftime('%Y-%m-%d %H:%M:%S'),
-                confidence_percent
-            ])
-        csv_data = output.getvalue().encode('utf-8-sig')
-
-        return Response(
-            csv_data,
-            mimetype="text/csv",
-            headers={"Content-Disposition": "attachment;filename=fire_logs_export.csv"}
-        )
-        
-    except Exception as e:
-        logging.error(f"Lỗi khi xuất CSV: {e}", exc_info=True)
-        return Response("Lỗi server khi tạo file CSV", status=500)
