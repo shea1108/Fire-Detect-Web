@@ -8,14 +8,14 @@ import logging
 import threading
 from PIL import Image, ImageDraw, ImageFont
 
-from flask import current_app, jsonify, request, session, has_request_context
+from flask import current_app, jsonify, request, session, has_request_context, Response
 from sqlalchemy import or_
 from sqlalchemy.sql import func
 from backend.Models.devices_model import Device
 from backend.Models.models_model import Model
 from backend.Models.users_model import User
 from backend.extensions import socketio
-
+import csv
 from backend.Models import db, Log
 from backend.Models.log_bboxes_model import LogBBox
 from backend.utils.models_manager import model_manager
@@ -304,3 +304,69 @@ def get_log_details(log_id):
     except Exception as e:
         logging.error(f"Lỗi khi lấy chi tiết log_id={log_id}: {e}", exc_info=True)
         return jsonify({"success": False, "message": "Lỗi server"}), 500
+
+
+
+def export_logs_to_csv():
+    try:
+        user_id = session.get('user_id')
+        user_roles = session.get('user_roles', [])
+        if not user_id:
+            return Response("Unauthorized", status=401)
+
+        search_value = request.args.get('search', '').strip()
+
+
+        bbox_subquery = db.session.query(
+            LogBBox.log_id,
+            func.max(LogBBox.confidence).label('max_confidence')
+        ).group_by(LogBBox.log_id).subquery()
+
+        base_query = db.session.query(
+            Log.log_id,
+            Device.dev_name,
+            Model.model_name,
+            Log.log_create_at,
+            bbox_subquery.c.max_confidence  
+        ).join(Device, Log.dev_id == Device.dev_id)\
+         .join(Model, Log.model_id == Model.model_id)\
+         .outerjoin(bbox_subquery, Log.log_id == bbox_subquery.c.log_id) 
+
+        if 'admin' not in user_roles:
+            base_query = base_query.filter(Device.user_id == user_id)
+
+        if search_value:
+            base_query = base_query.filter(or_(
+                Device.dev_name.ilike(f'%{search_value}%'),
+                Model.model_name.ilike(f'%{search_value}%')
+            ))
+
+        results = base_query.order_by(Log.log_create_at.desc()).all()
+
+        output = io.StringIO()
+        writer = csv.writer(output)
+
+        writer.writerow(['ID Log', 'Tên thiết bị', 'Tên mô hình', 'Ngày tạo', 'Độ tin cậy cao nhất (%)'])
+
+        for row in results:
+
+            confidence_percent = f"{(row.max_confidence * 100):.2f}" if row.max_confidence is not None else "N/A"
+            
+            writer.writerow([
+                row.log_id,
+                row.dev_name,
+                row.model_name,
+                row.log_create_at.strftime('%Y-%m-%d %H:%M:%S'),
+                confidence_percent
+            ])
+        csv_data = output.getvalue().encode('utf-8-sig')
+
+        return Response(
+            csv_data,
+            mimetype="text/csv",
+            headers={"Content-Disposition": "attachment;filename=fire_logs_export.csv"}
+        )
+        
+    except Exception as e:
+        logging.error(f"Lỗi khi xuất CSV: {e}", exc_info=True)
+        return Response("Lỗi server khi tạo file CSV", status=500)
