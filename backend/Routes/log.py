@@ -51,6 +51,7 @@ def api_get_one_log(log_id):
     return get_log_details(log_id)
 
 
+
 @bp.route("/export-csv", methods=['GET'])
 def export_logs_csv():
     """
@@ -65,3 +66,4 @@ def export_logs_csv():
         )
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+

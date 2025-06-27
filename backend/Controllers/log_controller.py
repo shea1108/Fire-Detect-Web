@@ -8,14 +8,14 @@ import logging
 import threading
 from PIL import Image, ImageDraw, ImageFont
 
-from flask import current_app, jsonify, request, session, has_request_context
+from flask import current_app, jsonify, request, session, has_request_context, Response
 from sqlalchemy import or_
 from sqlalchemy.sql import func
 from backend.Models.devices_model import Device
 from backend.Models.models_model import Model
 from backend.Models.users_model import User
 from backend.extensions import socketio
-
+import csv
 from backend.Models import db, Log
 from backend.Models.log_bboxes_model import LogBBox
 from backend.utils.models_manager import model_manager
@@ -313,6 +313,7 @@ def get_log_details(log_id):
 
 
 
+
 def export_logs_to_csv():
     logs = (
         db.session.query(Log)
@@ -344,3 +345,4 @@ def export_logs_to_csv():
         ])
 
     return si.getvalue()
+
