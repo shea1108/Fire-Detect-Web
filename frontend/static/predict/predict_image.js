@@ -122,40 +122,54 @@ detectBtn.addEventListener('click', () => {
                         const w = x2 - x1;
                         const h = y2 - y1;
 
-                        // 🚩 Vẽ bbox màu đỏ
+                        // 🚩 Vẽ bbox
                         uploadCtx.strokeStyle = 'red';
                         uploadCtx.lineWidth = 3;
                         uploadCtx.strokeRect(x1, y1, w, h);
 
-                        // 🚩 Tính toán text % confidence
                         const confText = `${(det.confidence * 100).toFixed(
                             1
                         )}%`;
 
-                        // 👉 Tính font size dựa trên chiều rộng bbox
-                        const fontSize = Math.max(14, Math.floor(w * 0.2)); // đảm bảo tối thiểu 24px
-                        // const fontSize = 32
-                        uploadCtx.font = `${fontSize}px Arial`;
+                        // ✅ Tính kích thước tương đối ảnh
+                        const baseWidth = 800;
+                        const scaleFactor = uploadCanvas.width / baseWidth;
 
-                        // 👉 Đo kích thước text
-                        const textWidth = uploadCtx.measureText(confText).width;
-                        const textHeight = fontSize;
-
-                        // 🚩 Vẽ nền đỏ
-                        uploadCtx.fillStyle = 'red';
-                        uploadCtx.fillRect(
-                            x1,
-                            y1,
-                            textWidth + 16,
-                            textHeight + 16
+                        const boxWidth = Math.min(
+                            Math.max(60 * scaleFactor, 50),
+                            120
+                        );
+                        const boxHeight = Math.min(
+                            Math.max(28 * scaleFactor, 24),
+                            60
+                        );
+                        const fontSize = Math.min(
+                            Math.max(16 * scaleFactor, 14),
+                            32
                         );
 
-                        // 🚩 Vẽ chữ trắng nằm trên nền
+                        uploadCtx.font = `bold ${fontSize}px Arial`;
+                        uploadCtx.textBaseline = 'middle';
+                        uploadCtx.textAlign = 'center';
+
+                        // Nền đỏ
+                        uploadCtx.fillStyle = '#ff4b33';
+                        uploadCtx.fillRect(x1, y1, boxWidth, boxHeight);
+
+                        // Đổ bóng đen
+                        uploadCtx.fillStyle = 'black';
+                        uploadCtx.fillText(
+                            confText,
+                            x1 + boxWidth / 2 + 1,
+                            y1 + boxHeight / 2 + 1
+                        );
+
+                        // Chữ trắng trên cùng
                         uploadCtx.fillStyle = 'white';
                         uploadCtx.fillText(
                             confText,
-                            x1 + 13,
-                            y1 + textHeight + 8
+                            x1 + boxWidth / 2,
+                            y1 + boxHeight / 2
                         );
                     });
 

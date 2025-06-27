@@ -12,3 +12,11 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated
 
+def login_required_redirect(f):
+    """Redirect nếu chưa đăng nhập"""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if 'user_id' not in session:
+            return render_template('sign-in.html')
+        return f(*args, **kwargs)
+    return decorated

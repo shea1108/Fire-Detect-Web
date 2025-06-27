@@ -337,6 +337,16 @@
                         ><i class="bx bx-user me-2"></i>Thông tin cá nhân</a
                     >
                 </li>
+                
+
+                {% if session.user_role is defined and 'admin' in session.user_role %}
+                    <li class="nav-item">
+                    <a href="/admin" class="dropdown-item"
+                        ><i class="bx bx-shield me-2"></i>Tới trang admin</a
+                    >
+                </li>
+                {% endif %}
+
                 <li class="nav-item">
                     <a
                         href="/logout"
@@ -469,6 +479,14 @@
                                                 Thông tin cá nhân
                                             </a>
                                         </li>
+                                        
+                                        {% if session.user_role is defined and 'admin' in session.user_role %}
+                                        <li class="nav-item">
+                                            <a href="/admin" class="nav-link"
+                                                ><i class="bx bx-shield  me-2"></i>Tới trang admin</a
+                                            >
+                                        </li>
+                                        {% endif %}
                                         <li class="nav-item">
                                             <a
                                                 href="logout"

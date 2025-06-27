@@ -6,6 +6,8 @@ from backend.utils.auth_utils import login_required_redirect
 from backend.Models.users_model import User
 from backend.Controllers.user_controller import render_verify_page
 
+
+
 TEMPLATE_DIR= os.path.join(os.path.dirname(__file__), '../../frontend/templates')
 bp = Blueprint('web', __name__, template_folder=TEMPLATE_DIR)
 
@@ -82,6 +84,7 @@ def detect_image():
 
 @bp.route('/detect-video')
 @bp.route('/detect-video.html')
+@login_required_redirect
 def detect_video():
     return render_template('detect-video.html')
 
@@ -93,6 +96,7 @@ def detect_camera():
 
 @bp.route('/logs')
 @bp.route('/user_logs.html')
+@login_required_redirect
 def user_logs():
     user_id = session.get('user_id') 
     user_roles = session.get('user_roles', [])
