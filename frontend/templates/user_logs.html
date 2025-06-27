@@ -81,6 +81,13 @@
                         bởi hệ thống.
                     </p>
                 </div>
+                <div class="row mb-3">
+                <div class="col-12 text-end">
+                    <button id="exportCsvBtn" class="btn btn-success">
+                    <i class="bx bxs-file-export"></i> Xuất CSV
+                    </button>
+                </div>
+                </div>
 
                 <div class="row">
                     <div class="col-12">
@@ -229,7 +236,9 @@
                     }
                 );
             });
-
+            $('#exportCsvBtn').on('click', function() {
+            window.location.href = '/api/log/export-csv'; // This will trigger the download
+            });
             // Hàm xử lý khi nhấn nút xem chi tiết
             function handleViewClick(logId) {
                 const container = document.getElementById('log-detail-content');
