@@ -36,9 +36,7 @@ def create_notification(log_id: int):
         db.session.rollback()
         return None, f"Lỗi tạo notification: {e}"
 
-def send_email_notification(noti_id: int, recipient_email: str, user_name="Người dùng", origin_path=None, bbox_path=None):
-    # SỬA 1: Thêm origin_path=None, bbox_path=None vào chữ ký hàm
-    
+def send_email_notification(noti_id: int, recipient_email: str, user_name="Người dùng"):
     notification = Notification.query.get(noti_id)
     if not notification:
         return False, "Không tìm thấy thông báo"
@@ -49,17 +47,24 @@ def send_email_notification(noti_id: int, recipient_email: str, user_name="Ngư�
     timestamp = log.log_create_at.astimezone(ZoneInfo("Asia/Ho_Chi_Minh")).strftime('%H:%M:%S %d-%m-%Y')
     year = datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")).year
 
-    # SỬA 2: Sử dụng trực tiếp origin_path và bbox_path được truyền vào.
-    # Không cần tính toán lại đường dẫn nữa vì nó đã được cung cấp chính xác.
-    # Các đường dẫn này là đường dẫn vật lý đầy đủ, ví dụ: "frontend/static/log_images/..."
-    
+
+    # Đường dẫn ảnh vật lý
+    origin_path = log.log_image_path
+    bbox_path = origin_path.replace("_origin_", "_bbox_")
+
+
+    project_root = os.path.abspath(os.path.join(current_app.root_path, ".."))
+    origin_abs_path = os.path.join(project_root, origin_path)
+    bbox_abs_path = os.path.join(project_root, bbox_path)
+
+
+
     # ✅ Nếu thiếu 1 trong 2 ảnh thì KHÔNG gửi email
-    if not origin_path or not bbox_path or not os.path.exists(origin_path) or not os.path.exists(bbox_path):
-        print(f"⚠️ Không gửi email vì thiếu file ảnh hoặc đường dẫn không tồn tại.")
-        print(f"   -> Đang tìm kiếm tại: {origin_path} và {bbox_path}")
+    if not os.path.exists(origin_abs_path) or not os.path.exists(bbox_abs_path):
+        print(f"⚠️ Không gửi email vì thiếu file ảnh: origin={os.path.exists(origin_abs_path)}, bbox={os.path.exists(bbox_abs_path)}")
         return False, "Thiếu ảnh đính kèm, không gửi email"
 
-    # Tiêu đề và nội dung HTML (GIỮ NGUYÊN NHƯ CŨ)
+    # Tiêu đề và nội dung HTML
     subject = f"[🔥 Fire Alert] Thiết bị {device_name} phát hiện cháy"
     html_body = f"""
         <table style="width:100%; max-width:600px; margin:0 auto; font-family:Arial,sans-serif; background:#fff; padding:20px; border-radius:8px; border:1px solid #eee;">
@@ -95,8 +100,7 @@ def send_email_notification(noti_id: int, recipient_email: str, user_name="Ngư�
     try:
         msg = Message(subject=subject, recipients=[recipient_email], html=html_body)
 
-        # SỬA 3: Đổi tên biến để khớp với logic đính kèm file của bạn
-        for abs_path in [origin_path, bbox_path]:
+        for abs_path in [origin_abs_path, bbox_abs_path]:
             with open(abs_path, 'rb') as f:
                 filename = os.path.basename(abs_path)
                 msg.attach(filename, "image/jpeg", f.read())
@@ -107,4 +111,4 @@ def send_email_notification(noti_id: int, recipient_email: str, user_name="Ngư�
 
     except Exception as e:
         print(f"❌ Lỗi gửi email: {e}")
-        return False, f"Lỗi gửi email: {str(e)}"
+        return False, f"Lỗi gửi email: {e}"
