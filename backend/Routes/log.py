@@ -1,4 +1,5 @@
 # backend/Routes/log.py
+from datetime import datetime
 from flask import Blueprint, request, jsonify, Response
 from backend.Controllers.log_controller import handle_detect_from_api
 from backend.Controllers.log_controller import (
@@ -54,16 +55,13 @@ def api_get_one_log(log_id):
 
 @bp.route("/export-csv", methods=['GET'])
 def export_logs_csv():
-    """
-    API endpoint để xuất toàn bộ log dưới dạng CSV.
-    """
     try:
         csv_data = export_logs_to_csv()
+        filename = f"logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
         return Response(
             csv_data,
             mimetype="text/csv",
-            headers={"Content-Disposition": "attachment;filename=logs.csv"},
+            headers={"Content-Disposition": f"attachment;filename={filename}"},
         )
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
-

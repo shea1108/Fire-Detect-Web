@@ -23,7 +23,7 @@ app = create_app()
 if __name__ == '__main__':
     # socketio.run(app, debug=True, use_reloader=True, host='127.0.0.1', port=5000)
     # socketio.run(app, debug=True, use_reloader=True, host='192.168.10.8', port=5000, ssl_context=context)
-    host = '192.168.10.8' # 127.0.0.1
+    host = '192.168.1.9' # 127.0.0.1
     port = 5000
     use_ssl = True  # đổi thành False nếu không dùng SSL
 

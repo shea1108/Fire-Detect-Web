@@ -23,7 +23,7 @@ from backend.services.log_noti_send_email import handle_post_log_events
 from backend.services.fire_persistence_tracker import FirePersistenceTracker
 
 from backend.socket.common import perf_monitor  # Theo dõi FPS mô hình
-
+from datetime import datetime
 
 import csv
 from io import StringIO
@@ -315,13 +315,34 @@ def get_log_details(log_id):
 
 
 def export_logs_to_csv():
-    logs = (
-        db.session.query(Log)
-        .order_by(Log.log_create_at.desc())
-        .all()
-    )
+    # Lấy tham số start/end từ query string
+    start_str = request.args.get("start")
+    end_str = request.args.get("end")
 
+    # ✅ Kiểm tra định dạng & hợp lệ
+    try:
+        start = datetime.strptime(start_str, "%m/%d/%Y %H:%M")
+        end = datetime.strptime(end_str, "%m/%d/%Y %H:%M")
+    except Exception:
+        raise ValueError("Định dạng ngày không hợp lệ. Vui lòng nhập đúng định dạng MM/DD/YYYY HH:mm.")
+
+    if start > end:
+        raise ValueError("Thời gian bắt đầu không được sau thời gian kết thúc.")
+
+    # ⚠️ Nếu muốn giới hạn quyền (VD: chỉ lấy log của user hiện tại), xử lý tại đây
+    user_id = session.get("user_id")
+    user_roles = session.get("user_roles", [])
+
+    logs_query = db.session.query(Log).filter(Log.log_create_at.between(start, end))
+
+    if "admin" not in user_roles:
+        logs_query = logs_query.join(Device).filter(Device.user_id == user_id)
+
+    logs = logs_query.order_by(Log.log_create_at.desc()).all()
+
+    # ✅ UTF-8 with BOM để mở trong Excel không lỗi font
     si = StringIO()
+    si.write('\ufeff')  # BOM
     writer = csv.writer(si)
     writer.writerow(["ID Log", "Device", "Model", "Confident", "Created At"])
 
@@ -329,12 +350,8 @@ def export_logs_to_csv():
         dev_name = log.device.dev_name if hasattr(log, "device") and log.device else "N/A"
         model_name = log.model.model_name if hasattr(log, "model") and log.model else "N/A"
 
-        # Tính độ tin cậy trung bình từ các bounding box
         bboxes = log.bboxes if log.bboxes else []
-        if bboxes:
-            avg_conf = sum([b.confidence for b in bboxes]) / len(bboxes)
-        else:
-            avg_conf = 0.0
+        avg_conf = sum([b.confidence for b in bboxes]) / len(bboxes) if bboxes else 0.0
 
         writer.writerow([
             log.log_id,
