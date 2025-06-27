@@ -126,7 +126,8 @@ function drawLoop() {
     });
 
     const now = Date.now();
-    if (!drawLoop.lastDetectTime || now - drawLoop.lastDetectTime > 500) {
+    //200ms gui 1 lan
+    if (!drawLoop.lastDetectTime || now - drawLoop.lastDetectTime > 200) {
         drawLoop.lastDetectTime = now;
         if (!previewVideo.paused) {
             const tempCanvas = document.createElement('canvas');

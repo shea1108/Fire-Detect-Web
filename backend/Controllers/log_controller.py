@@ -10,6 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from flask import current_app, jsonify, request, session, has_request_context
 from sqlalchemy import or_
+from sqlalchemy.sql import func
 from backend.Models.devices_model import Device
 from backend.Models.models_model import Model
 from backend.Models.users_model import User
@@ -187,6 +188,7 @@ def handle_detect_from_api(data):
         db.session.rollback()
         return False, f"Lỗi xử lý: {e}"
 
+
 def get_all_logs_for_datatable():
     try:
         user_id = session.get('user_id')
@@ -202,10 +204,18 @@ def get_all_logs_for_datatable():
         order_column_index = int(params.get('order[0][column]', 0))
         order_dir = params.get('order[0][dir]', 'asc')
 
+        # ✨ Truy vấn thêm độ tin cậy cao nhất từ LogBBox
         base_query = db.session.query(
-            Log.log_id, Device.dev_name, Model.model_name,
-            Log.log_image_path, Log.log_create_at
-        ).join(Device, Log.dev_id == Device.dev_id).join(Model, Log.model_id == Model.model_id)
+            Log.log_id,
+            Device.dev_name,
+            Model.model_name,
+            Log.log_image_path,
+            Log.log_create_at,
+            func.max(LogBBox.confidence).label("max_confidence")
+        ).join(Device, Log.dev_id == Device.dev_id
+        ).join(Model, Log.model_id == Model.model_id
+        ).outerjoin(LogBBox, LogBBox.log_id == Log.log_id
+        ).group_by(Log.log_id, Device.dev_name, Model.model_name, Log.log_image_path, Log.log_create_at)
 
         if 'admin' not in user_roles:
             base_query = base_query.filter(Device.user_id == user_id)
@@ -219,8 +229,16 @@ def get_all_logs_for_datatable():
             ))
         filtered_records = query.count()
 
-        columns = [Log.log_id, Device.dev_name, Model.model_name, None, Log.log_create_at]
-        order_column = columns[order_column_index]
+        # Nếu bạn muốn sắp xếp theo độ tin cậy, cần sửa thêm ở đây
+        columns = [
+            Log.log_id,
+            Device.dev_name,
+            Model.model_name,
+            None,
+            Log.log_create_at,
+            func.max(LogBBox.confidence)
+        ]
+        order_column = columns[order_column_index] if order_column_index < len(columns) else None
         if order_column is not None:
             query = query.order_by(order_column.desc() if order_dir == 'desc' else order_column.asc())
 
@@ -229,8 +247,9 @@ def get_all_logs_for_datatable():
             'id': row.log_id,
             'device_name': row.dev_name,
             'model_name': row.model_name,
-            'image_path': '/static/' + row.log_image_path if row.log_image_path else None,
-            'created_at': row.log_create_at.strftime('%Y-%m-%d %H:%M:%S')
+            'image_path': '/' + row.log_image_path if row.log_image_path else None,
+            'created_at': row.log_create_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'confidence': f"{row.max_confidence*100:.2f}%" if row.max_confidence is not None else 'N/A'
         } for row in results]
 
         return jsonify({
@@ -243,6 +262,7 @@ def get_all_logs_for_datatable():
     except Exception as e:
         logging.error(f"Lỗi khi lấy dữ liệu log: {e}", exc_info=True)
         return jsonify({'draw': 0, 'recordsTotal': 0, 'recordsFiltered': 0, 'data': [], 'error': "Lỗi server"})
+
 
 def get_log_details(log_id):
     try:
@@ -264,13 +284,17 @@ def get_log_details(log_id):
             'width': bbox.width,
             'height': bbox.height,
         } for bbox in bboxes]
+        bbox_image_path = None
+        if log_details.log_image_path:
+            bbox_image_path = log_details.log_image_path.replace("origin", "bbox")
 
         data = {
             'id': log_details.log_id,
             'device_name': log_details.dev_name,
             'device_location': log_details.dev_location,
             'model_name': log_details.model_name,
-            'image_path': '/static/' + log_details.log_image_path if log_details.log_image_path else None,
+            'image_path': '/' + log_details.log_image_path if log_details.log_image_path else None,
+            'bbox_image_path': '/' + bbox_image_path if bbox_image_path else None,
             'created_at': log_details.log_create_at,
             'bboxes': bboxes_data
         }

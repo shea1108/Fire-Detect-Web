@@ -1,5 +1,5 @@
 # backend/Routes/routes.py
-from flask import Blueprint, render_template, current_app
+from flask import Blueprint, render_template, current_app, send_from_directory
 import os
 from flask import Blueprint, render_template, session, redirect, url_for
 from backend.utils.auth_utils import login_required_redirect
@@ -10,6 +10,9 @@ from backend.Controllers.user_controller import render_verify_page
 
 TEMPLATE_DIR= os.path.join(os.path.dirname(__file__), '../../frontend/templates')
 bp = Blueprint('web', __name__, template_folder=TEMPLATE_DIR)
+
+
+
 
 @bp.route('/')
 @bp.route('/index.html')
@@ -93,6 +96,8 @@ def detect_video():
 @login_required_redirect
 def detect_camera():
     return render_template('detect-camera.html')
+
+
 
 @bp.route('/logs')
 @bp.route('/user_logs.html')

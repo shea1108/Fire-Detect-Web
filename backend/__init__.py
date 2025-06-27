@@ -103,4 +103,13 @@ def create_app():
     app.register_blueprint(admin_rbac)
     app.register_blueprint(admin_stats)
 
+
+
+
+    # fix logs UI
+    @app.route('/static/log_images/<path:filename>')
+    def serve_log_images(filename):
+        log_image_path = os.path.join(os.path.dirname(__file__), '..', 'static', 'log_images')
+        return send_from_directory(log_image_path, filename)
+
     return app
