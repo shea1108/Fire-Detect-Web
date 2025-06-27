@@ -24,6 +24,11 @@ from backend.services.fire_persistence_tracker import FirePersistenceTracker
 
 from backend.socket.common import perf_monitor  # Theo dõi FPS mô hình
 
+
+import csv
+from io import StringIO
+
+
 # Lưu thời gian log gần nhất theo thiết bị để giới hạn tốc độ ghi log (0.3s)
 last_log_times = {}
 
@@ -304,3 +309,38 @@ def get_log_details(log_id):
     except Exception as e:
         logging.error(f"Lỗi khi lấy chi tiết log_id={log_id}: {e}", exc_info=True)
         return jsonify({"success": False, "message": "Lỗi server"}), 500
+
+
+
+
+def export_logs_to_csv():
+    logs = (
+        db.session.query(Log)
+        .order_by(Log.log_create_at.desc())
+        .all()
+    )
+
+    si = StringIO()
+    writer = csv.writer(si)
+    writer.writerow(["ID Log", "Device", "Model", "Confident", "Created At"])
+
+    for log in logs:
+        dev_name = log.device.dev_name if hasattr(log, "device") and log.device else "N/A"
+        model_name = log.model.model_name if hasattr(log, "model") and log.model else "N/A"
+
+        # Tính độ tin cậy trung bình từ các bounding box
+        bboxes = log.bboxes if log.bboxes else []
+        if bboxes:
+            avg_conf = sum([b.confidence for b in bboxes]) / len(bboxes)
+        else:
+            avg_conf = 0.0
+
+        writer.writerow([
+            log.log_id,
+            dev_name,
+            model_name,
+            f"{avg_conf:.2f}",
+            log.log_create_at.strftime("%Y-%m-%d %H:%M:%S") if log.log_create_at else "N/A",
+        ])
+
+    return si.getvalue()
