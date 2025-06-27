@@ -12,6 +12,17 @@
             rel="stylesheet"
             href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css"
         />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+        />
+
+        <!-- Tempus Dominus Styles -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/css/tempus-dominus.min.css"
+            crossorigin="anonymous"
+        />
 
         <style>
             /* --- CSS CHO BẢNG DỮ LIỆU --- */
@@ -53,6 +64,9 @@
                 max-height: auto; /* tăng từ 240px lên */
                 object-fit: contain;
                 width: 100%;
+            }   
+            .dataTables_wrapper .dataTables_scroll {
+                overflow-x: auto;
             }
         </style>
     </head>
@@ -73,12 +87,13 @@
                         <div class="card shadow-sm border-0">
                             <div class="card-body">
                                 <div class="mb-3 text-end">
-                                    <a
-                                        href="/api/log/export-csv"
+                                    <button
                                         class="btn btn-success btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#exportModal"
                                     >
                                         <i class="bx bx-download"></i> Xuất CSV
-                                    </a>
+                                    </button>
                                 </div>
 
                                 <table
@@ -146,10 +161,22 @@
         <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
         <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
 
+        <!-- Popperjs -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+            crossorigin="anonymous"
+        ></script>
+        <!-- Tempus Dominus JavaScript -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js"
+            crossorigin="anonymous"
+        ></script>
+
         <script>
             $(document).ready(function () {
                 // Khởi tạo DataTable
                 const table = $('#datatable-logs').DataTable({
+                    scrollX: true,
                     responsive: true,
                     processing: true,
                     serverSide: true,
@@ -296,6 +323,239 @@
                         container.innerHTML = `<p class="text-danger"><strong>Lỗi!</strong> Không thể tải chi tiết log. Vui lòng thử lại.</p>`;
                     });
             }
+        </script>
+        <div
+            class="modal fade"
+            id="exportModal"
+            tabindex="-1"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form id="exportForm">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Chọn khoảng thời gian</h5>
+                            <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                            ></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="startDateInput" class="form-label"
+                                    >Từ ngày</label
+                                >
+                                <div
+                                    class="input-group"
+                                    id="startDatePicker"
+                                    data-td-target-input="nearest"
+                                    data-td-target-toggle="nearest"
+                                >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="startDateInput"
+                                        data-td-target="#startDatePicker"
+                                    />
+                                    <span
+                                        class="input-group-text"
+                                        data-td-target="#startDatePicker"
+                                        data-td-toggle="datetimepicker"
+                                    >
+                                        <i class="bi bi-calendar"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="endDateInput" class="form-label"
+                                    >Đến ngày</label
+                                >
+                                <div
+                                    class="input-group"
+                                    id="endDatePicker"
+                                    data-td-target-input="nearest"
+                                    data-td-target-toggle="nearest"
+                                >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="endDateInput"
+                                        data-td-target="#endDatePicker"
+                                    />
+                                    <span
+                                        class="input-group-text"
+                                        data-td-target="#endDatePicker"
+                                        data-td-toggle="datetimepicker"
+                                    >
+                                        <i class="bi bi-calendar"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div
+                                id="exportError"
+                                class="text-danger small"
+                            ></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">
+                                Tải CSV
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const now = new Date();
+                const sevenDaysAgo = new Date(
+                    now.getTime() - 7 * 24 * 60 * 60 * 1000
+                );
+
+                const startDatePicker = new tempusDominus.TempusDominus(
+                    document.getElementById('startDatePicker'),
+                    {
+                        defaultDate:
+                            tempusDominus.DateTime.convert(sevenDaysAgo),
+                        display: {
+                            components: {
+                                calendar: true,
+                                clock: true,
+                                hours: true,
+                                minutes: true,
+                                seconds: false,
+                            },
+                            icons: {
+                                type: 'icons',
+                                time: 'bi bi-clock',
+                                date: 'bi bi-calendar',
+                                up: 'bi bi-chevron-up',
+                                down: 'bi bi-chevron-down',
+                                previous: 'bi bi-chevron-left',
+                                next: 'bi bi-chevron-right',
+                            },
+                        },
+                        localization: {
+                            format: 'MM/dd/yyyy HH:mm',
+                            hourCycle: 'h23',
+                        },
+                    }
+                );
+
+                const endDatePicker = new tempusDominus.TempusDominus(
+                    document.getElementById('endDatePicker'),
+                    {
+                        defaultDate: tempusDominus.DateTime.convert(now),
+                        display: {
+                            components: {
+                                calendar: true,
+                                clock: true,
+                                hours: true,
+                                minutes: true,
+                                seconds: false,
+                            },
+                            icons: {
+                                type: 'icons',
+                                time: 'bi bi-clock',
+                                date: 'bi bi-calendar',
+                                up: 'bi bi-chevron-up',
+                                down: 'bi bi-chevron-down',
+                                previous: 'bi bi-chevron-left',
+                                next: 'bi bi-chevron-right',
+                            },
+                        },
+
+                        localization: {
+                            format: 'MM/dd/yyyy HH:mm',
+                            hourCycle: 'h23',
+                        },
+                    }
+                );
+
+                startDatePicker.dates.setValue(
+                    tempusDominus.DateTime.convert(sevenDaysAgo)
+                );
+                endDatePicker.dates.setValue(
+                    tempusDominus.DateTime.convert(now)
+                );
+            });
+        </script>
+        <script>
+            document
+                .getElementById('exportForm')
+                .addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const startDateStr =
+                        document.getElementById('startDateInput').value;
+                    const endDateStr =
+                        document.getElementById('endDateInput').value;
+
+                    if (!startDateStr || !endDateStr) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Thiếu thông tin',
+                            text: 'Vui lòng chọn đủ khoảng thời gian.',
+                        });
+                        return;
+                    }
+
+                    const now = new Date();
+                    const startDate = new Date(startDateStr);
+                    const endDate = new Date(endDateStr);
+
+                    if (isNaN(startDate) || isNaN(endDate)) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi định dạng',
+                            text: 'Định dạng ngày không hợp lệ.',
+                        });
+                        return;
+                    }
+
+                    if (startDate > endDate) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Sai thứ tự thời gian',
+                            text: 'Thời gian bắt đầu không được sau thời gian kết thúc.',
+                        });
+                        return;
+                    }
+
+                    if (endDate > now) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Vượt quá hiện tại',
+                            text: 'Không được chọn thời gian vượt quá hiện tại.',
+                        });
+                        return;
+                    }
+
+                    // ✅ Xác nhận xuất file
+                    Swal.fire({
+                        icon: 'question',
+                        title: 'Xác nhận xuất dữ liệu',
+                        text: 'Bạn có chắc chắn muốn tải xuống file CSV không?',
+                        showCancelButton: true,
+                        confirmButtonText: 'Có, tải xuống',
+                        cancelButtonText: 'Huỷ',
+                        reverseButtons: true,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const params = new URLSearchParams({
+                                start: startDateStr,
+                                end: endDateStr,
+                            });
+
+                            window.location.href =
+                                '/api/log/export-csv?' + params.toString();
+                        }
+                    });
+                });
         </script>
     </body>
 </html>
