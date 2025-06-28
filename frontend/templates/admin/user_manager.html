@@ -46,13 +46,6 @@
         div.dataTables_filter {
             display: none;
         }
-
-        /* Tùy chỉnh thanh cuộn cho cột Role đẹp hơn */
-        .role-cell-scroll {
-            max-height: 110px; 
-            overflow-y: auto; 
-            padding-right: 10px;
-        }
     </style>
 </head>
 
@@ -132,22 +125,14 @@
                                                         <span class="text-muted">No devices</span>
                                                     {% endif %}
                                                 </td>
-                                                <td>
-                                                    <div class="role-cell-scroll">
-                                                        {% for role in roles %}
-                                                        <div class="form-check">
-                                                            <input class="form-check-input user-role-checkbox" type="checkbox" value="{{ role.role_id }}" id="user-{{ user.user_id }}-role-{{ role.role_id }}" data-user-id="{{ user.user_id }}" {% if role in user.roles %}checked{% endif %}>
-                                                            <label class="form-check-label" for="user-{{ user.user_id }}-role-{{ role.role_id }}">
-                                                                {{ role.role_name | title }}
-                                                            </label>
-                                                        </div>
-                                                        {% endfor %}
-                                                    </div>
+                                                <td class="ellipsis" style="text-align: center;">
+                                            {% if user.roles %}
+                                                {{ user.roles | map(attribute='role_name') | map('title') | join(', ') }}
+                                            {% else %}
+                                                <span class="text-muted">No roles</span>
+                                            {% endif %}
                                                 </td>
                                                 <td class="text-center">
-                                                    <button class="btn btn-sm btn-success btn-save-roles me-2" data-user-id="{{ user.user_id }}" disabled title="Lưu vai trò">
-                                                        <i class="mdi mdi-check"></i> Lưu
-                                                    </button>
                                                     {% if user.user_status %}
                                                         <button class="btn btn-sm btn-info edit-user-btn me-1" data-user-id="{{ user.user_id }}" title="Sửa thông tin">
                                                             <i class="mdi mdi-pencil"></i> Sửa
@@ -259,28 +244,6 @@
         
         $('#status-filter').on('change', function() {
             window.location.href = '/admin/users?status=' + $(this).val();
-        });
-
-        $('.user-role-checkbox').on('change', function() {
-            const userId = $(this).data('user-id');
-            $(`.btn-save-roles[data-user-id="${userId}"]`).prop('disabled', false);
-        });
-
-        $('.btn-save-roles').on('click', function() {
-            const saveButton = $(this);
-            const userId = saveButton.data('user-id');
-            const selectedRoleIds = $(`.user-role-checkbox[data-user-id="${userId}"]:checked`).map(function() { return $(this).val(); }).get();
-            saveButton.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
-            fetch('/admin/users/update_roles', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: userId, role_ids: selectedRoleIds.map(Number) })
-            }).then(res => res.json()).then(data => {
-                if(data.status === 'success') { alert(data.message); } 
-                else { alert('Lỗi: ' + data.message); }
-            }).catch(err => console.error(err)).finally(() => {
-                saveButton.html('<i class="mdi mdi-check"></i> Lưu');
-            });
         });
 
         $(document).on('click', '.edit-user-btn', function() {
