@@ -45,7 +45,7 @@ def register_send_otp(data):
         if not re.match(vietnamese_phone_pattern, phone_number):
             return jsonify({"error": "Số điện thoại không đúng định dạng của Việt Nam."}), 400
 
-    required_fields = ['user_name', 'user_email', 'user_password', 'user_role']
+    required_fields = ['user_name', 'user_email', 'user_password']
     if not all(data.get(f) for f in required_fields):
         return jsonify({"error": "Vui lòng điền đầy đủ các trường bắt buộc."}), 400
 

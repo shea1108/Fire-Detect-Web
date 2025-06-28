@@ -23,6 +23,11 @@
                 pointer-events: none;
             }
         </style>
+        <style>
+            .form-floating > label {
+                padding-left: 0.75rem;
+            }
+        </style>
     </head>
     <body>
         <!-- Navbar -->
@@ -38,53 +43,60 @@
                 <div class="contact-wrap-form log-in-width">
                     <form id="register-form" method="post" novalidate>
                         <div class="row justify-content-center">
-                            <!-- Social Login Buttons -->
-                            <div class="col-lg-4 col-md-4 col-sm-4">
-                                <button class="login-social-btn" type="button">
-                                    <i class="bx bxl-google-plus"></i>
-                                </button>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-sm-4">
-                                <button class="login-social-btn" type="button">
-                                    <i class="bx bxl-facebook"></i>
-                                </button>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-sm-4">
-                                <button class="login-social-btn" type="button">
-                                    <i class="bx bxl-twitter"></i>
-                                </button>
-                            </div>
-
                             <!-- Form Inputs -->
+                            <!-- Họ và tên -->
                             <div class="col-12">
-                                <div class="form-group">
+                                <div class="form-floating mb-3">
                                     <input
-                                        class="form-control"
                                         type="text"
+                                        class="form-control"
+                                        id="floatingName"
                                         name="user_name"
                                         placeholder="Họ và tên"
                                         required
                                     />
+                                    <label for="floatingName">Họ và tên</label>
                                 </div>
                             </div>
+
+                            <!-- Email -->
                             <div class="col-12">
-                                <div class="form-group">
+                                <div class="form-floating mb-3">
                                     <input
-                                        class="form-control"
                                         type="email"
+                                        class="form-control"
+                                        id="floatingEmail"
                                         name="user_email"
                                         placeholder="Email"
                                         required
                                     />
+                                    <label for="floatingEmail"
+                                        >Email (@gmail.com)</label
+                                    >
                                 </div>
                             </div>
+
+                            <!-- Số điện thoại -->
+                            <!-- Số điện thoại -->
+                            <!-- Số điện thoại -->
                             <div class="col-12">
-                                <div class="form-group">
+                                <label
+                                    class="form-label ms-1 mb-1"
+                                    for="floatingPhone"
+                                    >Số điện thoại</label
+                                >
+                                <div class="input-group mb-3">
+                                    <span
+                                        class="input-group-text"
+                                        id="vietnam-prefix"
+                                        >🇻🇳 +84</span
+                                    >
                                     <input
-                                        class="form-control"
                                         type="text"
+                                        class="form-control"
+                                        id="floatingPhone"
                                         name="user_phone_num"
-                                        placeholder="Số điện thoại"
+                                        placeholder="Ví dụ: 0912345678"
                                         maxlength="10"
                                         pattern="\d{10}"
                                         inputmode="numeric"
@@ -93,35 +105,47 @@
                                     />
                                 </div>
                             </div>
-                            <input
-                                type="hidden"
-                                name="user_role"
-                                value="user"
-                            />
-                            <div class="form-group position-relative">
-                                <input
-                                    class="form-control"
-                                    type="password"
-                                    name="user_password"
-                                    id="register_password"
-                                    placeholder="Mật khẩu"
-                                    required
-                                />
-                                <i
-                                    class="bx bx-show toggle-password"
-                                    id="toggleRegisterPassword"
-                                    style="
-                                        position: absolute;
-                                        top: 50%;
-                                        right: 25px;
-                                        transform: translateY(-50%);
-                                        cursor: pointer;
-                                    "
-                                ></i>
+
+                            <!-- Mật khẩu -->
+                            <div class="col-12">
+                                <div
+                                    class="form-floating mb-3 position-relative"
+                                >
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        id="register_password"
+                                        name="user_password"
+                                        placeholder="Mật khẩu"
+                                        required
+                                    />
+                                    <label for="register_password"
+                                        >Mật khẩu</label
+                                    >
+                                    <i
+                                        class="bx bx-show toggle-password"
+                                        id="toggleRegisterPassword"
+                                        style="
+                                            position: absolute;
+                                            top: 50%;
+                                            right: 30px;
+                                            transform: translateY(-50%);
+                                            cursor: pointer;
+                                        "
+                                    ></i>
+                                </div>
+                                <div
+                                    id="password-help"
+                                    class="form-text text-muted ms-2 mt-n2"
+                                    style="font-size: 0.9rem"
+                                >
+                                    Mật khẩu phải có ít nhất 8 ký tự, gồm chữ
+                                    hoa, chữ thường, số và ký tự đặc biệt.
+                                </div>
                             </div>
 
                             <!-- reCAPTCHA Widget -->
-                            <div class="col-12">
+                            <div class="col-12 margin-top-10">
                                 <div
                                     class="form-group d-flex justify-content-center"
                                 >
@@ -264,8 +288,8 @@
                         return;
                     }
 
-                    const vietnamesePhonePattern =
-                        /^0(9[0-9]|8[1-9]|7[0|6|7|8|9]|5[2|6|8|9]|3[2-9])\d{7}$/;
+                    const vietnamesePhonePattern = /^0\d{9}$/;
+
                     if (!vietnamesePhonePattern.test(phone)) {
                         state.isPhoneOk = false;
                         updateInputFeedback(
@@ -297,6 +321,26 @@
                         state.isPhoneOk = false;
                     }
                 };
+                const passwordInput = form.querySelector('#register_password');
+
+                const validatePassword = () => {
+                    const password = passwordInput.value;
+                    const pattern =
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+                    if (!password) {
+                        updateInputFeedback(passwordInput, null);
+                        return false;
+                    }
+
+                    const isValid = pattern.test(password);
+                    updateInputFeedback(
+                        passwordInput,
+                        isValid,
+                        'Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.'
+                    );
+                    return isValid;
+                };
 
                 // === GẮN EVENT LISTENERS ===
 
@@ -314,6 +358,9 @@
                 });
                 phoneInput.addEventListener('change', validatePhone);
 
+                passwordInput.addEventListener('input', validatePassword);
+                passwordInput.addEventListener('change', validatePassword);
+
                 // === CHẠY KIỂM TRA MỘT LẦN KHI TẢI TRANG ĐỂ BẮT AUTOFILL ===
                 setTimeout(() => {
                     validateEmail();
@@ -323,10 +370,16 @@
                 // --- Xử lý khi GỬI FORM ---
                 form.addEventListener('submit', async (e) => {
                     e.preventDefault();
+                    const isPasswordOk = validatePassword();
 
                     // === THAY ĐỔI CHÍNH: KIỂM TRA VALIDATION KHI SUBMIT ===
                     const { isEmailOk, isPhoneOk, isCaptchaOk } = state;
-                    if (!isEmailOk || !isPhoneOk || !isCaptchaOk) {
+                    if (
+                        !isEmailOk ||
+                        !isPhoneOk ||
+                        !isCaptchaOk ||
+                        !isPasswordOk
+                    ) {
                         let errorMessages = [];
                         if (!isEmailOk)
                             errorMessages.push(
@@ -339,6 +392,10 @@
                         if (!isCaptchaOk)
                             errorMessages.push(
                                 'Vui lòng xác thực bạn không phải là robot.'
+                            );
+                        if (!isPasswordOk)
+                            errorMessages.push(
+                                'Mật khẩu chưa đáp ứng yêu cầu bảo mật.'
                             );
 
                         Swal.fire({

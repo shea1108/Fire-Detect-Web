@@ -19,9 +19,9 @@
                 </div>
                 <div class="contact-wrap-form log-in-width">
                     <form id="login-form" method="post">
-                        <p>Đăng nhập bằng mạng xã hội</p>
+                        <!-- <p>Đăng nhập bằng mạng xã hội</p> -->
                         <div class="row justify-content-center">
-                            <div class="col-lg-4 col-md-4 col-sm-4">
+                            <!-- <div class="col-lg-4 col-md-4 col-sm-4">
                                 <button
                                     class="login-social-btn"
                                     type="button"
@@ -41,30 +41,35 @@
                                 <button class="login-social-btn" type="button">
                                     <i class="bx bxl-twitter"></i>
                                 </button>
-                            </div>
+                            </div> -->
 
                             <div class="col-12">
-                                <div class="form-group">
+                                <div class="form-floating mb-3">
                                     <input
-                                        class="form-control"
                                         type="email"
+                                        class="form-control"
+                                        id="floatingEmail"
                                         name="user_email"
                                         placeholder="Email"
                                         required
                                     />
+                                    <label for="floatingEmail">Email</label>
                                 </div>
                             </div>
 
                             <div class="col-12">
-                                <div class="form-group position-relative">
+                                <div
+                                    class="form-floating position-relative mb-3"
+                                >
                                     <input
-                                        class="form-control"
                                         type="password"
-                                        name="user_password"
+                                        class="form-control"
                                         id="user_password"
+                                        name="user_password"
                                         placeholder="Mật khẩu"
                                         required
                                     />
+                                    <label for="user_password">Mật khẩu</label>
                                     <i
                                         class="bx bx-show toggle-password"
                                         id="togglePassword"
@@ -74,6 +79,7 @@
                                             right: 15px;
                                             transform: translateY(-50%);
                                             cursor: pointer;
+                                            z-index: 2;
                                         "
                                     ></i>
                                 </div>

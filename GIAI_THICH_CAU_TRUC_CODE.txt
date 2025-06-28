@@ -13,6 +13,7 @@ git add .
 
 git rm --cached .env
 git rm --cached certs/cert.pem certs/key.pem
+git rm -r --cached static/
 
 #kiểm tra
 git status

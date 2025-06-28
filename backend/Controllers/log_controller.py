@@ -7,22 +7,26 @@ import time
 import logging
 import threading
 from PIL import Image, ImageDraw, ImageFont
-import csv
 
-from sqlalchemy import or_, func
 from flask import current_app, jsonify, request, session, has_request_context, Response
 from sqlalchemy import or_
+from sqlalchemy.sql import func
 from backend.Models.devices_model import Device
 from backend.Models.models_model import Model
 from backend.Models.users_model import User
 from backend.extensions import socketio
-
+import csv
 from backend.Models import db, Log
 from backend.Models.log_bboxes_model import LogBBox
 from backend.utils.models_manager import model_manager
 from backend.services.log_noti_send_email import handle_post_log_events
 from backend.services.fire_persistence_tracker import FirePersistenceTracker
 
+from backend.socket.common import perf_monitor  # Theo dõi FPS mô hình
+from datetime import datetime
+
+import csv
+from io import StringIO
 
 
 # Lưu thời gian log gần nhất theo thiết bị để giới hạn tốc độ ghi log (0.3s)
@@ -50,7 +54,6 @@ def trigger_notification_in_background(app, log_id, user_email, user_name):
 
 # Hàm xử lý một frame gửi từ API
 def handle_detect_from_api(data):
-    from backend.socket.common import perf_monitor
     dev_id = data.get("dev_id")
     try:
         # Lấy dữ liệu từ client gửi lên
@@ -98,7 +101,7 @@ def handle_detect_from_api(data):
             return True, {"detections": detections, "message": "Cooldown, chưa ghi log"}
 
         # Ghi log ảnh
-        save_dir = os.path.join('frontend', 'static', 'log_images', str(dev_id))
+        save_dir = os.path.join('static', 'log_images', str(dev_id))
         os.makedirs(save_dir, exist_ok=True)
         new_log = Log(dev_id=dev_id, model_id=model_id)
         db.session.add(new_log)
@@ -190,6 +193,7 @@ def handle_detect_from_api(data):
         db.session.rollback()
         return False, f"Lỗi xử lý: {e}"
 
+
 def get_all_logs_for_datatable():
     try:
         user_id = session.get('user_id')
@@ -205,10 +209,18 @@ def get_all_logs_for_datatable():
         order_column_index = int(params.get('order[0][column]', 0))
         order_dir = params.get('order[0][dir]', 'asc')
 
+        # ✨ Truy vấn thêm độ tin cậy cao nhất từ LogBBox
         base_query = db.session.query(
-            Log.log_id, Device.dev_name, Model.model_name,
-            Log.log_image_path, Log.log_create_at
-        ).join(Device, Log.dev_id == Device.dev_id).join(Model, Log.model_id == Model.model_id)
+            Log.log_id,
+            Device.dev_name,
+            Model.model_name,
+            Log.log_image_path,
+            Log.log_create_at,
+            func.max(LogBBox.confidence).label("max_confidence")
+        ).join(Device, Log.dev_id == Device.dev_id
+        ).join(Model, Log.model_id == Model.model_id
+        ).outerjoin(LogBBox, LogBBox.log_id == Log.log_id
+        ).group_by(Log.log_id, Device.dev_name, Model.model_name, Log.log_image_path, Log.log_create_at)
 
         if 'admin' not in user_roles:
             base_query = base_query.filter(Device.user_id == user_id)
@@ -222,8 +234,16 @@ def get_all_logs_for_datatable():
             ))
         filtered_records = query.count()
 
-        columns = [Log.log_id, Device.dev_name, Model.model_name, None, Log.log_create_at]
-        order_column = columns[order_column_index]
+        # Nếu bạn muốn sắp xếp theo độ tin cậy, cần sửa thêm ở đây
+        columns = [
+            Log.log_id,
+            Device.dev_name,
+            Model.model_name,
+            None,
+            Log.log_create_at,
+            func.max(LogBBox.confidence)
+        ]
+        order_column = columns[order_column_index] if order_column_index < len(columns) else None
         if order_column is not None:
             query = query.order_by(order_column.desc() if order_dir == 'desc' else order_column.asc())
 
@@ -232,8 +252,9 @@ def get_all_logs_for_datatable():
             'id': row.log_id,
             'device_name': row.dev_name,
             'model_name': row.model_name,
-            'image_path': '/static/' + row.log_image_path if row.log_image_path else None,
-            'created_at': row.log_create_at.strftime('%Y-%m-%d %H:%M:%S')
+            'image_path': '/' + row.log_image_path if row.log_image_path else None,
+            'created_at': row.log_create_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'confidence': f"{row.max_confidence*100:.2f}%" if row.max_confidence is not None else 'N/A'
         } for row in results]
 
         return jsonify({
@@ -246,6 +267,7 @@ def get_all_logs_for_datatable():
     except Exception as e:
         logging.error(f"Lỗi khi lấy dữ liệu log: {e}", exc_info=True)
         return jsonify({'draw': 0, 'recordsTotal': 0, 'recordsFiltered': 0, 'data': [], 'error': "Lỗi server"})
+
 
 def get_log_details(log_id):
     try:
@@ -267,13 +289,17 @@ def get_log_details(log_id):
             'width': bbox.width,
             'height': bbox.height,
         } for bbox in bboxes]
+        bbox_image_path = None
+        if log_details.log_image_path:
+            bbox_image_path = log_details.log_image_path.replace("origin", "bbox")
 
         data = {
             'id': log_details.log_id,
             'device_name': log_details.dev_name,
             'device_location': log_details.dev_location,
             'model_name': log_details.model_name,
-            'image_path': '/static/' + log_details.log_image_path if log_details.log_image_path else None,
+            'image_path': '/' + log_details.log_image_path if log_details.log_image_path else None,
+            'bbox_image_path': '/' + bbox_image_path if bbox_image_path else None,
             'created_at': log_details.log_create_at,
             'bboxes': bboxes_data
         }
@@ -287,69 +313,53 @@ def get_log_details(log_id):
 
 
 
-#Xuất file csv#
+
 def export_logs_to_csv():
+    # Lấy tham số start/end từ query string
+    start_str = request.args.get("start")
+    end_str = request.args.get("end")
+
+    # ✅ Kiểm tra định dạng & hợp lệ
     try:
-        user_id = session.get('user_id')
-        user_roles = session.get('user_roles', [])
-        if not user_id:
-            return Response("Unauthorized", status=401)
+        start = datetime.strptime(start_str, "%m/%d/%Y %H:%M")
+        end = datetime.strptime(end_str, "%m/%d/%Y %H:%M")
+    except Exception:
+        raise ValueError("Định dạng ngày không hợp lệ. Vui lòng nhập đúng định dạng MM/DD/YYYY HH:mm.")
 
-        search_value = request.args.get('search', '').strip()
+    if start > end:
+        raise ValueError("Thời gian bắt đầu không được sau thời gian kết thúc.")
 
-        if 'admin' not in user_roles and 'police' not in user_roles:
-            return Response("Bạn không có quyền thực hiện hành động này.", status=403)
+    # ⚠️ Nếu muốn giới hạn quyền (VD: chỉ lấy log của user hiện tại), xử lý tại đây
+    user_id = session.get("user_id")
+    user_roles = session.get("user_roles", [])
 
-        bbox_subquery = db.session.query(
-            LogBBox.log_id,
-            func.max(LogBBox.confidence).label('max_confidence')
-        ).group_by(LogBBox.log_id).subquery()
+    logs_query = db.session.query(Log).filter(Log.log_create_at.between(start, end))
 
-        base_query = db.session.query(
-            Log.log_id,
-            Device.dev_name,
-            Model.model_name,
-            Log.log_create_at,
-            bbox_subquery.c.max_confidence  
-        ).join(Device, Log.dev_id == Device.dev_id)\
-         .join(Model, Log.model_id == Model.model_id)\
-         .outerjoin(bbox_subquery, Log.log_id == bbox_subquery.c.log_id) 
+    if "admin" not in user_roles:
+        logs_query = logs_query.join(Device).filter(Device.user_id == user_id)
 
-        if 'admin' not in user_roles:
-            base_query = base_query.filter(Device.user_id == user_id)
+    logs = logs_query.order_by(Log.log_create_at.desc()).all()
 
-        if search_value:
-            base_query = base_query.filter(or_(
-                Device.dev_name.ilike(f'%{search_value}%'),
-                Model.model_name.ilike(f'%{search_value}%')
-            ))
+    # ✅ UTF-8 with BOM để mở trong Excel không lỗi font
+    si = StringIO()
+    si.write('\ufeff')  # BOM
+    writer = csv.writer(si)
+    writer.writerow(["ID Log", "Device", "Model", "Confident", "Created At"])
 
-        results = base_query.order_by(Log.log_create_at.desc()).all()
+    for log in logs:
+        dev_name = log.device.dev_name if hasattr(log, "device") and log.device else "N/A"
+        model_name = log.model.model_name if hasattr(log, "model") and log.model else "N/A"
 
-        output = io.StringIO()
-        writer = csv.writer(output)
+        bboxes = log.bboxes if log.bboxes else []
+        avg_conf = sum([b.confidence for b in bboxes]) / len(bboxes) if bboxes else 0.0
 
-        writer.writerow(['ID Log', 'Tên thiết bị', 'Tên mô hình', 'Ngày tạo', 'Độ tin cậy cao nhất (%)'])
+        writer.writerow([
+            log.log_id,
+            dev_name,
+            model_name,
+            f"{avg_conf:.2f}",
+            log.log_create_at.strftime("%Y-%m-%d %H:%M:%S") if log.log_create_at else "N/A",
+        ])
 
-        for row in results:
+    return si.getvalue()
 
-            confidence_percent = f"{(row.max_confidence * 100):.2f}" if row.max_confidence is not None else "N/A"
-            
-            writer.writerow([
-                row.log_id,
-                row.dev_name,
-                row.model_name,
-                row.log_create_at.strftime('%Y-%m-%d %H:%M:%S'),
-                confidence_percent
-            ])
-        csv_data = output.getvalue().encode('utf-8-sig')
-
-        return Response(
-            csv_data,
-            mimetype="text/csv",
-            headers={"Content-Disposition": "attachment;filename=fire_logs_export.csv"}
-        )
-        
-    except Exception as e:
-        logging.error(f"Lỗi khi xuất CSV: {e}", exc_info=True)
-        return Response("Lỗi server khi tạo file CSV", status=500)

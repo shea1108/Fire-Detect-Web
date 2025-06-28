@@ -1,6 +1,7 @@
 # backend/Routes/log.py
-from flask import Blueprint, request, jsonify
-from flask import Blueprint, render_template
+from datetime import datetime
+from flask import Blueprint, request, jsonify, Response
+from backend.Controllers.log_controller import handle_detect_from_api
 from backend.Controllers.log_controller import (
     handle_detect_from_api, 
     get_all_logs_for_datatable, 
@@ -51,6 +52,16 @@ def api_get_one_log(log_id):
     return get_log_details(log_id)
 
 
-@bp.route('/export-csv', methods=['GET'])
-def export_csv():
-    return export_logs_to_csv()
+
+@bp.route("/export-csv", methods=['GET'])
+def export_logs_csv():
+    try:
+        csv_data = export_logs_to_csv()
+        filename = f"logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        return Response(
+            csv_data,
+            mimetype="text/csv",
+            headers={"Content-Disposition": f"attachment;filename={filename}"},
+        )
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
