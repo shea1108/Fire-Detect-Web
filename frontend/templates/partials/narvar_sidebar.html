@@ -339,7 +339,7 @@
                 </li>
                 
 
-                {% if session.user_role is defined and 'admin' in session.user_role %}
+                {% if session.user_roles is defined and 'admin' in session.user_roles %}
                     <li class="nav-item">
                     <a href="/admin" class="dropdown-item"
                         ><i class="bx bx-shield me-2"></i>Tới trang admin</a
@@ -413,13 +413,14 @@
                                         Qua Video
                                     </a>
                                 </li>
-                                {% if session['user_id'] %}
                                 <li class="nav-item">
-                                    <a href="detect-camera.html" class="nav-link">
+                                    <a
+                                        href="detect-camera.html"
+                                        class="nav-link"
+                                    >
                                         Qua Camera
                                     </a>
                                 </li>
-                                {% endif %}
                             </ul>
                                 <li class="nav-item">
                                     <a href="/logs" class="nav-link">
@@ -480,7 +481,7 @@
                                             </a>
                                         </li>
                                         
-                                        {% if session.user_role is defined and 'admin' in session.user_role %}
+                                        {% if session.user_roles is defined and 'admin' in session.user_roles %}
                                         <li class="nav-item">
                                             <a href="/admin" class="nav-link"
                                                 ><i class="bx bx-shield  me-2"></i>Tới trang admin</a
@@ -589,7 +590,7 @@
                     method: 'POST',
                     credentials: 'include',
                 });
-                window.location.href = '/sign-in';
+                window.location.href = '/sign-in.html';
             });
 
         document
@@ -600,7 +601,7 @@
                     method: 'POST',
                     credentials: 'include',
                 });
-                window.location.href = '/sign-in';
+                window.location.href = '/sign-in.html';
             });
     });
 </script>

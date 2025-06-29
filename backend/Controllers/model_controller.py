@@ -7,7 +7,8 @@ from backend.extensions import db
 # Lấy tất cả mô hình
 def get_all_models():
     try:
-        models = Model.query.all()
+        models = Model.query.filter_by(model_status=True).all()
+
         models_list = [
             {"model_id": m.model_id, "model_name": m.model_name}
             for m in models
