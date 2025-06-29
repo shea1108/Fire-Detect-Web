@@ -3,26 +3,25 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Video Fire Detection</title>
         {% include ('partials/head.html')%}
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+        />
         <style>
-            #videoWrapper {
-                position: relative;
-                display: inline-block;
-                margin: 0 auto;
+            #videoDropArea:hover {
+                border-color: #0d6efd;
+                box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
             }
-
-            #previewVideo,
-            #uploadCanvas {
-                height: auto;
-                display: block;
-                border-radius: 12px;
-            }
-            #uploadCanvas {
-                position: absolute;
-                top: 0;
-                left: 0;
-                pointer-events: none;
-                z-index: 10;
+            .client-area {
+                padding: 50px 0;
             }
         </style>
     </head>
@@ -30,78 +29,104 @@
         <!-- Start Navbar Sidebar Area -->
         {% include ('partials/narvar_sidebar.html') %}
         <!-- End Navbar Sidebar Modal -->
-
-        <!-- Client Area for Video Detection -->
-        <div class="client-area ptb-100">
-            <div class="container">
-                <div class="section-title text-center mb-5">
-                    <h2 class="fw-bold" style="color: #0b1e8f">
-                        Phát hiện đám cháy qua video
-                    </h2>
-                    <p class="text-muted">
-                        Tải lên một video và hệ thống sẽ phân tích để phát hiện
-                        cháy trong từng khung hình.
-                    </p>
+        <div class="client-area ptb-50">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="text-center mb-4">
+                            <strong>Phát hiện cháy từ video</strong>
+                        </h2>
+                    </div>
                 </div>
-
-                <div class="row justify-content-center">
-                    <div class="col-lg-8 text-center">
-                        <label
-                            for="videoUpload"
-                            class="btn btn-outline-primary px-4 py-2 fw-semibold mb-3"
+                <div class="row">
+                    <!-- Left: Video Upload Area (8 columns) -->
+                    <div class="col-lg-9 mb-4">
+                        <div
+                            id="videoDropArea"
+                            class="position-relative border border-2 border-primary rounded bg-white shadow-sm"
+                            style="aspect-ratio: 16/9; cursor: pointer"
                         >
-                            📁 Chọn video
-                        </label>
-
-                        <input
-                            type="file"
-                            id="videoUpload"
-                            accept="video/*"
-                            style="display: none"
-                        />
-                        <span
-                            id="FileName"
-                            class="text-muted d-block mb-3"
-                        ></span>
-                        <!-- Thêm trong phần col-lg-8 text-center -->
-                        <div class="mb-3">
-                            <label
-                                for="modelSelect"
-                                class="form-label fw-semibold"
-                                >🎯 Chọn mô hình</label
-                            >
-                            <select
-                                id="modelSelect"
-                                class="form-select shadow-sm"
-                                style="max-width: 300px; margin: 0 auto"
-                            >
-                                <option value="">-- Chọn mô hình --</option>
-                            </select>
-                        </div>
-
-                        <div id="videoWrapper">
+                            <input
+                                type="file"
+                                id="videoUpload"
+                                accept="video/mp4"
+                                style="
+                                    opacity: 0;
+                                    width: 100%;
+                                    height: 100%;
+                                    position: absolute;
+                                    top: 0;
+                                    left: 0;
+                                    z-index: 3;
+                                    cursor: pointer;
+                                "
+                            />
                             <video
                                 id="previewVideo"
                                 controls
-                                class="rounded shadow border"
+                                class="position-absolute top-0 start-0 w-100 h-100"
+                                style="
+                                    z-index: 2;
+                                    object-fit: contain;
+                                    display: none;
+                                    background: #000;
+                                "
                             ></video>
-                            <canvas id="uploadCanvas"></canvas>
+                            <canvas
+                                id="uploadCanvas"
+                                class="position-absolute top-0 start-0"
+                                style="
+                                    z-index: 10;
+                                    pointer-events: none;
+                                    display: none;
+                                "
+                            ></canvas>
+                            <div
+                                id="uploadPrompt"
+                                class="position-absolute top-50 start-50 translate-middle text-center text-muted"
+                                style="z-index: 1"
+                            >
+                                <i
+                                    class="bi bi-cloud-arrow-up-fill display-3 text-primary mb-2"
+                                ></i>
+                                <p class="m-0">
+                                    <strong>Kéo thả video MP4 vào đây</strong
+                                    ><br />
+                                    hoặc bấm để chọn từ thiết bị
+                                </p>
+                            </div>
                         </div>
-                        <br />
+                        <div class="text-end mt-2">
+                            <button
+                                id="resetVideoBtn"
+                                class="btn btn-outline-secondary btn-sm d-none"
+                            >
+                                <i class="bi bi-arrow-repeat"></i> Chọn lại
+                                video
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Model Selection (4 columns) -->
+                    <div class="col-lg-3">
+                        <h5 class="mb-3">Chọn mô hình</h5>
+                        <select id="modelSelect" class="form-select mb-3">
+                            <option disabled selected>
+                                -- Đang tải mô hình... --
+                            </option>
+                        </select>
                         <button
                             id="detectBtn"
-                            class="btn btn-danger px-4 py-2 fw-semibold shadow"
+                            class="btn btn-primary w-100"
                             disabled
                         >
-                            🔍 Bắt đầu phát hiện
+                            Bắt đầu
                         </button>
+                        <div id="status" class="mt-3 text-center"></div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Client Area End -->
-
         <!-- Footer Area -->
         {% include ('partials/footer.html') %}
         <!-- Footer Area End -->
@@ -126,8 +151,7 @@
         <script src="/static/assets/js/contact-form-script.js"></script>
         <!-- Custom JS -->
         <script src="/static/assets/js/custom.js"></script>
-
-        <!-- Dự đoán ảnh -->
+        <!-- Dự đoán video -->
         <script src="/static/predict/predict_video.js"></script>
     </body>
 </html>
