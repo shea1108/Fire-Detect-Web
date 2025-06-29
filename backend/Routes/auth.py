@@ -35,7 +35,7 @@ def get_current_user():
             'user_email': session['user_email'],
             'user_phone_num': session.get('user_phone_num', ''),
             'user_avatar': session.get('user_avatar', ''),
-            'user_role': session.get('user_roles', []),
+            'user_roles': session.get('user_roles', []),
             'permissions': session.get('permissions', [])
         }), 200
     return jsonify({'error': 'Chưa đăng nhập', 'user_role': 'guest'}), 401
