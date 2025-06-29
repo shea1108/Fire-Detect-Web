@@ -1,91 +1,147 @@
 /** @format */
 
-const videoUpload = document.getElementById('videoUpload');
-const fileNameSpan = document.getElementById('FileName');
-const previewVideo = document.getElementById('previewVideo');
+const videoInput = document.getElementById('videoUpload');
+const videoPreview = document.getElementById('previewVideo');
+const uploadPrompt = document.getElementById('uploadPrompt');
+const resetBtn = document.getElementById('resetVideoBtn');
+const modelSelect = document.getElementById('modelSelect');
+const detectBtn = document.getElementById('detectBtn');
 const uploadCanvas = document.getElementById('uploadCanvas');
 const uploadCtx = uploadCanvas.getContext('2d');
-const detectBtn = document.getElementById('detectBtn');
-const modelSelect = document.getElementById('modelSelect');
+const status = document.getElementById('status');
 
-let lastBoxes = [];
 let isDetecting = false;
-let scaleX = 1,
-    scaleY = 1;
+let lastBoxes = [];
 
-// 🧠 Load models từ API
-fetch('/api/auth/me')
-    .then((res) => res.json())
-    .then((user) => {
-        const currentUserId = user.user_id || null;
-
-        return fetch('/api/models/get_all')
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.models && data.models.length > 0) {
-                    const modelsToShow =
-                        currentUserId === null ? [data.models[0]] : data.models;
-
-                    modelSelect.innerHTML = '';
-                    modelsToShow.forEach((m) => {
-                        const opt = document.createElement('option');
-                        opt.value = m.model_id;
-                        opt.textContent = m.model_name;
-                        modelSelect.appendChild(opt);
-                    });
-
-                    modelSelect.value = modelsToShow[0].model_id;
-                }
-            });
-    })
-    .catch((err) => {
-        console.error('Không load được mô hình:', err);
-    });
-
+// ✅ Cập nhật kích thước canvas chính xác
 function updateCanvasSize() {
-    const rect = previewVideo.getBoundingClientRect();
-    uploadCanvas.style.width = rect.width + 'px';
-    uploadCanvas.style.height = rect.height + 'px';
-    scaleX = rect.width / previewVideo.videoWidth;
-    scaleY = rect.height / previewVideo.videoHeight;
+    // Canvas sẽ có kích thước bằng container để overlay chính xác
+    const containerRect = videoPreview.getBoundingClientRect();
+    uploadCanvas.width = containerRect.width;
+    uploadCanvas.height = containerRect.height;
+    uploadCanvas.style.width = containerRect.width + 'px';
+    uploadCanvas.style.height = containerRect.height + 'px';
 }
 
-window.addEventListener('resize', () => {
-    if (!previewVideo.videoWidth) return;
-    updateCanvasSize();
+// ✅ Tính toán tỷ lệ scale từ video gốc sang hiển thị
+function getVideoScale() {
+    if (!videoPreview.videoWidth || !videoPreview.videoHeight) {
+        return { scaleX: 1, scaleY: 1, offsetX: 0, offsetY: 0 };
+    }
+
+    const videoAspect = videoPreview.videoWidth / videoPreview.videoHeight;
+    const displayAspect = videoPreview.clientWidth / videoPreview.clientHeight;
+
+    let scaleX,
+        scaleY,
+        offsetX = 0,
+        offsetY = 0;
+
+    if (displayAspect > videoAspect) {
+        // Video có thanh đen hai bên
+        scaleY = videoPreview.clientHeight / videoPreview.videoHeight;
+        scaleX = scaleY;
+        const actualWidth = videoPreview.videoWidth * scaleX;
+        offsetX = (videoPreview.clientWidth - actualWidth) / 2;
+    } else {
+        // Video có thanh đen trên dưới
+        scaleX = videoPreview.clientWidth / videoPreview.videoWidth;
+        scaleY = scaleX;
+        const actualHeight = videoPreview.videoHeight * scaleY;
+        offsetY = (videoPreview.clientHeight - actualHeight) / 2;
+    }
+
+    return { scaleX, scaleY, offsetX, offsetY };
+}
+
+// Load model list from API
+fetch('/api/models/get_all')
+    .then((res) => res.json())
+    .then((data) => {
+        if (data.models) {
+            modelSelect.innerHTML = '';
+            data.models.forEach((m) => {
+                const opt = document.createElement('option');
+                opt.value = m.model_id;
+                opt.textContent = m.model_name;
+                modelSelect.appendChild(opt);
+            });
+            modelSelect.value = data.models[0].model_id;
+        }
+    })
+    .catch((error) => {
+        console.error('Error loading models:', error);
+        // Fallback to mock data if API fails
+        modelSelect.innerHTML = `
+                        <option value="1">YOLOv8 Fire Detection</option>
+                        <option value="2">Custom Fire Model</option>
+                    `;
+        modelSelect.value = '1';
+    });
+
+modelSelect.addEventListener('change', () => {
+    detectBtn.disabled = !videoPreview.src;
 });
 
-videoUpload.addEventListener('change', () => {
-    const file = videoUpload.files[0];
+videoInput.addEventListener('click', () => (videoInput.value = ''));
+videoInput.addEventListener('change', () => {
+    const file = videoInput.files[0];
     if (!file) return;
 
-    previewVideo.src = URL.createObjectURL(file);
-    detectBtn.disabled = false;
-    fileNameSpan.textContent = file.name;
-    previewVideo.style.display = 'block';
+    // ✅ Reset lại video hoàn toàn trước khi gán mới
+    videoPreview.pause();
+    videoPreview.removeAttribute('src');
+    videoPreview.load();
 
-    previewVideo.addEventListener('loadedmetadata', () => {
-        previewVideo.style.display = 'block';
+    const url = URL.createObjectURL(file);
+    videoPreview.src = url;
+    videoPreview.style.display = 'block';
+    uploadPrompt.style.display = 'none';
+    videoInput.style.pointerEvents = 'none';
+    resetBtn.classList.remove('d-none');
+    detectBtn.disabled = !modelSelect.value;
+
+    videoPreview.addEventListener('loadedmetadata', () => {
+        updateCanvasSize();
         uploadCanvas.style.display = 'block';
-
-        const maxHeight = 400;
-        const aspectRatio = previewVideo.videoWidth / previewVideo.videoHeight;
-        const displayHeight = Math.min(maxHeight, previewVideo.videoHeight);
-        const displayWidth = displayHeight * aspectRatio;
-
-        previewVideo.style.height = displayHeight + 'px';
-        previewVideo.style.width = displayWidth + 'px';
-
-        uploadCanvas.style.height = displayHeight + 'px';
-        uploadCanvas.style.width = displayWidth + 'px';
-
-        uploadCanvas.width = previewVideo.videoWidth;
-        uploadCanvas.height = previewVideo.videoHeight;
     });
+
+    window.addEventListener('resize', updateCanvasSize);
 });
 
+resetBtn.addEventListener('click', () => {
+    // Ngừng video
+    videoPreview.pause();
+
+    // Gỡ bỏ URL cũ
+    if (videoPreview.src && videoPreview.src.startsWith('blob:')) {
+        URL.revokeObjectURL(videoPreview.src);
+    }
+
+    // Reset src và load lại
+    videoPreview.removeAttribute('src');
+    videoPreview.load();
+
+    // ✅ Ẩn thẻ video, hiện prompt ban đầu
+    videoPreview.style.display = 'none';
+    uploadPrompt.style.display = 'block';
+
+    // ✅ Ẩn canvas và reset form
+    uploadCanvas.style.display = 'none';
+    videoInput.value = '';
+    videoInput.style.pointerEvents = 'auto';
+    resetBtn.classList.add('d-none');
+    detectBtn.disabled = true;
+
+    // ✅ Reset logic
+    isDetecting = false;
+    lastBoxes = [];
+    status.innerHTML = '';
+});
+
+// ✅ Gửi frame để detect (real API call)
 async function detectFrame(imageData) {
-    const modelId = modelSelect.value || '1';
+    const modelId = modelSelect.value;
 
     try {
         const res = await fetch('/api/predict/detect_video_frame', {
@@ -96,68 +152,128 @@ async function detectFrame(imageData) {
                 model_id: modelId,
             }),
         });
+
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
         const data = await res.json();
         lastBoxes = data.detections || [];
-    } catch (err) {
-        console.error('Detection error:', err);
+    } catch (error) {
+        console.error('Detection error:', error);
+        lastBoxes = [];
+        status.innerHTML =
+            '<span class="text-danger">❌ Lỗi kết nối API</span>';
     }
 }
 
-function drawLoop() {
-    if (!isDetecting || previewVideo.ended) return;
-
+// ✅ Vẽ bounding boxes với tỷ lệ chính xác
+function drawBoundingBoxes() {
     uploadCtx.clearRect(0, 0, uploadCanvas.width, uploadCanvas.height);
 
-    lastBoxes.forEach(({ bbox, confidence }) => {
+    if (lastBoxes.length === 0) return;
+
+    const { scaleX, scaleY, offsetX, offsetY } = getVideoScale();
+
+    lastBoxes.forEach(({ bbox, confidence, label }) => {
         const [x1, y1, x2, y2] = bbox;
-        const label = `Fire (${(confidence * 100).toFixed(1)}%)`;
 
-        const dx1 = x1 * scaleX;
-        const dy1 = y1 * scaleY;
-        const dw = (x2 - x1) * scaleX;
-        const dh = (y2 - y1) * scaleY;
+        // ✅ Chuyển từ tọa độ video gốc sang tọa độ hiển thị
+        const displayX1 = x1 * scaleX + offsetX;
+        const displayY1 = y1 * scaleY + offsetY;
+        const displayX2 = x2 * scaleX + offsetX;
+        const displayY2 = y2 * scaleY + offsetY;
 
-        uploadCtx.strokeStyle = 'blue';
+        const width = displayX2 - displayX1;
+        const height = displayY2 - displayY1;
+
+        // Vẽ bbox
+        uploadCtx.strokeStyle = '#ff0000';
         uploadCtx.lineWidth = 2;
-        uploadCtx.strokeRect(dx1, dy1, dw, dh);
-        uploadCtx.fillStyle = 'blue';
-        uploadCtx.font = '16px sans-serif';
-        uploadCtx.fillText(label, dx1 + 4, dy1 - 6);
-    });
+        uploadCtx.strokeRect(displayX1, displayY1, width, height);
 
+        // Vẽ label
+        const labelText = `🔥 ${label} ${(confidence * 100).toFixed(1)}%`;
+        uploadCtx.fillStyle = '#ff0000';
+        uploadCtx.font = '14px Arial';
+
+        // Background cho text
+        const textMetrics = uploadCtx.measureText(labelText);
+        uploadCtx.fillStyle = 'rgba(255, 0, 0, 0.8)';
+        uploadCtx.fillRect(
+            displayX1,
+            displayY1 - 20,
+            textMetrics.width + 8,
+            20
+        );
+
+        // Text
+        uploadCtx.fillStyle = '#ffffff';
+        uploadCtx.fillText(labelText, displayX1 + 4, displayY1 - 6);
+    });
+}
+
+// ✅ Main detection loop
+function drawLoop() {
+    if (!isDetecting || videoPreview.paused || videoPreview.ended) {
+        return;
+    }
+
+    drawBoundingBoxes();
+
+    // Gửi frame mới mỗi 300ms để tránh spam
     const now = Date.now();
-    //200ms gui 1 lan
-    if (!drawLoop.lastDetectTime || now - drawLoop.lastDetectTime > 200) {
+    if (!drawLoop.lastDetectTime || now - drawLoop.lastDetectTime > 300) {
         drawLoop.lastDetectTime = now;
-        if (!previewVideo.paused) {
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = previewVideo.videoWidth;
-            tempCanvas.height = previewVideo.videoHeight;
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.drawImage(previewVideo, 0, 0);
-            const base64Image = tempCanvas.toDataURL('image/jpeg');
-            detectFrame(base64Image);
-        }
+
+        // Tạo canvas để capture frame hiện tại
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = videoPreview.videoWidth;
+        tempCanvas.height = videoPreview.videoHeight;
+        const ctx = tempCanvas.getContext('2d');
+        ctx.drawImage(videoPreview, 0, 0);
+        const imageData = tempCanvas.toDataURL('image/jpeg', 0.8);
+
+        detectFrame(imageData);
     }
 
     requestAnimationFrame(drawLoop);
 }
 
+// ✅ Event listeners
 detectBtn.addEventListener('click', () => {
-    if (previewVideo.src && !isDetecting) {
+    if (!videoPreview.src || isDetecting) return;
+
+    isDetecting = true;
+    videoPreview.play();
+    drawLoop();
+    detectBtn.textContent = 'Đang phát hiện...';
+    detectBtn.disabled = true;
+    status.innerHTML =
+        '<span class="text-success">🔴 Đang phát hiện cháy...</span>';
+});
+
+videoPreview.addEventListener('pause', () => {
+    isDetecting = false;
+    detectBtn.textContent = 'Tiếp tục';
+    detectBtn.disabled = false;
+    status.innerHTML = '<span class="text-warning">⏸️ Tạm dừng</span>';
+});
+
+videoPreview.addEventListener('ended', () => {
+    isDetecting = false;
+    detectBtn.textContent = 'Bắt đầu';
+    detectBtn.disabled = false;
+    status.innerHTML = '<span class="text-info">✅ Hoàn thành</span>';
+});
+
+videoPreview.addEventListener('play', () => {
+    if (!isDetecting) {
         isDetecting = true;
-        previewVideo.play();
         drawLoop();
+        detectBtn.textContent = 'Đang phát hiện...';
         detectBtn.disabled = true;
+        status.innerHTML =
+            '<span class="text-success">🔴 Đang phát hiện cháy...</span>';
     }
-});
-
-previewVideo.addEventListener('pause', () => {
-    isDetecting = false;
-    detectBtn.disabled = false;
-});
-
-previewVideo.addEventListener('ended', () => {
-    isDetecting = false;
-    detectBtn.disabled = false;
 });
