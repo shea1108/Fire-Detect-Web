@@ -62,11 +62,13 @@ def detect_video_frame():
 
         detections = []
         for result in results:
+            img_w, img_h = result.orig_shape[1], result.orig_shape[0]
+
             for box in result.boxes.data.tolist():
                 if len(box) >= 6:
                     x1, y1, x2, y2, score, cls = box
                     detections.append({
-                        'bbox': [x1, y1, x2, y2],
+                        'bbox': [x1, y1, x2, y2],  # ⚠️ KHÔNG scale gì cả — gửi nguyên
                         'confidence': float(score),
                         'class_id': int(cls),
                         'label': current_model.names.get(int(cls), 'unknown')
@@ -76,3 +78,5 @@ def detect_video_frame():
 
     except Exception as e:
         return jsonify({'error': f'Lỗi xử lý frame: {str(e)}'}), 500
+
+
