@@ -1,4 +1,4 @@
-# 🔥 Fire Detection System with YOLOv8
+# 🔥 Fire Detection System
 
 A web-based real-time fire detection system using [YOLOv8](https://github.com/ultralytics/ultralytics) for image, video, and camera stream inputs.  
 The project includes a modern web interface (Flask) and supports running inference with your custom-trained YOLOv8 fire model.
